@@ -1,0 +1,36 @@
+{
+  "source": "agentos_executive_agent_reference_assets_v2.zip",
+  "copiedAt": "2026-05-30",
+  "movement": [
+    "movement/executive_idle_front_01.png",
+    "movement/executive_idle_front_02.png",
+    "movement/executive_idle_front_03.png",
+    "movement/executive_idle_front_04.png",
+    "movement/executive_walk_down_01.png",
+    "movement/executive_walk_down_02.png",
+    "movement/executive_walk_down_03.png",
+    "movement/executive_walk_down_04.png"
+  ],
+  "props": [
+    "props/prop_mission_board.png",
+    "props/prop_approval_console.png",
+    "props/prop_small_server_pedestal.png",
+    "props/prop_holographic_status_display.png",
+    "props/prop_standing_podium.png",
+    "props/prop_executive_desk_front.png",
+    "props/prop_executive_rug.png"
+  ],
+  "vfx": [
+    "vfx/vfx_selected_glow_ring.png",
+    "vfx/vfx_hover_outline_frame.png",
+    "vfx/vfx_typing_bubble.png",
+    "vfx/vfx_warning_triangle.png",
+    "vfx/status_dot_online.png",
+    "vfx/status_dot_busy.png",
+    "vfx/status_dot_offline.png"
+  ],
+  "discord": [
+    "discord/mobile_card_executive_summary.png",
+    "discord/briefing_avatar.png"
+  ]
+}

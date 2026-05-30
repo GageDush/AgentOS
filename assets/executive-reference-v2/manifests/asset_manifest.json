@@ -1,0 +1,1387 @@
+[
+  {
+    "file": "character_sprites/movement/executive_idle_front_01.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      370,
+      37,
+      444,
+      193
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_front_02.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      605,
+      36,
+      678,
+      193
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_front_03.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      839,
+      37,
+      913,
+      193
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_front_04.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      1056,
+      38,
+      1130,
+      193
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_side_01.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      378,
+      215,
+      433,
+      363
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_side_02.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      611,
+      215,
+      666,
+      363
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_side_03.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      845,
+      215,
+      901,
+      363
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_idle_side_04.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      1062,
+      215,
+      1117,
+      363
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_side_01.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      362,
+      386,
+      440,
+      532
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_side_02.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      600,
+      386,
+      683,
+      533
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_side_03.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      843,
+      386,
+      901,
+      532
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_side_04.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      1050,
+      386,
+      1135,
+      533
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_up_01.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      367,
+      559,
+      435,
+      702
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_up_02.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      607,
+      559,
+      674,
+      702
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_up_03.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      837,
+      559,
+      905,
+      702
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_up_04.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      1057,
+      559,
+      1127,
+      702
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_down_01.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      372,
+      725,
+      437,
+      873
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_down_02.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      607,
+      725,
+      673,
+      873
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_down_03.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      839,
+      725,
+      905,
+      873
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_walk_down_04.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      1058,
+      725,
+      1125,
+      873
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_run_side_01.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      350,
+      897,
+      445,
+      1035
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_run_side_02.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      588,
+      896,
+      683,
+      1023
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_run_side_03.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      824,
+      896,
+      920,
+      1035
+    ]
+  },
+  {
+    "file": "character_sprites/movement/executive_run_side_04.png",
+    "source_sheet": "sheet_01_character_movement",
+    "bbox": [
+      1041,
+      896,
+      1140,
+      1035
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_idle_alt_01.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      359,
+      95,
+      445,
+      245
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_idle_alt_02.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      571,
+      95,
+      658,
+      244
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_idle_alt_03.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      787,
+      95,
+      873,
+      245
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_idle_alt_04.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      993,
+      95,
+      1080,
+      245
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_walk_alt_01.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      350,
+      253,
+      441,
+      398
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_walk_alt_02.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      565,
+      253,
+      654,
+      398
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_walk_alt_03.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      778,
+      253,
+      869,
+      398
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_walk_alt_04.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      987,
+      253,
+      1077,
+      398
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_run_alt_01.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      339,
+      405,
+      449,
+      539
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_run_alt_02.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      555,
+      405,
+      666,
+      539
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_run_alt_03.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      762,
+      405,
+      876,
+      539
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_run_alt_04.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      966,
+      405,
+      1097,
+      539
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_talk_wave.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      323,
+      542,
+      427,
+      675
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_talk_present.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      553,
+      545,
+      667,
+      675
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_talk_arms_crossed.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      782,
+      545,
+      850,
+      675
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_talk_point_up.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      981,
+      545,
+      1070,
+      675
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_type_work_01.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      293,
+      682,
+      482,
+      836
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_type_work_02.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      505,
+      682,
+      693,
+      836
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_type_work_03.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      736,
+      682,
+      923,
+      836
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_type_work_04.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      961,
+      682,
+      1148,
+      836
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_celebrate_fist.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      331,
+      847,
+      435,
+      1032
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_celebrate_arms_up.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      530,
+      849,
+      662,
+      1032
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_celebrate_finger_guns.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      765,
+      850,
+      887,
+      1032
+    ]
+  },
+  {
+    "file": "character_sprites/actions_work/executive_celebrate_cheer.png",
+    "source_sheet": "sheet_02_character_actions_work",
+    "bbox": [
+      975,
+      850,
+      1114,
+      1031
+    ]
+  },
+  {
+    "file": "props_workstation/prop_executive_desk_front.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      57,
+      62,
+      464,
+      245
+    ]
+  },
+  {
+    "file": "props_workstation/prop_executive_desk_side.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      537,
+      86,
+      696,
+      244
+    ]
+  },
+  {
+    "file": "props_workstation/prop_command_chair.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      765,
+      66,
+      887,
+      245
+    ]
+  },
+  {
+    "file": "props_workstation/prop_laptop_open.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      975,
+      82,
+      1163,
+      220
+    ]
+  },
+  {
+    "file": "props_workstation/prop_laptop_closed.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      1227,
+      105,
+      1380,
+      206
+    ]
+  },
+  {
+    "file": "props_workstation/prop_desk_plant.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      64,
+      336,
+      143,
+      431
+    ]
+  },
+  {
+    "file": "props_workstation/prop_coffee_mug.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      292,
+      345,
+      377,
+      420
+    ]
+  },
+  {
+    "file": "props_workstation/prop_executive_nameplate.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      504,
+      359,
+      747,
+      422
+    ]
+  },
+  {
+    "file": "props_workstation/prop_mission_clipboard.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      882,
+      314,
+      989,
+      447
+    ]
+  },
+  {
+    "file": "props_workstation/prop_approval_tablet.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      1158,
+      314,
+      1329,
+      454
+    ]
+  },
+  {
+    "file": "props_workstation/prop_wall_strategy_monitor.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      61,
+      495,
+      393,
+      673
+    ]
+  },
+  {
+    "file": "props_workstation/prop_mission_board.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      464,
+      492,
+      791,
+      672
+    ]
+  },
+  {
+    "file": "props_workstation/prop_approval_console.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      856,
+      498,
+      1150,
+      671
+    ]
+  },
+  {
+    "file": "props_workstation/prop_small_server_pedestal.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      1242,
+      521,
+      1341,
+      666
+    ]
+  },
+  {
+    "file": "props_workstation/prop_holographic_status_display.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      64,
+      741,
+      234,
+      894
+    ]
+  },
+  {
+    "file": "props_workstation/prop_standing_podium.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      358,
+      741,
+      459,
+      896
+    ]
+  },
+  {
+    "file": "props_workstation/prop_bookshelf_file_shelf.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      587,
+      747,
+      806,
+      902
+    ]
+  },
+  {
+    "file": "props_workstation/prop_baseops_wall_plaque.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      892,
+      755,
+      1110,
+      887
+    ]
+  },
+  {
+    "file": "props_workstation/prop_floor_shadow_ellipse.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      1200,
+      824,
+      1360,
+      849
+    ]
+  },
+  {
+    "file": "props_workstation/prop_executive_rug.png",
+    "source_sheet": "sheet_03_props_workstation",
+    "bbox": [
+      62,
+      941,
+      475,
+      1054
+    ]
+  },
+  {
+    "file": "ui_panels/ui_executive_profile_panel_empty.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      60,
+      39,
+      448,
+      320
+    ]
+  },
+  {
+    "file": "ui_panels/ui_executive_profile_panel_filled.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      485,
+      40,
+      900,
+      324
+    ]
+  },
+  {
+    "file": "ui_panels/ui_top_tab_strip.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      943,
+      41,
+      1376,
+      100
+    ]
+  },
+  {
+    "file": "ui_panels/ui_current_mission_panel.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      943,
+      131,
+      1375,
+      325
+    ]
+  },
+  {
+    "file": "ui_panels/ui_operations_log_panel.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      59,
+      364,
+      401,
+      625
+    ]
+  },
+  {
+    "file": "ui_panels/ui_chain_of_command_panel.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      430,
+      365,
+      715,
+      627
+    ]
+  },
+  {
+    "file": "ui_panels/ui_strategy_brief_panel.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      746,
+      365,
+      1040,
+      628
+    ]
+  },
+  {
+    "file": "ui_panels/ui_delegate_task_panel.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      1067,
+      366,
+      1374,
+      630
+    ]
+  },
+  {
+    "file": "ui_panels/ui_approval_required_modal.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      59,
+      662,
+      372,
+      876
+    ]
+  },
+  {
+    "file": "ui_panels/ui_approve_deny_modal.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      391,
+      662,
+      694,
+      878
+    ]
+  },
+  {
+    "file": "ui_panels/ui_priority_override_modal.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      714,
+      662,
+      1015,
+      878
+    ]
+  },
+  {
+    "file": "ui_panels/ui_toast_success.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      1057,
+      663,
+      1369,
+      722
+    ]
+  },
+  {
+    "file": "ui_panels/ui_toast_warning.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      1057,
+      813,
+      1369,
+      873
+    ]
+  },
+  {
+    "file": "ui_panels/ui_toast_error.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      1058,
+      737,
+      1369,
+      796
+    ]
+  },
+  {
+    "file": "ui_panels/ui_footer_bar_full.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      60,
+      925,
+      709,
+      1014
+    ]
+  },
+  {
+    "file": "ui_panels/ui_footer_bar_compact.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      760,
+      925,
+      1204,
+      1015
+    ]
+  },
+  {
+    "file": "ui_panels/ui_compact_profile_tile.png",
+    "source_sheet": "sheet_04_ui_panels",
+    "bbox": [
+      1238,
+      926,
+      1336,
+      1023
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_speech_bubble.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      95,
+      55,
+      320,
+      225
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_thought_bubble.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      350,
+      55,
+      575,
+      225
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_typing_bubble.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      615,
+      55,
+      835,
+      225
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_exclamation_bubble.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      890,
+      55,
+      1085,
+      225
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_question_bubble.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1140,
+      55,
+      1340,
+      225
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_warning_triangle.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      100,
+      250,
+      310,
+      435
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_alert_pulse_ring.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      360,
+      250,
+      550,
+      435
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_approval_check_burst.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      620,
+      250,
+      825,
+      435
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_success_star_burst.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      880,
+      250,
+      1090,
+      435
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_selected_glow_ring.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1135,
+      250,
+      1335,
+      435
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_hover_outline_frame.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      95,
+      455,
+      345,
+      650
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_command_beacon.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      380,
+      455,
+      565,
+      650
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_blocked_stop_badge.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      640,
+      455,
+      815,
+      650
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_small_lock_icon.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      925,
+      455,
+      1035,
+      650
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_active_task_ping.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1140,
+      455,
+      1315,
+      650
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_shadow_ellipse.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      90,
+      690,
+      340,
+      820
+    ]
+  },
+  {
+    "file": "icons_buttons/icon_cursor_arrow.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      390,
+      690,
+      520,
+      830
+    ]
+  },
+  {
+    "file": "vfx_indicators/vfx_click_sparkle.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      635,
+      690,
+      805,
+      830
+    ]
+  },
+  {
+    "file": "vfx_indicators/status_dot_online.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      900,
+      720,
+      980,
+      800
+    ]
+  },
+  {
+    "file": "vfx_indicators/status_dot_offline.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      995,
+      720,
+      1075,
+      800
+    ]
+  },
+  {
+    "file": "vfx_indicators/status_dot_busy.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1090,
+      720,
+      1170,
+      800
+    ]
+  },
+  {
+    "file": "icons_buttons/icon_user_approved.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1170,
+      690,
+      1310,
+      835
+    ]
+  },
+  {
+    "file": "icons_buttons/button_confirm_check.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      70,
+      885,
+      205,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_cancel_x.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      220,
+      885,
+      355,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_search.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      370,
+      885,
+      505,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_delegate.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      520,
+      885,
+      655,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_warning.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      665,
+      885,
+      800,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_chat.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      810,
+      885,
+      945,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_logs.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      955,
+      885,
+      1090,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_flag.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1105,
+      885,
+      1240,
+      1020
+    ]
+  },
+  {
+    "file": "icons_buttons/button_settings.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": [
+      1250,
+      885,
+      1380,
+      1020
+    ]
+  },
+  {
+    "file": "discord_mobile/avatars/square_avatar_128.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      83,
+      41,
+      251,
+      221
+    ]
+  },
+  {
+    "file": "discord_mobile/avatars/circular_avatar_128.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      322,
+      40,
+      498,
+      221
+    ]
+  },
+  {
+    "file": "discord_mobile/avatars/online_avatar.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      543,
+      45,
+      706,
+      218
+    ]
+  },
+  {
+    "file": "discord_mobile/avatars/blocked_avatar.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      746,
+      45,
+      911,
+      218
+    ]
+  },
+  {
+    "file": "discord_mobile/avatars/thinking_avatar.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      958,
+      32,
+      1120,
+      229
+    ]
+  },
+  {
+    "file": "discord_mobile/avatars/briefing_avatar.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      1147,
+      24,
+      1345,
+      230
+    ]
+  },
+  {
+    "file": "discord_mobile/emojis/emoji_face_smile.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      366,
+      285,
+      473,
+      402
+    ]
+  },
+  {
+    "file": "discord_mobile/emojis/emoji_face_thinking.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      558,
+      285,
+      664,
+      409
+    ]
+  },
+  {
+    "file": "discord_mobile/emojis/emoji_face_surprised.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      753,
+      285,
+      858,
+      402
+    ]
+  },
+  {
+    "file": "discord_mobile/emojis/emoji_face_serious.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      950,
+      286,
+      1053,
+      402
+    ]
+  },
+  {
+    "file": "discord_mobile/stickers/sticker_lets_go.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      54,
+      477,
+      245,
+      669
+    ]
+  },
+  {
+    "file": "discord_mobile/stickers/sticker_on_it.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      311,
+      479,
+      452,
+      672
+    ]
+  },
+  {
+    "file": "discord_mobile/stickers/sticker_standby.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      519,
+      478,
+      688,
+      670
+    ]
+  },
+  {
+    "file": "discord_mobile/stickers/sticker_done.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      748,
+      481,
+      890,
+      675
+    ]
+  },
+  {
+    "file": "discord_mobile/stickers/sticker_briefing.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      954,
+      477,
+      1133,
+      679
+    ]
+  },
+  {
+    "file": "discord_mobile/stickers/sticker_approved.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      1187,
+      482,
+      1382,
+      674
+    ]
+  },
+  {
+    "file": "discord_mobile/mobile_cards/mobile_card_new_mission.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      35,
+      732,
+      295,
+      1021
+    ]
+  },
+  {
+    "file": "discord_mobile/mobile_cards/mobile_card_approval_request.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      310,
+      732,
+      569,
+      1021
+    ]
+  },
+  {
+    "file": "discord_mobile/mobile_cards/mobile_card_task_complete.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      585,
+      732,
+      846,
+      1021
+    ]
+  },
+  {
+    "file": "discord_mobile/mobile_cards/mobile_card_blocked_task.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      862,
+      732,
+      1130,
+      1021
+    ]
+  },
+  {
+    "file": "discord_mobile/mobile_cards/mobile_card_executive_summary.png",
+    "source_sheet": "sheet_06_discord_mobile",
+    "bbox": [
+      1145,
+      732,
+      1411,
+      1021
+    ]
+  },
+  {
+    "file": "vfx_indicators/status_dot_green.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": "manual_patch"
+  },
+  {
+    "file": "vfx_indicators/status_dot_gray.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": "manual_patch"
+  },
+  {
+    "file": "vfx_indicators/status_dot_red.png",
+    "source_sheet": "sheet_05_vfx_icons_buttons",
+    "bbox": "manual_patch"
+  }
+]

@@ -22,7 +22,7 @@ body {
   min-height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
 }
 
 button,
@@ -60,8 +60,9 @@ textarea {
 
 .brand h1 {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   letter-spacing: 0;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .brand p,
@@ -131,6 +132,13 @@ textarea {
   padding: 7px 9px;
   color: var(--muted);
   font-size: 12px;
+  cursor: pointer;
+}
+
+.chip-strong {
+  color: var(--text);
+  background: rgba(80, 227, 164, 0.14);
+  border-color: rgba(80, 227, 164, 0.45);
 }
 
 .side-panel {
@@ -145,6 +153,10 @@ textarea {
   margin-bottom: 12px;
 }
 
+.panel-hero {
+  overflow: hidden;
+}
+
 .panel h2,
 .panel h3 {
   margin: 0 0 8px;
@@ -157,6 +169,7 @@ textarea {
 
 .panel h3 {
   font-size: 15px;
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .panel-subtitle {
@@ -174,6 +187,11 @@ textarea {
   border-radius: 8px;
   padding: 10px;
   background: rgba(255, 255, 255, 0.035);
+}
+
+.row-selected {
+  border-color: rgba(80, 227, 164, 0.5);
+  background: rgba(80, 227, 164, 0.08);
 }
 
 .row-title {
@@ -194,8 +212,13 @@ textarea {
 }
 
 .status.reviewing,
-.status.thinking {
+.status.thinking,
+.status.running {
   color: var(--orange);
+}
+
+.status.failed {
+  color: var(--red);
 }
 
 .button-row {
@@ -218,6 +241,16 @@ textarea {
   border-color: rgba(56, 213, 255, 0.54);
 }
 
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn-strong {
+  background: linear-gradient(135deg, rgba(80, 227, 164, 0.24), rgba(56, 213, 255, 0.22));
+  border-color: rgba(80, 227, 164, 0.4);
+}
+
 .progress {
   height: 8px;
   border-radius: 999px;
@@ -229,6 +262,124 @@ textarea {
   display: block;
   height: 100%;
   background: linear-gradient(90deg, var(--green), var(--cyan));
+}
+
+.status-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--line);
+  background: rgba(8, 12, 18, 0.94);
+}
+
+.issue-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  background: var(--green);
+}
+
+.status-dot.warning {
+  background: var(--orange);
+}
+
+.footer-text {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.field span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.meta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.meta-tag {
+  border-radius: 999px;
+  padding: 5px 8px;
+  font-size: 11px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hero-avatar {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 4px;
+}
+
+.panel-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+}
+
+.error-text {
+  color: #ff9cab;
+}
+
+.result-preview {
+  color: #d6f3e9;
 }
 
 @media (max-width: 980px) {
@@ -243,5 +394,14 @@ textarea {
   .topbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .status-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .footer-text {
+    text-align: left;
   }
 }

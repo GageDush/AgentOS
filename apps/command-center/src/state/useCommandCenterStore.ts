@@ -12,5 +12,14 @@ export type PanelState = {
 export const useCommandCenterStore = create<PanelState>((set) => ({
   activePanel: "MissionBoardPanel",
   activeTarget: undefined,
-  openPanel: (panel, target) => set({ activePanel: panel, activeTarget: target })
+  openPanel: (panel, target) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("agentos:panel-opened", {
+          detail: { panel, targetId: target?.id }
+        })
+      );
+    }
+    set({ activePanel: panel, activeTarget: target });
+  }
 }));

@@ -1,0 +1,243 @@
+param(
+    [string]$Model = "qwen2.5-coder:7b",
+    [int]$Cycles = 8,
+    [int]$MinutesBetweenCycles = 20
+)
+
+$ErrorActionPreference = "Stop"
+
+$ProjectRoot = "$env:USERPROFILE\Documents\AgenOS"
+Set-Location $ProjectRoot
+
+$OutDir = ".\docs\overnight-plans"
+New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
+
+$FocusAreas = @(
+    "UI smoke test: verify clickable office zones, selected zone state, hover behavior, and panel mapping",
+    "Game schema hardening: unique zone ids, clear action names, no overlapping rectangles, comments for future editing",
+    "Command center UX: improve panel clarity, task visibility, issue indicator explanation, and dashboard readability",
+    "API mock data reliability: review agents, tasks, memory, usage, approvals, audit endpoint consistency",
+    "Testing plan: add small high-value tests for game-schema, shared seed data, and API store behavior",
+    "Developer experience: README improvements, setup commands, troubleshooting notes, and common errors",
+    "Codex task planning: split the next 10 implementation steps into tiny safe prompts under 5 files each",
+    "Risk review: identify things not to build yet, including auth, real agents, Discord, secrets, Docker, and production deployment"
+)
+
+function Get-SafeFileContent {
+    param([string]$Path, [int]$MaxChars = 10000)
+
+    if (!(Test-Path $Path)) {
+        return ""
+    }
+
+    $content = Get-Content $Path -Raw
+
+    if ($content.Length -gt $MaxChars) {
+        return $content.Substring(0, $MaxChars) + "`n...[truncated]..."
+    }
+
+    return $content
+}
+
+function Invoke-OllamaReview {
+    param(
+        [string]$Focus,
+        [int]$Cycle
+    )
+
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $safeStamp = Get-Date -Format "yyyyMMdd-HHmmss"
+
+    $Files = @{
+        "README.md" = Get-SafeFileContent "README.md"
+        "AGENTS.md" = Get-SafeFileContent "AGENTS.md"
+        "package.json" = Get-SafeFileContent "package.json"
+        "apps/command-center/src/app/layout.tsx" = Get-SafeFileContent "apps/command-center/src/app/layout.tsx"
+        "apps/command-center/src/app/page.tsx" = Get-SafeFileContent "apps/command-center/src/app/page.tsx"
+        "packages/game-schema/src/index.ts" = Get-SafeFileContent "packages/game-schema/src/index.ts"
+        "packages/shared/src/index.ts" = Get-SafeFileContent "packages/shared/src/index.ts"
+        "apps/api/src/index.ts" = Get-SafeFileContent "apps/api/src/index.ts"
+        "apps/api/src/store.ts" = Get-SafeFileContent "apps/api/src/store.ts"
+    }
+
+    $RepoContext = ""
+
+    foreach ($key in $Files.Keys) {
+        $RepoContext += "`n--- FILE: $key ---`n"
+        $RepoContext += $Files[$key]
+        $RepoContext += "`n"
+    }
+
+    $Prompt = @"
+You are a local read-only planning worker for AgentOS.
+
+Current project state:
+- AgentOS is a working local MVP.
+- It has a Next.js command-center frontend.
+- It has a Phaser office dashboard.
+- It has a Fastify mock API.
+- It has a mock gateway.
+- It has a worker heartbeat.
+- It already passes pnpm typecheck, pnpm test, and pnpm build.
+- Git checkpoint exists.
+
+Your overnight focus area:
+$Focus
+
+Rules:
+- Do not tell me to make huge rewrites.
+- Do not suggest production deployment yet.
+- Do not suggest real Discord, real agents, auth, secret management, or database persistence yet.
+- Do not output giant code files.
+- Do not assume files exist unless shown in context.
+- Prefer tiny tasks that touch 1-3 files.
+- Every task should preserve pnpm typecheck, pnpm test, pnpm build, and pnpm dev.
+- Focus on practical next actions for Codex tomorrow.
+
+Output format:
+
+# AgentOS Overnight Planning Packet $Cycle
+
+Generated: $timestamp
+
+## Focus Area
+$Focus
+
+## Findings
+List concrete findings from the repo context.
+
+## Best Tiny Tasks
+Create 5-10 tasks. Each task must include:
+- Goal
+- Files likely touched
+- Why it matters
+- Risk level: Low / Medium / High
+- Verification command
+
+## Best Next Codex Prompt
+Write one concise Codex prompt for the single best next task.
+
+## Manual Smoke Test Checklist
+Give a checklist I can perform by hand in the browser.
+
+## Do Not Do Yet
+List things to avoid.
+
+Repo context:
+$RepoContext
+"@
+
+    $Body = @{
+        model = $Model
+        prompt = $Prompt
+        stream = $false
+        options = @{
+            temperature = 0.2
+            num_ctx = 8192
+        }
+    } | ConvertTo-Json -Depth 10
+
+    Write-Host "`n[$timestamp] Cycle $Cycle/$Cycles"
+    Write-Host "Focus: $Focus"
+    Write-Host "Sending to Ollama model: $Model"
+
+    $Response = Invoke-RestMethod `
+        -Uri "http://127.0.0.1:11434/api/generate" `
+        -Method Post `
+        -ContentType "application/json" `
+        -Body $Body `
+        -TimeoutSec 3600
+
+    $fileName = "$safeStamp-cycle-$Cycle.md"
+    $outPath = Join-Path $OutDir $fileName
+
+    $header = @"
+# AgentOS Overnight Planner Output
+
+Model: $Model  
+Generated: $timestamp  
+Cycle: $Cycle of $Cycles  
+Focus: $Focus  
+
+This file was generated by local Ollama. It is planning-only and did not modify app source code.
+
+---
+
+"@
+
+    $header + $Response.response | Set-Content $outPath -Encoding UTF8
+
+    Write-Host "Wrote:"
+    Write-Host $outPath
+}
+
+Write-Host "`n=== AgentOS Overnight Planner ==="
+Write-Host "Model: $Model"
+Write-Host "Cycles: $Cycles"
+Write-Host "Minutes between cycles: $MinutesBetweenCycles"
+Write-Host "Output: $OutDir"
+Write-Host "`nThis script writes planning docs only. It does not edit source code.`n"
+
+# Confirm Ollama API is alive
+try {
+    Invoke-RestMethod -Uri "http://127.0.0.1:11434/api/tags" -Method Get -TimeoutSec 10 | Out-Null
+    Write-Host "Ollama API is online."
+} catch {
+    throw "Ollama API is not responding at http://127.0.0.1:11434. Start Ollama and rerun."
+}
+
+# Record current git status before starting
+$gitBefore = git status --short
+$statusPath = Join-Path $OutDir "git-status-before.txt"
+$gitBefore | Set-Content $statusPath -Encoding UTF8
+
+for ($i = 1; $i -le $Cycles; $i++) {
+    $focus = $FocusAreas[($i - 1) % $FocusAreas.Count]
+
+    try {
+        Invoke-OllamaReview -Focus $focus -Cycle $i
+    } catch {
+        $errPath = Join-Path $OutDir ("error-cycle-" + $i + ".txt")
+        $_ | Out-String | Set-Content $errPath -Encoding UTF8
+        Write-Host "Cycle $i failed. Error saved to $errPath"
+    }
+
+    if ($i -lt $Cycles) {
+        Write-Host "Sleeping $MinutesBetweenCycles minutes..."
+        Start-Sleep -Seconds ($MinutesBetweenCycles * 60)
+    }
+}
+
+# Create summary index
+$indexPath = Join-Path $OutDir "INDEX.md"
+
+$files = Get-ChildItem $OutDir -Filter "*.md" |
+    Where-Object { $_.Name -ne "INDEX.md" } |
+    Sort-Object LastWriteTime
+
+$index = "# AgentOS Overnight Planner Index`n`n"
+
+foreach ($file in $files) {
+    $index += "- [$($file.Name)](./$($file.Name))`n"
+}
+
+$index | Set-Content $indexPath -Encoding UTF8
+
+Write-Host "`nGenerated index:"
+Write-Host $indexPath
+
+# Commit generated planning docs only
+git add $OutDir
+
+$changes = git status --porcelain
+
+if ($changes) {
+    git commit -m "Add overnight local AI planning packets"
+    Write-Host "Committed overnight planning docs."
+} else {
+    Write-Host "No changes to commit."
+}
+
+Write-Host "`n=== Overnight planner complete ==="
+Write-Host "Open:"
+Write-Host "notepad .\docs\overnight-plans\INDEX.md"

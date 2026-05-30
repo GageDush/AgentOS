@@ -32,8 +32,11 @@ export type AgentTask = {
   id: string;
   title: string;
   description: string;
-  status: TaskStatus;
+  prompt?: string;
+  status: TaskStatus | "queued" | "running" | "complete" | "failed";
   assignedAgentId?: string;
+  result?: string;
+  error?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -112,6 +115,40 @@ export type SystemHealth = {
   gateway: "online" | "offline";
   discordMode: "mock" | "real";
   providerMode: "mock" | "real";
+};
+
+export type LlmProviderId = "mock" | "ollama" | "cloud-stub";
+
+export type LlmChatRequest = {
+  prompt: string;
+  model?: string;
+  agentId?: string;
+  saveMemory?: boolean;
+};
+
+export type LlmChatResponse = {
+  ok: true;
+  provider: LlmProviderId;
+  model: string;
+  response: string;
+  durationMs: number;
+  savedMemoryId?: string;
+};
+
+export type DemoMissionStep = {
+  id: string;
+  agentId: string;
+  status: "queued" | "running" | "complete";
+  summary: string;
+};
+
+export type DemoMissionRun = {
+  id: string;
+  title: string;
+  status: "idle" | "running" | "complete";
+  steps: DemoMissionStep[];
+  createdAt: string;
+  updatedAt: string;
 };
 
 export const nowIso = () => new Date().toISOString();
@@ -198,6 +235,7 @@ export const defaultTasks: AgentTask[] = [
     id: "task-command-center",
     title: "Build the AgentOS Command Center MVP",
     description: "Create mock-mode dashboard, API, memory, token usage, approvals, and Discord controls.",
+    prompt: "Build a polished local AgentOS demo that feels alive but remains safe.",
     status: "building",
     assignedAgentId: "builder-agent",
     createdAt: nowIso(),
@@ -207,6 +245,7 @@ export const defaultTasks: AgentTask[] = [
     id: "task-asset-pass",
     title: "Prepare Phaser-ready game assets",
     description: "Slice concept sheets into clean transparent sprites, atlases, and interaction metadata.",
+    prompt: "Organize the executive asset pack and promote demo-ready art into the command center.",
     status: "planning",
     assignedAgentId: "product-agent",
     createdAt: nowIso(),
@@ -288,6 +327,20 @@ export const defaultAuditEvents: AuditEvent[] = [
     createdAt: nowIso()
   }
 ];
+
+export const defaultDemoMission: DemoMissionRun = {
+  id: "demo-mission-seed",
+  title: "Show friends the AgentOS command center",
+  status: "idle",
+  steps: [
+    { id: "step-planner", agentId: "product-agent", status: "queued", summary: "Planner prepares the mission brief." },
+    { id: "step-coder", agentId: "builder-agent", status: "queued", summary: "Coder drafts the response." },
+    { id: "step-reviewer", agentId: "reviewer-agent", status: "queued", summary: "Reviewer checks the result." },
+    { id: "step-memory", agentId: "agentos-operator", status: "queued", summary: "Operator records memory and audit notes." }
+  ],
+  createdAt: nowIso(),
+  updatedAt: nowIso()
+};
 
 export const calculateUsageSummary = (events: UsageEvent[], budgets: UsageBudget[]) => {
   const today = new Date().toISOString().slice(0, 10);

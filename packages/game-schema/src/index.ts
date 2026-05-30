@@ -10,6 +10,7 @@ export type OfficeInteractable = {
   panel: string;
 };
 
+// Keep zones data-driven so Phaser layout tweaks happen here instead of inside the scene.
 export const officeInteractables: OfficeInteractable[] = [
   {
     id: "agentos-operator",
@@ -177,6 +178,17 @@ export const officeInteractables: OfficeInteractable[] = [
     panel: "DiscordPanel"
   },
   {
+    id: "local-ai-console",
+    label: "Local AI Console",
+    kind: "station",
+    x: 535,
+    y: 605,
+    width: 195,
+    height: 95,
+    action: "open-local-ai",
+    panel: "LocalAIConsolePanel"
+  },
+  {
     id: "system-status-panel",
     label: "System Status",
     kind: "system",
@@ -199,5 +211,6 @@ export const panelLabels: Record<string, string> = {
   ApprovalPanel: "Approvals",
   LogsPanel: "Logs",
   DiscordPanel: "Discord",
-  SettingsPanel: "Settings"
+  SettingsPanel: "Settings",
+  LocalAIConsolePanel: "Local AI"
 };

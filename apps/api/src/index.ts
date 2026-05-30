@@ -3,7 +3,23 @@ import websocket from "@fastify/websocket";
 import Fastify from "fastify";
 import { createMemory, searchMemories } from "@agentos/memory";
 import { evaluateBudget } from "@agentos/token-manager";
-import { addBudget, addUsageEvent, createTask, resolveApproval, store, usageSummary } from "./store";
+import type { LlmChatRequest } from "@agentos/shared";
+import { getProviderId, providers } from "./providers";
+import {
+  addAudit,
+  addBudget,
+  addUsageEvent,
+  completeDemoMission,
+  completeTask,
+  createTask,
+  failTask,
+  getTask,
+  resolveApproval,
+  runDemoMission,
+  startTask,
+  store,
+  usageSummary
+} from "./store";
 
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_API_PORT ?? 8787);
@@ -15,6 +31,7 @@ app.get("/health", async () => ({
   ok: true,
   service: "AgentOS API",
   mode: process.env.AGENTOS_MODEL_PROVIDER ?? "mock",
+  provider: getProviderId(),
   timestamp: new Date().toISOString()
 }));
 
@@ -31,6 +48,41 @@ app.get("/tasks/:id", async (request, reply) => {
   const task = store.tasks.find((item) => item.id === (request.params as { id: string }).id);
   if (!task) return reply.code(404).send({ error: "Task not found" });
   return task;
+});
+app.post("/tasks/:id/run", async (request, reply) => {
+  const id = (request.params as { id: string }).id;
+  const task = startTask(id);
+  if (!task) return reply.code(404).send({ error: "Task not found" });
+
+  addAudit("task.started", task.assignedAgentId ?? "agentos-operator", `Started task: ${task.title}`);
+
+  try {
+    const provider = providers[getProviderId()];
+    const result = await provider.chat({
+      prompt: task.prompt || task.description,
+      model: (request.body as { model?: string } | undefined)?.model,
+      agentId: task.assignedAgentId,
+      saveMemory: true
+    });
+    completeTask(id, result.response);
+    addAudit("task.completed", task.assignedAgentId ?? "agentos-operator", `Completed task: ${task.title}`);
+    store.memories.unshift(
+      createMemory({
+        type: "task_memory",
+        title: `Task result: ${task.title}`,
+        content: result.response,
+        taskId: task.id,
+        agentId: task.assignedAgentId,
+        source: result.provider
+      })
+    );
+    return { task: getTask(id), llm: result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown task execution failure.";
+    failTask(id, message);
+    addAudit("task.failed", task.assignedAgentId ?? "agentos-operator", `Task failed: ${task.title}`);
+    return reply.code(502).send({ error: message, task: getTask(id) });
+  }
 });
 
 app.get("/runs", async () => store.runs);
@@ -122,17 +174,97 @@ app.post("/approvals/:id/deny", async (request, reply) => {
 });
 
 app.get("/audit", async () => store.auditEvents);
+app.post("/llm/chat", async (request, reply) => {
+  const body = request.body as LlmChatRequest;
+  if (!body?.prompt?.trim()) {
+    return reply.code(400).send({ ok: false, error: "Prompt is required." });
+  }
+
+  try {
+    const provider = providers[getProviderId()];
+    const result = await provider.chat(body);
+    let savedMemoryId: string | undefined;
+
+    if (body.saveMemory !== false) {
+      const memory = createMemory({
+        type: "tool_result",
+        title: `Local AI console response (${result.model})`,
+        content: result.response,
+        source: result.provider,
+        agentId: body.agentId,
+        tags: ["llm", "local-ai"]
+      });
+      store.memories.unshift(memory);
+      savedMemoryId = memory.id;
+    }
+
+    addAudit("llm.chat.completed", body.agentId ?? "agentos-operator", `Local AI response from ${result.provider}.`);
+
+    const estimatedCostUsd = result.provider === "ollama" ? 0 : 0;
+    const promptTokens = Math.ceil(body.prompt.length / 4);
+    const completionTokens = Math.ceil(result.response.length / 4);
+    addUsageEvent({
+      provider: result.provider,
+      model: result.model,
+      promptTokens,
+      completionTokens,
+      totalTokens: promptTokens + completionTokens,
+      estimatedCostUsd,
+      agentId: body.agentId,
+      runId: `llm-${Date.now()}`
+    });
+
+    return {
+      ...result,
+      savedMemoryId
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Local AI provider failure.";
+    return reply.code(502).send({ ok: false, error: message, provider: getProviderId() });
+  }
+});
+app.get("/mission/demo", async () => store.demoMission);
+app.post("/mission/demo/run", async () => {
+  const mission = runDemoMission();
+  const summary =
+    "Planner drafted the brief, Builder outlined the implementation, Reviewer signed off, and AgentOS stored the mission note.";
+  store.memories.unshift(
+    createMemory({
+      type: "decision_log",
+      title: "Demo mission completed",
+      content: summary,
+      source: "demo-mission",
+      tags: ["demo", "mission"]
+    })
+  );
+  completeDemoMission(summary);
+  return store.demoMission;
+});
 app.get("/system", async () => ({
   api: "online",
   worker: "online",
   gateway: "online",
   discordMode: process.env.DISCORD_BOT_TOKEN ? "real" : "mock",
-  providerMode: process.env.AGENTOS_MODEL_PROVIDER === "mock" ? "mock" : "real"
+  providerMode: getProviderId() === "mock" ? "mock" : "real",
+  features: {
+    ollama: (process.env.FEATURE_OLLAMA ?? "true") === "true",
+    discord: (process.env.FEATURE_DISCORD ?? "false") === "true" && Boolean(process.env.DISCORD_BOT_TOKEN),
+    demoMode: (process.env.FEATURE_DEMO_MODE ?? "true") === "true",
+    cloudProviders: (process.env.FEATURE_CLOUD_PROVIDERS ?? "false") === "true",
+    toolExecution: (process.env.FEATURE_TOOL_EXECUTION ?? "false") === "true"
+  }
 }));
 
 app.get("/discord/mock", async () => ({
-  mode: "mock",
-  commands: ["/status", "/agents", "/tasks", "/task-create", "/assign", "/approve", "/deny", "/logs", "/tokens", "/memory-search"]
+  mode: process.env.DISCORD_BOT_TOKEN ? "real-configured" : "mock",
+  configured: Boolean(process.env.DISCORD_BOT_TOKEN),
+  commands: ["/status", "/agents", "/tasks", "/health"]
+}));
+app.get("/discord/status", async () => ({
+  configured: Boolean(process.env.DISCORD_BOT_TOKEN),
+  mode: process.env.DISCORD_BOT_TOKEN ? "real-configured" : "mock",
+  commands: ["/status", "/agents", "/tasks", "/health"],
+  note: "Read-only Discord integration is scaffolded but intentionally not executing tasks yet."
 }));
 
 app.get("/events", { websocket: true }, (connection) => {

@@ -4,10 +4,12 @@ import {
   defaultApprovals,
   defaultAuditEvents,
   defaultBudgets,
+  defaultDemoMission,
   defaultMemories,
   defaultTasks,
   defaultUsageEvents,
   nowIso,
+  type DemoMissionRun,
   type AgentTask,
   type ApprovalRecord,
   type AuditEvent,
@@ -24,6 +26,7 @@ export const store = {
   budgets: structuredClone(defaultBudgets),
   approvals: structuredClone(defaultApprovals),
   auditEvents: structuredClone(defaultAuditEvents),
+  demoMission: structuredClone(defaultDemoMission),
   runs: [
     {
       id: "run-seed",
@@ -41,8 +44,11 @@ export const createTask = (input: Partial<AgentTask>) => {
     id: `task-${Date.now()}`,
     title: input.title ?? "Untitled AgentOS task",
     description: input.description ?? "Created from the AgentOS dashboard.",
-    status: input.status ?? "inbox",
+    prompt: input.prompt ?? input.description ?? input.title ?? "Create a new AgentOS task.",
+    status: input.status ?? "queued",
     assignedAgentId: input.assignedAgentId,
+    result: input.result,
+    error: input.error,
     createdAt: nowIso(),
     updatedAt: nowIso()
   };
@@ -94,5 +100,64 @@ export const addAudit = (event: string, actor: string, summary: string) => {
 };
 
 export const usageSummary = () => calculateUsageSummary(store.usageEvents, store.budgets);
+
+export const getTask = (id: string) => store.tasks.find((item) => item.id === id);
+
+export const updateTask = (id: string, updates: Partial<AgentTask>) => {
+  const task = getTask(id);
+  if (!task) return undefined;
+  Object.assign(task, updates, { updatedAt: nowIso() });
+  return task;
+};
+
+export const startTask = (id: string) => updateTask(id, { status: "running", error: undefined });
+
+export const completeTask = (id: string, result: string) =>
+  updateTask(id, {
+    status: "complete",
+    result,
+    error: undefined
+  });
+
+export const failTask = (id: string, error: string) =>
+  updateTask(id, {
+    status: "failed",
+    error
+  });
+
+export const runDemoMission = (): DemoMissionRun => {
+  const mission = store.demoMission;
+  mission.status = "running";
+  mission.updatedAt = nowIso();
+  mission.steps = mission.steps.map((step, index) => {
+    if (index < mission.steps.length - 1) {
+      return { ...step, status: "complete" };
+    }
+    return { ...step, status: "running" };
+  });
+
+  addAudit("mission.demo.started", "agentos-operator", `Started demo mission: ${mission.title}`);
+
+  const task = createTask({
+    title: "Demo mission briefing",
+    description: "Walk through a safe multi-agent mission for the local demo.",
+    prompt: "Summarize a safe, exciting AgentOS demo mission for friends and family.",
+    assignedAgentId: "agentos-operator",
+    status: "queued"
+  });
+
+  return {
+    ...mission,
+    updatedAt: task.updatedAt
+  };
+};
+
+export const completeDemoMission = (summary: string) => {
+  store.demoMission.status = "complete";
+  store.demoMission.updatedAt = nowIso();
+  store.demoMission.steps = store.demoMission.steps.map((step) => ({ ...step, status: "complete" }));
+  addAudit("mission.demo.completed", "reviewer-agent", summary);
+  return store.demoMission;
+};
 
 export type AppStore = typeof store;
