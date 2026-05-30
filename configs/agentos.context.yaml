@@ -1,0 +1,9 @@
+product: AgentOS
+dashboard: AgentOS Command Center
+mode: mock
+principles:
+  - local-first
+  - supervised agents
+  - budget-aware execution
+  - approval-gated tools
+  - audit everything

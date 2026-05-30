@@ -1,0 +1,28 @@
+agents:
+  - id: agentos-operator
+    name: AgentOS Operator
+    role: Routes tasks and manages approvals.
+  - id: product-agent
+    name: Product Agent
+    role: Turns ideas into specs.
+  - id: architect-agent
+    name: Architect Agent
+    role: Designs APIs and architecture.
+  - id: builder-agent
+    name: Builder Agent
+    role: Implements supervised changes.
+  - id: qa-agent
+    name: QA Agent
+    role: Runs tests and checks.
+  - id: security-agent
+    name: Security Agent
+    role: Reviews risky actions.
+  - id: reviewer-agent
+    name: Reviewer Agent
+    role: Reviews final work.
+  - id: docs-agent
+    name: Docs Agent
+    role: Maintains docs.
+  - id: release-agent
+    name: Release Agent
+    role: Prepares rollout notes.

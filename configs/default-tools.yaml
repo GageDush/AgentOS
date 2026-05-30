@@ -1,0 +1,11 @@
+tools:
+  - id: memory.search
+    approvalRequired: false
+  - id: usage.record
+    approvalRequired: false
+  - id: file.write
+    approvalRequired: true
+  - id: terminal.run
+    approvalRequired: true
+  - id: deploy.production
+    approvalRequired: true

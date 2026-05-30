@@ -1,0 +1,28 @@
+{
+  "name": "@agentos/command-center",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@agentos/game-schema": "workspace:*",
+    "@agentos/shared": "workspace:*",
+    "next": "^15.1.6",
+    "phaser": "^3.87.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "generated": [
+    "futuristic_operations_hub_in_pixel_art.png",
+    "agentos_hq_modular_room_kit.png",
+    "sci_fi_office_pixel_art_asset_sheet.png",
+    "agentos_ui_kit_concept_sheet.png",
+    "agentos_pixel_icon_sheet_design.png",
+    "agentos_specialist_agents_dashboard.png",
+    "agentos_operator_sprite_sheet_design.png",
+    "agentos_asset_roadmap_overview.png"
+  ],
+  "reference_images": [
+    "09D4EC00-040B-4CF8-9C41-ECDCC737993B.jpeg",
+    "47FF6ED0-679C-40BC-B6E8-24D245C38610.jpeg",
+    "6E5C282C-C948-436E-91B6-BBA33DA10DCE.jpeg",
+    "7AEE328A-7F86-4F98-ADC6-7FB276C87283.jpeg",
+    "9E654052-2DA8-4C37-B2FA-560C4E563AA6.jpeg",
+    "DD37BB0C-AE59-45A7-90B7-63DEC87F66C0.jpeg",
+    "DFE73DE7-D33D-483B-8B76-2AF8162A82D7.jpeg",
+    "DFF47C70-ABF5-45B1-B9F4-B6007537BF81.jpeg",
+    "E178C6A4-3F29-4B49-A9E5-04C9FD72BCBA.jpeg",
+    "E351104A-65BA-4A58-8C91-AAFA2AA89D13.jpeg"
+  ],
+  "created": "2026-05-30",
+  "note": "Generated assets are concept sheets and should be sliced/cleaned before Phaser production use."
+}

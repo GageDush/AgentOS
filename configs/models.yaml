@@ -1,0 +1,6 @@
+providers:
+  mock:
+    defaultModel: mock-agentos-local
+    pricing:
+      inputPerMillion: 0
+      outputPerMillion: 0

@@ -1,0 +1,22 @@
+{
+  "name": "agentos",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "sanitize:check": "node scripts/sanitize-agentos.mjs",
+    "env:check": "node scripts/validate-env.mjs",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "db:seed": "node scripts/db-seed.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.2",
+    "vitest": "^2.1.8"
+  }
+}

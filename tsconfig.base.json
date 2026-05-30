@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@agentos/shared": ["packages/shared/src/index.ts"],
+      "@agentos/game-schema": ["packages/game-schema/src/index.ts"],
+      "@agentos/agents": ["packages/agents/src/index.ts"],
+      "@agentos/memory": ["packages/memory/src/index.ts"],
+      "@agentos/token-manager": ["packages/token-manager/src/index.ts"]
+    }
+  }
+}

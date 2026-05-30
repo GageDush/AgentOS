@@ -1,0 +1,16 @@
+profiles:
+  read_only:
+    tools:
+      - memory.search
+      - task.read
+  code_editing:
+    tools:
+      - file.write
+      - test.run
+    approvalRequired:
+      - file.write
+  operator:
+    tools:
+      - task.create
+      - approval.resolve
+      - usage.record
