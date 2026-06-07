@@ -25,11 +25,16 @@
     "vfx/vfx_hover_outline_frame.png",
     "vfx/vfx_typing_bubble.png",
     "vfx/vfx_warning_triangle.png",
+    "vfx/vfx_shadow_ellipse.png",
     "vfx/status_dot_online.png",
     "vfx/status_dot_busy.png",
     "vfx/status_dot_offline.png"
   ],
   "discord": [
+    "discord/square_avatar_128.png",
+    "discord/online_avatar.png",
+    "discord/blocked_avatar.png",
+    "discord/thinking_avatar.png",
     "discord/mobile_card_executive_summary.png",
     "discord/briefing_avatar.png"
   ]

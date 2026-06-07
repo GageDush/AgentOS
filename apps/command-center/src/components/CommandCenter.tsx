@@ -25,7 +25,7 @@ import {
   defaultUsageEvents
 } from "@agentos/shared";
 import type { OfficeInteractable } from "@agentos/game-schema";
-import { officeInteractables, panelLabels } from "@agentos/game-schema";
+import { officeAgentRoster, officeInteractables, officeVisualAnchors, officeWorkstations, panelLabels } from "@agentos/game-schema";
 import { OfficeGame } from "../game/OfficeGame";
 import { useCommandCenterStore } from "../state/useCommandCenterStore";
 
@@ -234,6 +234,7 @@ export function CommandCenter() {
       const mission = (await response.json()) as DemoMissionRun;
       setData((current) => ({ ...current, demoMission: mission }));
       openPanel("MissionBoardPanel", officeInteractables.find((item) => item.id === "mission-board"));
+      window.dispatchEvent(new CustomEvent("agentos:demo-mission-run"));
     }
   }
 
@@ -282,6 +283,7 @@ export function CommandCenter() {
           activeTarget={activeTarget}
           providerMode={data.system.providerMode}
           apiOnline={data.apiOnline}
+          agents={data.agents}
         />
         <HeroPanel
           demoMission={data.demoMission}
@@ -320,13 +322,46 @@ function PanelHeader({
   activePanel,
   activeTarget,
   providerMode,
-  apiOnline
+  apiOnline,
+  agents
 }: {
   activePanel: string;
   activeTarget?: OfficeInteractable;
   providerMode: string;
   apiOnline: boolean;
+  agents: AgentProfile[];
 }) {
+  const selectedAgent = activeTarget?.kind === "agent" ? agents.find((agent) => agent.id === activeTarget.id) : undefined;
+  const visualAgent = activeTarget?.kind === "agent" ? officeAgentRoster.find((agent) => agent.agentId === activeTarget.id) : undefined;
+  const selectedStation =
+    visualAgent
+      ? officeWorkstations.find((station) => station.stationId === visualAgent.homeStationId)
+      : activeTarget
+        ? officeWorkstations.find((station) => station.hitboxId === activeTarget.id || station.stationId === activeTarget.id)
+        : undefined;
+  const anchor = activeTarget ? officeVisualAnchors[activeTarget.id] : undefined;
+  const selectedStatus = selectedAgent?.status ?? visualAgent?.mode ?? anchor?.statusMood ?? "available";
+  const selectedRole =
+    selectedAgent?.role ??
+    visualAgent?.role ??
+    (activeTarget
+      ? `${activeTarget.kind.charAt(0).toUpperCase()}${activeTarget.kind.slice(1)} surface`
+      : "Command surface");
+  const selectedAction = selectedStation?.actionLabel ?? anchor?.actionHint ?? "Open the connected panel.";
+  const selectedDescription =
+    selectedStation
+      ? `${selectedStation.stationName} is a live workstation for ${selectedStation.role}.`
+      : anchor?.shortDescription ?? "This surface ties the office to the right-side control panel.";
+  const portraitKey = visualAgent?.portraitKey ?? anchor?.portraitKey;
+  const portraitSrc = portraitKey
+    ? {
+        "portrait-briefing": "/assets/executive/discord/briefing_avatar.png",
+        "portrait-online": "/assets/executive/discord/online_avatar.png",
+        "portrait-blocked": "/assets/executive/discord/blocked_avatar.png",
+        "portrait-thinking": "/assets/executive/discord/thinking_avatar.png"
+      }[portraitKey]
+    : "/assets/executive/discord/square_avatar_128.png";
+
   return (
     <section className="panel">
       <h2>{panelLabels[activePanel] ?? (activePanel === "LocalAIConsolePanel" ? "Local AI Console" : "AgentOS")}</h2>
@@ -336,6 +371,21 @@ function PanelHeader({
       <div className="meta-row">
         <span className="meta-tag">{apiOnline ? "api live" : "seed fallback"}</span>
         <span className="meta-tag">{providerMode === "real" ? "ollama ready" : "mock provider"}</span>
+      </div>
+      <div className="selection-card">
+        <div className="selection-head">
+          <img className="selection-portrait" src={portraitSrc} alt={activeTarget?.label ?? "Selected surface"} />
+          <div className="selection-copy">
+            <div className="row-title">
+              <span>{activeTarget?.label ?? "No selection"}</span>
+              <span className={`status ${selectedStatus}`}>{selectedStatus}</span>
+            </div>
+            <p className="small">{selectedRole}</p>
+          </div>
+        </div>
+        <p className="small">{selectedDescription}</p>
+        {selectedStation ? <p className="small"><strong>Station:</strong> {selectedStation.stationName}</p> : null}
+        <p className="small"><strong>Action:</strong> {selectedAction}</p>
       </div>
     </section>
   );

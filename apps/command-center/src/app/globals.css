@@ -145,6 +145,10 @@ textarea {
   min-width: 0;
   padding: 16px;
   overflow: auto;
+  background:
+    linear-gradient(180deg, rgba(9, 16, 24, 0.97), rgba(7, 12, 18, 0.98)),
+    radial-gradient(circle at top right, rgba(58, 208, 255, 0.12), transparent 18rem);
+  backdrop-filter: blur(14px);
 }
 
 .panel {
@@ -372,6 +376,35 @@ textarea {
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 10px;
+}
+
+.selection-card {
+  margin-top: 12px;
+  border: 1px solid rgba(80, 227, 164, 0.18);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(80, 227, 164, 0.05);
+}
+
+.selection-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.selection-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.selection-portrait {
+  width: 54px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .error-text {
