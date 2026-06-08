@@ -163,6 +163,7 @@ export const createMission = (input: Partial<MissionRecord>) => {
     objective: input.objective ?? "Run a local-first agent mission.",
     prompt: input.prompt ?? input.objective ?? input.title ?? "Describe the next mission.",
     operatorId: input.operatorId ?? "agentos-operator",
+    sessionId: input.sessionId,
     status: input.status ?? "draft",
     sandboxLevel: input.sandboxLevel ?? "safe_execute",
     command: input.command ?? "git status",
@@ -206,6 +207,13 @@ export const createMissionRun = (input: Omit<MissionRun, "id" | "createdAt" | "u
             ? "awaiting_approval"
             : "running";
   updateMission(run.missionId, { latestRunId: run.id, status: missionStatus });
+  if (run.sessionId) {
+    updateSession(run.sessionId, {
+      latestRunId: run.id,
+      status: missionStatus === "completed" ? "complete" : missionStatus === "failed" ? "failed" : "active",
+      summary: `Tracking ${run.requestedCommand ?? "mission execution"}`
+    });
+  }
   addAudit("mission.run.created", run.operatorId, `Started run for mission ${run.missionId}.`, run.missionId, run.id);
   return run;
 };
@@ -228,6 +236,19 @@ export const updateMissionRun = (id: string, updates: Partial<MissionRun>) => {
               ? "awaiting_approval"
               : "running";
     updateMission(run.missionId, { status: missionStatus });
+    if (run.sessionId) {
+      updateSession(run.sessionId, {
+        latestRunId: run.id,
+        status:
+          missionStatus === "completed"
+            ? "complete"
+            : missionStatus === "failed" || missionStatus === "denied"
+              ? "failed"
+              : missionStatus === "awaiting_approval"
+                ? "paused"
+                : "active"
+      });
+    }
   }
   return run;
 };
@@ -245,6 +266,89 @@ export const appendMissionLog = (runId: string, level: MissionRunLogLevel, messa
 };
 
 export const getMissionLogs = (runId: string) => store.missionLogs.filter((item) => item.runId === runId);
+
+export const getRoutine = (id: string) => store.routines.find((item) => item.id === id);
+
+export const createRoutine = (input: Partial<RoutineRecord>) => {
+  const routine: RoutineRecord = {
+    id: `routine-${Date.now()}`,
+    title: input.title ?? "Untitled routine",
+    objective: input.objective ?? "Run a scheduled local mission.",
+    prompt: input.prompt ?? input.objective ?? "Plan a recurring local mission safely.",
+    command: input.command ?? "pnpm typecheck",
+    sandboxLevel: input.sandboxLevel ?? "workspace_write",
+    provider: input.provider ?? "mock",
+    model: input.model ?? "mock-agentos-local",
+    frequency: input.frequency ?? "manual",
+    enabled: input.enabled ?? true,
+    status: input.status ?? "scheduled",
+    latestRunId: input.latestRunId,
+    lastRunAt: input.lastRunAt,
+    nextRunAt: input.nextRunAt
+  };
+  store.routines.unshift(routine);
+  addAudit("routine.created", "agentos-operator", `Created routine: ${routine.title}`);
+  return routine;
+};
+
+export const updateRoutine = (id: string, updates: Partial<RoutineRecord>) => {
+  const routine = getRoutine(id);
+  if (!routine) return undefined;
+  Object.assign(routine, updates);
+  return routine;
+};
+
+export const getSession = (id: string) => store.sessions.find((item) => item.id === id);
+
+export const createSession = (input: Partial<SessionRecord>) => {
+  const session: SessionRecord = {
+    id: `session-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    title: input.title ?? "Untitled session",
+    missionId: input.missionId,
+    operatorId: input.operatorId ?? "agentos-operator",
+    status: input.status ?? "active",
+    summary: input.summary ?? "Local mission session in progress.",
+    latestRunId: input.latestRunId,
+    resumedAt: input.resumedAt,
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  };
+  store.sessions.unshift(session);
+  addAudit("session.created", session.operatorId, `Created session: ${session.title}`, session.missionId, session.latestRunId);
+  return session;
+};
+
+export const updateSession = (id: string, updates: Partial<SessionRecord>) => {
+  const session = getSession(id);
+  if (!session) return undefined;
+  Object.assign(session, updates, { updatedAt: nowIso() });
+  return session;
+};
+
+export const ensureSessionForMission = (mission: MissionRecord) => {
+  if (mission.sessionId) {
+    return getSession(mission.sessionId) ?? createSession({
+      id: mission.sessionId,
+      title: `${mission.title} session`,
+      missionId: mission.id,
+      operatorId: mission.operatorId,
+      summary: `Tracking ${mission.title}.`
+    });
+  }
+  const existing = store.sessions.find((session) => session.missionId === mission.id);
+  if (existing) {
+    updateMission(mission.id, { sessionId: existing.id });
+    return existing;
+  }
+  const created = createSession({
+    title: `${mission.title} session`,
+    missionId: mission.id,
+    operatorId: mission.operatorId,
+    summary: `Tracking ${mission.title}.`
+  });
+  updateMission(mission.id, { sessionId: created.id });
+  return created;
+};
 
 export const createMissionResultMemory = (input: {
   missionId: string;

@@ -67,6 +67,34 @@ type MissionDraft = {
   model: string;
 };
 
+type RoutineDraft = {
+  title: string;
+  objective: string;
+  prompt: string;
+  command: string;
+  sandboxLevel: SandboxPermissionLevel;
+  provider: "mock" | "ollama";
+  model: string;
+  frequency: "manual" | "hourly" | "daily" | "weekly";
+};
+
+type ProviderStatus = {
+  defaultProvider: string;
+  ollama: { available: boolean; message: string };
+  mock: { available: boolean; message: string };
+};
+
+type PolicyPreview = {
+  decision: {
+    policy: "auto_allowed" | "approval_required" | "denied";
+    permissionLevel: SandboxPermissionLevel;
+    reason: string;
+  };
+  requestedLevel: SandboxPermissionLevel;
+  requiresControlGate: boolean;
+  explanation: string;
+};
+
 const navItems: Array<{ href: string; key: SectionKey; label: string }> = [
   { href: "/", key: "dashboard", label: "Command Center" },
   { href: "/missions", key: "missions", label: "Missions" },
@@ -79,6 +107,17 @@ const navItems: Array<{ href: string; key: SectionKey; label: string }> = [
   { href: "/settings", key: "settings", label: "Settings" }
 ];
 
+const sandboxLevels: SandboxPermissionLevel[] = [
+  "observe",
+  "workspace_write",
+  "safe_execute",
+  "network_limited",
+  "dependency_install",
+  "external_action",
+  "repo_mutation",
+  "system_elevated"
+];
+
 const defaultDraft: MissionDraft = {
   title: "Validate local command center quality gate",
   objective: "Create a local mission, plan the run, request approval, then execute a safe repository command.",
@@ -87,6 +126,17 @@ const defaultDraft: MissionDraft = {
   sandboxLevel: "workspace_write",
   provider: "mock",
   model: "mock-agentos-local"
+};
+
+const defaultRoutineDraft: RoutineDraft = {
+  title: "Nightly quality gate",
+  objective: "Run a recurring local quality check with a clear approval posture.",
+  prompt: "Summarize the routine intent, local impact, and any approval boundary before the command runs.",
+  command: "pnpm typecheck",
+  sandboxLevel: "workspace_write",
+  provider: "mock",
+  model: "mock-agentos-local",
+  frequency: "daily"
 };
 
 async function getJson<T>(path: string, fallback: T): Promise<T> {
@@ -99,11 +149,35 @@ async function getJson<T>(path: string, fallback: T): Promise<T> {
   }
 }
 
+async function postJson<T>(path: string, body: unknown = {}): Promise<T> {
+  const response = await fetch(`${apiBase}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const payload = (await response.json().catch(() => ({ error: "Request failed." }))) as T | { error?: string; message?: string };
+  if (!response.ok) {
+    const message =
+      typeof payload === "object" && payload
+        ? "error" in payload && payload.error
+          ? payload.error
+          : "message" in payload && payload.message
+            ? payload.message
+            : `Request failed with HTTP ${response.status}.`
+        : `Request failed with HTTP ${response.status}.`;
+    throw new Error(message);
+  }
+  return payload as T;
+}
+
 export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [draft, setDraft] = useState<MissionDraft>(defaultDraft);
+  const [routineDraft, setRoutineDraft] = useState<RoutineDraft>(defaultRoutineDraft);
   const [activeRunId, setActiveRunId] = useState<string>();
   const [activeLogs, setActiveLogs] = useState<MissionRunLog[]>([]);
+  const [policyPreview, setPolicyPreview] = useState<PolicyPreview>();
+  const [providerStatus, setProviderStatus] = useState<ProviderStatus>();
   const [busyAction, setBusyAction] = useState<string>();
   const [error, setError] = useState("");
 
@@ -169,6 +243,40 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     };
   }, [activeRunId]);
 
+  useEffect(() => {
+    let mounted = true;
+    const refreshAux = async () => {
+      const [nextPolicy, nextProviderStatus] = await Promise.all([
+        getJson<PolicyPreview>(
+          `/policy/check?command=${encodeURIComponent(draft.command)}&sandboxLevel=${encodeURIComponent(draft.sandboxLevel)}`,
+          {
+            decision: {
+              policy: "approval_required",
+              permissionLevel: "safe_execute",
+              reason: "Policy preview unavailable."
+            },
+            requestedLevel: draft.sandboxLevel,
+            requiresControlGate: true,
+            explanation: "Policy preview unavailable."
+          }
+        ),
+        getJson<ProviderStatus>("/providers/status", {
+          defaultProvider: "mock",
+          ollama: { available: false, message: "Ollama status unavailable." },
+          mock: { available: true, message: "Mock provider is always available." }
+        })
+      ]);
+      if (!mounted) return;
+      setPolicyPreview(nextPolicy);
+      setProviderStatus(nextProviderStatus);
+    };
+
+    void refreshAux();
+    return () => {
+      mounted = false;
+    };
+  }, [draft.command, draft.sandboxLevel]);
+
   const activeRun = useMemo(() => data?.runs.find((run) => run.id === activeRunId), [data?.runs, activeRunId]);
   const activeMission = useMemo(() => data?.missions.find((mission) => mission.latestRunId === activeRunId), [data?.missions, activeRunId]);
   const pendingApprovals = data?.approvals.filter((approval) => approval.status === "pending") ?? [];
@@ -185,14 +293,8 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction("create-mission");
     setError("");
     try {
-      const createdResponse = await fetch(`${apiBase}/missions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft)
-      });
-      const mission = (await createdResponse.json()) as MissionRecord;
-      const runResponse = await fetch(`${apiBase}/missions/${mission.id}/run`, { method: "POST" });
-      const runPayload = (await runResponse.json()) as { run: MissionRun };
+      const mission = await postJson<MissionRecord>("/missions", draft);
+      const runPayload = await postJson<{ run: MissionRun }>(`/missions/${mission.id}/run`);
       setActiveRunId(runPayload.run.id);
       await refreshDashboard();
     } catch (cause) {
@@ -206,8 +308,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`run-${missionId}`);
     setError("");
     try {
-      const response = await fetch(`${apiBase}/missions/${missionId}/run`, { method: "POST" });
-      const payload = (await response.json()) as { run: MissionRun };
+      const payload = await postJson<{ run: MissionRun }>(`/missions/${missionId}/run`);
       setActiveRunId(payload.run.id);
       await refreshDashboard();
     } catch (cause) {
@@ -228,9 +329,9 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
             ? `/approvals/${approval.id}/approve-for-mission`
             : `/approvals/${approval.id}/deny`;
 
-      await fetch(`${apiBase}${endpoint}`, { method: "POST" });
+      await postJson(endpoint);
       if (mode !== "deny" && approval.runId) {
-        await fetch(`${apiBase}/runs/${approval.runId}/continue`, { method: "POST" });
+        await postJson(`/runs/${approval.runId}/continue`);
         setActiveRunId(approval.runId);
       }
       await refreshDashboard();
@@ -241,8 +342,79 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     }
   }
 
+  async function createRoutineAction() {
+    setBusyAction("create-routine");
+    setError("");
+    try {
+      await postJson("/routines", routineDraft);
+      setRoutineDraft(defaultRoutineDraft);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Routine creation failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function toggleRoutineAction(routineId: string) {
+    setBusyAction(`toggle-routine-${routineId}`);
+    setError("");
+    try {
+      await postJson(`/routines/${routineId}/toggle`);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Routine update failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function runRoutineAction(routineId: string) {
+    setBusyAction(`run-routine-${routineId}`);
+    setError("");
+    try {
+      const payload = await postJson<{ run: MissionRun }>(`/routines/${routineId}/run`);
+      setActiveRunId(payload.run.id);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Routine run failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function pauseSessionAction(sessionId: string) {
+    setBusyAction(`pause-session-${sessionId}`);
+    setError("");
+    try {
+      await postJson(`/sessions/${sessionId}/pause`);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Session pause failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function resumeSessionAction(sessionId: string) {
+    setBusyAction(`resume-session-${sessionId}`);
+    setError("");
+    try {
+      await postJson(`/sessions/${sessionId}/resume`);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Session resume failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
   if (!data) {
-    return <main className="local-shell"><div className="loading-state">Loading AgentOS Local…</div></main>;
+    return (
+      <main className="local-shell">
+        <div className="loading-state">Loading AgentOS Local...</div>
+      </main>
+    );
   }
 
   return (
@@ -291,19 +463,15 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
         <div className="content-grid">
           <section className="primary-column">
             {section === "dashboard" ? (
-              <DashboardView
-                data={data}
-                activeRun={activeRun}
-                activeMission={activeMission}
-                activeLogs={activeLogs}
-                onRunMission={runMission}
-              />
+              <DashboardView data={data} activeRun={activeRun} activeMission={activeMission} activeLogs={activeLogs} onRunMission={runMission} />
             ) : null}
             {section === "missions" ? (
               <MissionsView
                 data={data}
                 draft={draft}
                 setDraft={setDraft}
+                policyPreview={policyPreview}
+                providerStatus={providerStatus}
                 busyAction={busyAction}
                 activeRunId={activeRunId}
                 onCreateMissionAndRun={createMissionAndRun}
@@ -311,15 +479,33 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
                 onSelectRun={setActiveRunId}
               />
             ) : null}
-            {section === "routines" ? <RoutinesView routines={data.routines} /> : null}
-            {section === "operators" ? <OperatorsView agents={data.agents} sessions={data.sessions} /> : null}
+            {section === "routines" ? (
+              <RoutinesView
+                routines={data.routines}
+                draft={routineDraft}
+                setDraft={setRoutineDraft}
+                busyAction={busyAction}
+                onCreateRoutine={createRoutineAction}
+                onToggleRoutine={toggleRoutineAction}
+                onRunRoutine={runRoutineAction}
+              />
+            ) : null}
+            {section === "operators" ? (
+              <OperatorsView
+                agents={data.agents}
+                sessions={data.sessions}
+                busyAction={busyAction}
+                onPauseSession={pauseSessionAction}
+                onResumeSession={resumeSessionAction}
+              />
+            ) : null}
             {section === "control-gate" ? (
               <ControlGateView approvals={pendingApprovals} busyAction={busyAction} onResolveApproval={resolveApprovalAction} />
             ) : null}
             {section === "blackbox" ? <BlackboxView audit={data.audit} activeLogs={activeLogs} /> : null}
             {section === "archive" ? <ArchiveView archive={data.archive} /> : null}
-            {section === "loadout" ? <LoadoutView loadout={data.loadout} /> : null}
-            {section === "settings" ? <SettingsView data={data} /> : null}
+            {section === "loadout" ? <LoadoutView loadout={data.loadout} providerStatus={providerStatus} /> : null}
+            {section === "settings" ? <SettingsView data={data} providerStatus={providerStatus} /> : null}
           </section>
 
           <aside className="secondary-column">
@@ -371,7 +557,7 @@ function titleForSection(section: SectionKey) {
 function descriptionForSection(section: SectionKey) {
   switch (section) {
     case "dashboard":
-      return "The first vertical slice is live: create a mission, pause at Control Gate when needed, execute a safe command, and keep the result in history.";
+      return "Create a mission, pause at Control Gate when needed, execute a safe command, and keep the result in history.";
     case "missions":
       return "Mission records now drive the app instead of the deprecated office scene.";
     case "control-gate":
@@ -482,6 +668,8 @@ function MissionsView({
   data,
   draft,
   setDraft,
+  policyPreview,
+  providerStatus,
   busyAction,
   activeRunId,
   onCreateMissionAndRun,
@@ -491,6 +679,8 @@ function MissionsView({
   data: DashboardPayload;
   draft: MissionDraft;
   setDraft: Dispatch<SetStateAction<MissionDraft>>;
+  policyPreview?: PolicyPreview;
+  providerStatus?: ProviderStatus;
   busyAction?: string;
   activeRunId?: string;
   onCreateMissionAndRun: () => Promise<void>;
@@ -520,16 +710,7 @@ function MissionsView({
           <label>
             <span>Sandbox Level</span>
             <select value={draft.sandboxLevel} onChange={(event) => setDraft((current) => ({ ...current, sandboxLevel: event.target.value as SandboxPermissionLevel }))}>
-              {[
-                "observe",
-                "workspace_write",
-                "safe_execute",
-                "network_limited",
-                "dependency_install",
-                "external_action",
-                "repo_mutation",
-                "system_elevated"
-              ].map((level) => (
+              {sandboxLevels.map((level) => (
                 <option key={level} value={level}>
                   {level}
                 </option>
@@ -548,9 +729,19 @@ function MissionsView({
             <input value={draft.model} onChange={(event) => setDraft((current) => ({ ...current, model: event.target.value }))} />
           </label>
         </div>
+        <div className="snapshot-grid">
+          <Snapshot label="Command policy" value={policyPreview?.decision.policy ?? "loading"} copy={policyPreview?.decision.reason ?? "Checking policy posture."} />
+          <Snapshot label="Control Gate" value={policyPreview?.requiresControlGate ? "required" : "clear"} copy={policyPreview?.explanation ?? "Checking gate posture."} />
+          <Snapshot label="Ollama" value={providerStatus?.ollama.available ? "ready" : "offline"} copy={providerStatus?.ollama.message ?? "Checking Ollama reachability."} />
+          <Snapshot
+            label="Provider path"
+            value={draft.provider}
+            copy={draft.provider === "ollama" ? "Uses local Ollama when available and falls back gracefully for planning." : "Uses the always-ready mock planner."}
+          />
+        </div>
         <div className="button-row">
           <button className="primary-button" disabled={busyAction === "create-mission"} onClick={() => void onCreateMissionAndRun()}>
-            {busyAction === "create-mission" ? "Creating…" : "Create Mission and Run"}
+            {busyAction === "create-mission" ? "Creating..." : "Create Mission and Run"}
           </button>
         </div>
       </Panel>
@@ -566,7 +757,7 @@ function MissionsView({
               <div className="row-actions">
                 <span className={`status-chip status-chip-${mission.status}`}>{mission.status}</span>
                 <button className="secondary-button" disabled={busyAction === `run-${mission.id}`} onClick={() => void onRunMission(mission.id)}>
-                  {busyAction === `run-${mission.id}` ? "Running…" : "Run"}
+                  {busyAction === `run-${mission.id}` ? "Running..." : "Run"}
                 </button>
                 {mission.latestRunId ? (
                   <button className={`ghost-button ${activeRunId === mission.latestRunId ? "ghost-button-active" : ""}`} onClick={() => onSelectRun(mission.latestRunId!)}>
@@ -582,28 +773,96 @@ function MissionsView({
   );
 }
 
-function RoutinesView({ routines }: { routines: RoutineRecord[] }) {
+function RoutinesView({
+  routines,
+  draft,
+  setDraft,
+  busyAction,
+  onCreateRoutine,
+  onToggleRoutine,
+  onRunRoutine
+}: {
+  routines: RoutineRecord[];
+  draft: RoutineDraft;
+  setDraft: Dispatch<SetStateAction<RoutineDraft>>;
+  busyAction?: string;
+  onCreateRoutine: () => Promise<void>;
+  onToggleRoutine: (routineId: string) => Promise<void>;
+  onRunRoutine: (routineId: string) => Promise<void>;
+}) {
   return (
-    <Panel title="Routines" subtitle="Scheduled automations stay mock-first for this pivot slice.">
-      <div className="table-list">
-        {routines.map((routine) => (
-          <div className="table-row" key={routine.id}>
-            <div>
-              <strong>{routine.title}</strong>
-              <p>{routine.objective}</p>
+    <>
+      <Panel title="Create Routine" subtitle="Save a recurring mission recipe, then run it on demand or keep it scheduled.">
+        <div className="form-grid">
+          <label>
+            <span>Title</span>
+            <input value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} />
+          </label>
+          <label>
+            <span>Frequency</span>
+            <select value={draft.frequency} onChange={(event) => setDraft((current) => ({ ...current, frequency: event.target.value as RoutineDraft["frequency"] }))}>
+              {["manual", "hourly", "daily", "weekly"].map((frequency) => (
+                <option key={frequency} value={frequency}>
+                  {frequency}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="wide-field">
+            <span>Objective</span>
+            <textarea rows={3} value={draft.objective} onChange={(event) => setDraft((current) => ({ ...current, objective: event.target.value }))} />
+          </label>
+          <label className="wide-field">
+            <span>Command</span>
+            <input value={draft.command} onChange={(event) => setDraft((current) => ({ ...current, command: event.target.value }))} />
+          </label>
+        </div>
+        <div className="button-row">
+          <button className="primary-button" disabled={busyAction === "create-routine"} onClick={() => void onCreateRoutine()}>
+            {busyAction === "create-routine" ? "Creating..." : "Create Routine"}
+          </button>
+        </div>
+      </Panel>
+      <Panel title="Routines" subtitle="Scheduled automations stay mock-first but can run now for review.">
+        <div className="table-list">
+          {routines.map((routine) => (
+            <div className="table-row" key={routine.id}>
+              <div>
+                <strong>{routine.title}</strong>
+                <p>{routine.objective}</p>
+                <p className="command-line">{routine.command}</p>
+              </div>
+              <div className="row-actions">
+                <span className={`status-chip status-chip-${routine.status === "paused" ? "awaiting_approval" : "running"}`}>{routine.status}</span>
+                <span>{routine.frequency}</span>
+                <button className="secondary-button" disabled={busyAction === `run-routine-${routine.id}`} onClick={() => void onRunRoutine(routine.id)}>
+                  {busyAction === `run-routine-${routine.id}` ? "Starting..." : "Run Now"}
+                </button>
+                <button className="ghost-button" disabled={busyAction === `toggle-routine-${routine.id}`} onClick={() => void onToggleRoutine(routine.id)}>
+                  {routine.enabled ? "Pause" : "Enable"}
+                </button>
+              </div>
             </div>
-            <div className="row-meta">
-              <span className={`status-chip status-chip-${routine.enabled ? "running" : "queued"}`}>{routine.enabled ? "enabled" : "disabled"}</span>
-              <span>{routine.frequency}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Panel>
+          ))}
+        </div>
+      </Panel>
+    </>
   );
 }
 
-function OperatorsView({ agents, sessions }: { agents: AgentProfile[]; sessions: SessionRecord[] }) {
+function OperatorsView({
+  agents,
+  sessions,
+  busyAction,
+  onPauseSession,
+  onResumeSession
+}: {
+  agents: AgentProfile[];
+  sessions: SessionRecord[];
+  busyAction?: string;
+  onPauseSession: (sessionId: string) => Promise<void>;
+  onResumeSession: (sessionId: string) => Promise<void>;
+}) {
   return (
     <>
       <Panel title="Operators" subtitle="Agent roster reused from the existing mock team.">
@@ -630,8 +889,18 @@ function OperatorsView({ agents, sessions }: { agents: AgentProfile[]; sessions:
                 <strong>{session.title}</strong>
                 <p>{session.summary}</p>
               </div>
-              <div className="row-meta">
+              <div className="row-actions">
                 <span className={`status-chip status-chip-${session.status}`}>{session.status}</span>
+                {session.status === "active" ? (
+                  <button className="ghost-button" disabled={busyAction === `pause-session-${session.id}`} onClick={() => void onPauseSession(session.id)}>
+                    Pause
+                  </button>
+                ) : null}
+                {session.status === "paused" || session.status === "failed" ? (
+                  <button className="secondary-button" disabled={busyAction === `resume-session-${session.id}`} onClick={() => void onResumeSession(session.id)}>
+                    Resume
+                  </button>
+                ) : null}
               </div>
             </div>
           ))}
@@ -650,6 +919,17 @@ function ControlGateView({
   busyAction?: string;
   onResolveApproval: (approval: ApprovalRecord, mode: "approve-once" | "approve-for-mission" | "deny") => Promise<void>;
 }) {
+  const permissionCopy: Record<SandboxPermissionLevel, string> = {
+    observe: "Read-only mission observation.",
+    workspace_write: "May change files inside the current workspace.",
+    safe_execute: "May run small allow-listed local commands.",
+    network_limited: "May reach reviewed loopback or narrow network targets.",
+    dependency_install: "May install dependencies and update lockfiles.",
+    external_action: "May send state to external systems or remotes.",
+    repo_mutation: "May mutate repository history or durable git state.",
+    system_elevated: "Would require operating-system level power."
+  };
+
   return (
     <Panel title="Control Gate" subtitle="Every risky action becomes a logged decision.">
       <div className="table-list">
@@ -661,6 +941,7 @@ function ControlGateView({
               <span className="status-chip status-chip-awaiting_approval">{approval.permissionLevel}</span>
             </div>
             <p>{approval.inputSummary}</p>
+            <p>{permissionCopy[approval.permissionLevel]}</p>
             {approval.command ? <p className="command-line">{approval.command}</p> : null}
             <div className="button-row">
               <button className="primary-button" disabled={busyAction === `approve-once-${approval.id}`} onClick={() => void onResolveApproval(approval, "approve-once")}>
@@ -681,12 +962,42 @@ function ControlGateView({
 }
 
 function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: MissionRunLog[] }) {
+  const [query, setQuery] = useState("");
+  const [eventFilter, setEventFilter] = useState<"all" | MissionRunLog["level"]>("all");
+  const filteredLogs = activeLogs.filter((log) => {
+    const matchesQuery = !query || log.message.toLowerCase().includes(query.toLowerCase());
+    const matchesFilter = eventFilter === "all" || eventFilter === log.level;
+    return matchesQuery && matchesFilter;
+  });
+  const filteredAudit = audit.filter((event) => {
+    const haystack = `${event.event} ${event.summary} ${event.actor}`.toLowerCase();
+    return !query || haystack.includes(query.toLowerCase());
+  });
+
   return (
     <>
+      <Panel title="Search Blackbox" subtitle="Filter live logs and audit events by keyword or signal.">
+        <div className="form-grid">
+          <label className="wide-field">
+            <span>Search</span>
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="approval, typecheck, ollama, failed..." />
+          </label>
+          <label>
+            <span>Log filter</span>
+            <select value={eventFilter} onChange={(event) => setEventFilter(event.target.value as "all" | MissionRunLog["level"])}>
+              {["all", "system", "plan", "approval", "exec", "stdout", "stderr", "result"].map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </Panel>
       <Panel title="Live Logs" subtitle="Polled from the active mission run.">
         <div className="log-preview full-log">
-          {activeLogs.length === 0 ? <div className="empty-state">Run a mission to stream logs here.</div> : null}
-          {activeLogs.map((log) => (
+          {filteredLogs.length === 0 ? <div className="empty-state">Run a mission to stream logs here.</div> : null}
+          {filteredLogs.map((log) => (
             <div className="log-line" key={log.id}>
               <span className={`log-level log-level-${log.level}`}>{log.level}</span>
               <span>{log.message}</span>
@@ -696,7 +1007,7 @@ function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: 
       </Panel>
       <Panel title="Audit Trail" subtitle="Blackbox records every decision and completion event.">
         <div className="table-list">
-          {audit.slice(0, 20).map((event) => (
+          {filteredAudit.slice(0, 30).map((event) => (
             <div className="table-row" key={event.id}>
               <div>
                 <strong>{event.event}</strong>
@@ -733,7 +1044,7 @@ function ArchiveView({ archive }: { archive: MemoryRecord[] }) {
   );
 }
 
-function LoadoutView({ loadout }: { loadout: LoadoutItem[] }) {
+function LoadoutView({ loadout, providerStatus }: { loadout: LoadoutItem[]; providerStatus?: ProviderStatus }) {
   return (
     <Panel title="Loadout" subtitle="Local model posture, policies, and tooling integrations.">
       <div className="table-list">
@@ -749,12 +1060,23 @@ function LoadoutView({ loadout }: { loadout: LoadoutItem[] }) {
             </div>
           </div>
         ))}
+        <div className="table-row">
+          <div>
+            <strong>Ollama Readiness</strong>
+            <p>{providerStatus?.ollama.message ?? "Checking local provider reachability."}</p>
+          </div>
+          <div className="row-meta">
+            <span className={`status-chip status-chip-${providerStatus?.ollama.available ? "completed" : "failed"}`}>
+              {providerStatus?.ollama.available ? "ready" : "offline"}
+            </span>
+          </div>
+        </div>
       </div>
     </Panel>
   );
 }
 
-function SettingsView({ data }: { data: DashboardPayload }) {
+function SettingsView({ data, providerStatus }: { data: DashboardPayload; providerStatus?: ProviderStatus }) {
   return (
     <>
       <Panel title="Runtime Mode" subtitle="Mock-first by default, Ollama when you opt in.">
@@ -763,6 +1085,7 @@ function SettingsView({ data }: { data: DashboardPayload }) {
           <Setting label="Gateway" value={data.system.gateway} />
           <Setting label="Discord" value={data.system.discordMode} />
           <Setting label="Monthly budget" value={`$${data.usage.monthlyLimit.toFixed(2)}`} />
+          <Setting label="Ollama" value={providerStatus?.ollama.available ? "reachable" : "unavailable"} />
         </div>
       </Panel>
       <Panel title="Policy Snapshot" subtitle="Safe commands are small by design during the pivot.">
@@ -792,6 +1115,9 @@ function RunInspector({
   busyAction?: string;
 }) {
   const approval = run?.approvalRequestId ? approvals.find((item) => item.id === run.approvalRequestId) : undefined;
+  const latestStdout = [...logs].reverse().find((log) => log.level === "stdout");
+  const latestStderr = [...logs].reverse().find((log) => log.level === "stderr");
+
   return (
     <>
       <Panel title="Run Inspector" subtitle={run ? run.id : "No run selected"}>
@@ -808,6 +1134,27 @@ function RunInspector({
                 <span>{mission.sandboxLevel}</span>
               </div>
             </div>
+            <div className="snapshot-grid">
+              <Snapshot label="Provider" value={run.provider} copy={run.model} />
+              <Snapshot label="Session" value={run.sessionId ? "linked" : "none"} copy={run.sessionId ?? "No session linked"} />
+              <Snapshot label="Result" value={run.resultSummary ? "saved" : run.error ? "error" : "pending"} copy={run.resultSummary ?? run.error ?? "Still running"} />
+            </div>
+            {latestStdout ? (
+              <div className="mini-log">
+                <div className="log-line">
+                  <span className="log-level log-level-stdout">stdout</span>
+                  <span>{latestStdout.message}</span>
+                </div>
+              </div>
+            ) : null}
+            {latestStderr ? (
+              <div className="mini-log">
+                <div className="log-line">
+                  <span className="log-level log-level-stderr">stderr</span>
+                  <span>{latestStderr.message}</span>
+                </div>
+              </div>
+            ) : null}
             <div className="mini-log">
               {logs.slice(-6).map((log) => (
                 <div className="log-line" key={log.id}>

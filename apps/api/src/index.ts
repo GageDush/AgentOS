@@ -26,17 +26,24 @@ import {
   createMission,
   createMissionResultMemory,
   createMissionRun,
+  createRoutine,
+  createSession,
   createTask,
+  ensureSessionForMission,
   failTask,
   getMission,
   getMissionLogs,
   getMissionRun,
+  getRoutine,
+  getSession,
   getTask,
   listPendingApprovals,
   resolveApproval,
   runDemoMission,
   startTask,
   store,
+  updateRoutine,
+  updateSession,
   updateMission,
   updateMissionRun,
   usageSummary
@@ -101,17 +108,46 @@ async function runMissionExecution(runId: string) {
   appendMissionLog(run.id, "system", `Mission ${mission.title} entered planning.`);
 
   const provider = providers[mission.provider];
-  const planResponse = await provider.chat({
-    prompt: [
-      `Mission title: ${mission.title}`,
-      `Objective: ${mission.objective}`,
-      `Command request: ${mission.command}`,
-      "Respond with a short operator plan and risk note."
-    ].join("\n"),
-    model: mission.model,
-    agentId: mission.operatorId,
-    saveMemory: false
-  });
+  let planResponse: Awaited<ReturnType<typeof provider.chat>>;
+  try {
+    planResponse = await provider.chat({
+      prompt: [
+        `Mission title: ${mission.title}`,
+        `Objective: ${mission.objective}`,
+        `Command request: ${mission.command}`,
+        "Respond with a short operator plan, risk note, and whether the selected provider is ready."
+      ].join("\n"),
+      model: mission.model,
+      agentId: mission.operatorId,
+      saveMemory: false
+    });
+  } catch (error) {
+    if (mission.provider === "ollama") {
+      appendMissionLog(run.id, "system", `Ollama planning unavailable. Falling back to mock planner. Reason: ${error instanceof Error ? error.message : "Unknown error."}`);
+      planResponse = await providers.mock.chat({
+        prompt: [
+          `Mission title: ${mission.title}`,
+          `Objective: ${mission.objective}`,
+          `Command request: ${mission.command}`,
+          "Provide a short fallback plan because Ollama is unavailable."
+        ].join("\n"),
+        model: "mock-agentos-local",
+        agentId: mission.operatorId,
+        saveMemory: false
+      });
+    } else {
+      const message = error instanceof Error ? error.message : "Mission planning failed.";
+      updateMissionRun(run.id, {
+        status: "failed",
+        error: message,
+        completedAt: new Date().toISOString()
+      });
+      updateMission(mission.id, { status: "failed" });
+      appendMissionLog(run.id, "stderr", message);
+      addAudit("mission.failed", mission.operatorId, message, mission.id, run.id);
+      return;
+    }
+  }
 
   addUsageEvent({
     provider: planResponse.provider,
@@ -145,6 +181,7 @@ async function runMissionExecution(runId: string) {
     const approval = createApproval({
       agentId: mission.operatorId,
       missionId: mission.id,
+      sessionId: mission.sessionId,
       runId: run.id,
       tool: "command.execute",
       permissionLevel: permissionEscalates(mission.sandboxLevel) ? mission.sandboxLevel : commandDecision.permissionLevel,
@@ -239,6 +276,42 @@ app.get("/dashboard", async () => ({
   }
 }));
 
+app.get("/policy/check", async (request) => {
+  const query = request.query as { command?: string; sandboxLevel?: SandboxPermissionLevel };
+  const commandDecision = assessCommandPolicy(query.command ?? "");
+  const requestedLevel = query.sandboxLevel ?? "safe_execute";
+  return {
+    decision: commandDecision,
+    requestedLevel,
+    requiresControlGate: commandDecision.policy !== "auto_allowed" || permissionEscalates(requestedLevel),
+    explanation:
+      commandDecision.policy === "denied"
+        ? "This command is blocked before execution."
+        : commandDecision.policy === "approval_required"
+          ? "This command is outside the small local allow-list and will pause in Control Gate."
+          : permissionEscalates(requestedLevel)
+            ? "The command is safe, but the requested sandbox level escalates beyond safe execution."
+            : "This mission can run straight through without an approval pause."
+  };
+});
+
+app.get("/providers/status", async () => {
+  let ollama = { available: false, message: "Ollama not checked." };
+  try {
+    const response = await fetch("http://127.0.0.1:11434/api/tags");
+    ollama = response.ok
+      ? { available: true, message: "Ollama is reachable on loopback." }
+      : { available: false, message: `Ollama returned HTTP ${response.status}.` };
+  } catch {
+    ollama = { available: false, message: "Ollama is unavailable at http://127.0.0.1:11434." };
+  }
+  return {
+    defaultProvider: getProviderId(),
+    ollama,
+    mock: { available: true, message: "Mock provider is always available." }
+  };
+});
+
 app.get("/operators", async () => store.agents);
 app.get("/missions", async () => store.missions);
 app.post("/missions", async (request) => {
@@ -262,9 +335,11 @@ app.get("/missions/:id", async (request, reply) => {
 app.post("/missions/:id/run", async (request, reply) => {
   const mission = getMission((request.params as { id: string }).id);
   if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const session = ensureSessionForMission(mission);
 
   const run = createMissionRun({
     missionId: mission.id,
+    sessionId: session.id,
     operatorId: mission.operatorId,
     provider: mission.provider,
     model: mission.model,
@@ -299,8 +374,70 @@ app.post("/runs/:id/continue", async (request, reply) => {
 });
 
 app.get("/routines", async () => store.routines);
+app.post("/routines", async (request) => createRoutine(request.body as Record<string, unknown>));
+app.post("/routines/:id/toggle", async (request, reply) => {
+  const routine = getRoutine((request.params as { id: string }).id);
+  if (!routine) return reply.code(404).send({ error: "Routine not found" });
+  const updated = updateRoutine(routine.id, {
+    enabled: !routine.enabled,
+    status: routine.enabled ? "paused" : "scheduled"
+  });
+  addAudit("routine.toggled", "agentos-operator", `${updated?.enabled ? "Enabled" : "Paused"} routine: ${routine.title}`);
+  return updated;
+});
+app.post("/routines/:id/run", async (request, reply) => {
+  const routine = getRoutine((request.params as { id: string }).id);
+  if (!routine) return reply.code(404).send({ error: "Routine not found" });
+  const mission = createMission({
+    title: routine.title,
+    objective: routine.objective,
+    prompt: routine.prompt,
+    command: routine.command,
+    sandboxLevel: routine.sandboxLevel,
+    provider: routine.provider,
+    model: routine.model,
+    operatorId: chooseAgentForMission(productionTeam, {
+      title: routine.title,
+      objective: routine.objective,
+      command: routine.command
+    })?.id
+  });
+  const session = ensureSessionForMission(mission);
+  const run = createMissionRun({
+    missionId: mission.id,
+    sessionId: session.id,
+    operatorId: mission.operatorId,
+    provider: mission.provider,
+    model: mission.model,
+    status: "queued",
+    commandPolicy: mission.commandPolicy,
+    requestedCommand: mission.command
+  });
+  updateRoutine(routine.id, {
+    latestRunId: run.id,
+    lastRunAt: new Date().toISOString(),
+    status: "running"
+  });
+  void runMissionExecution(run.id);
+  return { mission, run, routine: getRoutine(routine.id) };
+});
 app.get("/loadout", async () => store.loadout);
 app.get("/sessions", async () => store.sessions);
+app.post("/sessions", async (request) => createSession(request.body as Record<string, unknown>));
+app.post("/sessions/:id/pause", async (request, reply) => {
+  const session = getSession((request.params as { id: string }).id);
+  if (!session) return reply.code(404).send({ error: "Session not found" });
+  return updateSession(session.id, { status: "paused", summary: `Paused ${session.title}.` });
+});
+app.post("/sessions/:id/resume", async (request, reply) => {
+  const session = getSession((request.params as { id: string }).id);
+  if (!session) return reply.code(404).send({ error: "Session not found" });
+  return updateSession(session.id, {
+    status: "active",
+    resumedAt: new Date().toISOString(),
+    summary: `Resumed ${session.title}.`
+  });
+});
 
 app.get("/agents", async () => store.agents);
 app.get("/agents/:id", async (request, reply) => {

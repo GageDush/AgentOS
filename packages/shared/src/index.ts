@@ -109,6 +109,7 @@ export type ApprovalRecord = {
   id: string;
   agentId: string;
   missionId?: string;
+  sessionId?: string;
   runId?: string;
   tool: string;
   permissionLevel: SandboxPermissionLevel;
@@ -196,6 +197,7 @@ export type MissionRunStatus =
 export type MissionRun = {
   id: string;
   missionId: string;
+  sessionId?: string;
   operatorId: string;
   provider: LlmProviderId;
   model: string;
@@ -219,6 +221,7 @@ export type MissionRecord = {
   objective: string;
   prompt: string;
   operatorId: string;
+  sessionId?: string;
   status: MissionStatus;
   sandboxLevel: SandboxPermissionLevel;
   command: string;
@@ -236,8 +239,15 @@ export type RoutineRecord = {
   id: string;
   title: string;
   objective: string;
+  prompt: string;
+  command: string;
+  sandboxLevel: SandboxPermissionLevel;
+  provider: LlmProviderId;
+  model: string;
   frequency: RoutineFrequency;
   enabled: boolean;
+  status: "idle" | "scheduled" | "running" | "paused";
+  latestRunId?: string;
   lastRunAt?: string;
   nextRunAt?: string;
 };
@@ -255,8 +265,10 @@ export type SessionRecord = {
   title: string;
   missionId?: string;
   operatorId: string;
-  status: "active" | "paused" | "complete";
+  status: "active" | "paused" | "complete" | "failed";
   summary: string;
+  latestRunId?: string;
+  resumedAt?: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -418,6 +430,9 @@ export const defaultApprovals: ApprovalRecord[] = [
   {
     id: "approval-terminal-run",
     agentId: "builder-agent",
+    missionId: "mission-seed-local-checks",
+    sessionId: "session-seed",
+    runId: "mission-run-seed",
     tool: "command.execute",
     permissionLevel: "safe_execute",
     inputSummary: "Run local checks after scaffold creation.",
@@ -459,6 +474,7 @@ export const defaultMissions: MissionRecord[] = [
     objective: "Validate the repository using safe local commands before a refactor lands.",
     prompt: "Review the repo state, summarize the check plan, then run pnpm typecheck.",
     operatorId: "builder-agent",
+    sessionId: "session-seed",
     status: "awaiting_approval",
     sandboxLevel: "workspace_write",
     command: "pnpm typecheck",
@@ -475,6 +491,7 @@ export const defaultMissionRuns: MissionRun[] = [
   {
     id: "mission-run-seed",
     missionId: "mission-seed-local-checks",
+    sessionId: "session-seed",
     operatorId: "builder-agent",
     provider: "mock",
     model: "mock-agentos-local",
@@ -502,9 +519,28 @@ export const defaultRoutines: RoutineRecord[] = [
     id: "routine-nightly-scan",
     title: "Nightly Repository Scan",
     objective: "Run lint and type checks every evening in mock-first mode.",
+    prompt: "Plan a nightly safe repository scan and summarize any local developer risk before execution.",
+    command: "pnpm typecheck",
+    sandboxLevel: "workspace_write",
+    provider: "mock",
+    model: "mock-agentos-local",
     frequency: "daily",
     enabled: false,
+    status: "idle",
     nextRunAt: undefined
+  },
+  {
+    id: "routine-ollama-health",
+    title: "Ollama Readiness Check",
+    objective: "Check whether Ollama is reachable and document the local model posture.",
+    prompt: "Assess the Ollama endpoint and summarize whether the local provider is ready for a mission.",
+    command: "git status",
+    sandboxLevel: "observe",
+    provider: "ollama",
+    model: "qwen2.5-coder:7b",
+    frequency: "manual",
+    enabled: true,
+    status: "scheduled"
   }
 ];
 
@@ -540,6 +576,7 @@ export const defaultSessions: SessionRecord[] = [
     operatorId: "builder-agent",
     status: "active",
     summary: "Pivoting AgentOS from demo office toward a mission-first local ops hub.",
+    latestRunId: "mission-run-seed",
     createdAt: nowIso(),
     updatedAt: nowIso()
   }
