@@ -6,13 +6,14 @@ import type { GatewayExecutionRequest, GatewayExecutionResult } from "@agentos/s
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_GATEWAY_PORT ?? 8790);
 const repoRoot = process.env.AGENTOS_REPO_ROOT ?? process.cwd();
+const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
 const commandAliases: Record<string, { file: string; args: string[] }> = {
   "git status": { file: "git", args: ["status"] },
   "git diff": { file: "git", args: ["diff"] },
-  "pnpm test": { file: "pnpm", args: ["test"] },
-  "pnpm typecheck": { file: "pnpm", args: ["typecheck"] },
-  "pnpm lint": { file: "pnpm", args: ["lint"] }
+  "pnpm test": { file: pnpmBin, args: ["test"] },
+  "pnpm typecheck": { file: pnpmBin, args: ["typecheck"] },
+  "pnpm lint": { file: pnpmBin, args: ["lint"] }
 };
 
 function executeAllowedCommand(command: string) {
@@ -22,9 +23,14 @@ function executeAllowedCommand(command: string) {
     throw new Error(`Unsupported command alias: ${normalized}`);
   }
 
+  const childCommand =
+    process.platform === "win32" && alias.file.endsWith(".cmd")
+      ? { file: "cmd.exe", args: ["/d", "/s", "/c", alias.file, ...alias.args] }
+      : alias;
+
   return new Promise<GatewayExecutionResult>((resolve) => {
     const startedAt = Date.now();
-    const child = spawn(alias.file, alias.args, {
+    const child = spawn(childCommand.file, childCommand.args, {
       cwd: repoRoot,
       shell: false,
       windowsHide: true,
