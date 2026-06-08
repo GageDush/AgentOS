@@ -23,9 +23,18 @@ importers:
 
   apps/api:
     dependencies:
+      '@agentos/agents':
+        specifier: workspace:*
+        version: link:../../packages/agents
       '@agentos/memory':
         specifier: workspace:*
         version: link:../../packages/memory
+      '@agentos/orchestrator':
+        specifier: workspace:*
+        version: link:../../packages/orchestrator
+      '@agentos/sandbox':
+        specifier: workspace:*
+        version: link:../../packages/sandbox
       '@agentos/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -97,6 +106,12 @@ importers:
 
   apps/gateway:
     dependencies:
+      '@agentos/sandbox':
+        specifier: workspace:*
+        version: link:../../packages/sandbox
+      '@agentos/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       fastify:
         specifier: ^5.2.1
         version: 5.8.5

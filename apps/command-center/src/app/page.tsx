@@ -1,5 +1,5 @@
-import { CommandCenter } from "../components/CommandCenter";
+import { AgentOSLocalApp } from "../components/local/AgentOSLocalApp";
 
 export default function Home() {
-  return <CommandCenter />;
+  return <AgentOSLocalApp section="dashboard" />;
 }

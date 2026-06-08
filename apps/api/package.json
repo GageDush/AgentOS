@@ -10,7 +10,10 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@agentos/agents": "workspace:*",
     "@agentos/memory": "workspace:*",
+    "@agentos/orchestrator": "workspace:*",
+    "@agentos/sandbox": "workspace:*",
     "@agentos/shared": "workspace:*",
     "@agentos/token-manager": "workspace:*",
     "@fastify/cors": "^10.0.2",

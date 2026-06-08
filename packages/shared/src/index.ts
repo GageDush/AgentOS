@@ -60,6 +60,8 @@ export type MemoryRecord = {
   projectId?: string;
   agentId?: string;
   taskId?: string;
+  missionId?: string;
+  runId?: string;
   tags: string[];
   importance: number;
   archived: boolean;
@@ -91,12 +93,29 @@ export type UsageBudget = {
   hardStopEnabled: boolean;
 };
 
+export type SandboxPermissionLevel =
+  | "observe"
+  | "workspace_write"
+  | "safe_execute"
+  | "network_limited"
+  | "dependency_install"
+  | "external_action"
+  | "repo_mutation"
+  | "system_elevated";
+
+export type ApprovalScope = "once" | "mission";
+
 export type ApprovalRecord = {
   id: string;
   agentId: string;
+  missionId?: string;
+  runId?: string;
   tool: string;
+  permissionLevel: SandboxPermissionLevel;
   inputSummary: string;
   status: "pending" | "approved" | "denied";
+  scope?: ApprovalScope;
+  command?: string;
   createdAt: string;
   resolvedAt?: string;
 };
@@ -106,6 +125,8 @@ export type AuditEvent = {
   event: string;
   actor: string;
   summary: string;
+  missionId?: string;
+  runId?: string;
   createdAt: string;
 };
 
@@ -151,6 +172,110 @@ export type DemoMissionRun = {
   updatedAt: string;
 };
 
+export type MissionCommandPolicy = "auto_allowed" | "approval_required" | "denied";
+
+export type MissionRunLogLevel = "system" | "plan" | "approval" | "exec" | "stdout" | "stderr" | "result";
+
+export type MissionRunLog = {
+  id: string;
+  runId: string;
+  level: MissionRunLogLevel;
+  message: string;
+  createdAt: string;
+};
+
+export type MissionRunStatus =
+  | "queued"
+  | "planning"
+  | "awaiting_approval"
+  | "running"
+  | "completed"
+  | "failed"
+  | "denied";
+
+export type MissionRun = {
+  id: string;
+  missionId: string;
+  operatorId: string;
+  provider: LlmProviderId;
+  model: string;
+  status: MissionRunStatus;
+  commandPolicy: MissionCommandPolicy;
+  requestedCommand?: string;
+  approvalRequestId?: string;
+  resultSummary?: string;
+  error?: string;
+  startedAt?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MissionStatus = "draft" | "queued" | "running" | "awaiting_approval" | "completed" | "failed" | "denied";
+
+export type MissionRecord = {
+  id: string;
+  title: string;
+  objective: string;
+  prompt: string;
+  operatorId: string;
+  status: MissionStatus;
+  sandboxLevel: SandboxPermissionLevel;
+  command: string;
+  commandPolicy: MissionCommandPolicy;
+  provider: LlmProviderId;
+  model: string;
+  latestRunId?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RoutineFrequency = "manual" | "hourly" | "daily" | "weekly";
+
+export type RoutineRecord = {
+  id: string;
+  title: string;
+  objective: string;
+  frequency: RoutineFrequency;
+  enabled: boolean;
+  lastRunAt?: string;
+  nextRunAt?: string;
+};
+
+export type LoadoutItem = {
+  id: string;
+  name: string;
+  kind: "local_model" | "command_policy" | "integration" | "tooling";
+  status: "ready" | "mock" | "disabled";
+  summary: string;
+};
+
+export type SessionRecord = {
+  id: string;
+  title: string;
+  missionId?: string;
+  operatorId: string;
+  status: "active" | "paused" | "complete";
+  summary: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GatewayExecutionRequest = {
+  command: string;
+  missionId?: string;
+  runId?: string;
+};
+
+export type GatewayExecutionResult = {
+  ok: boolean;
+  command: string;
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+  durationMs: number;
+};
+
 export const nowIso = () => new Date().toISOString();
 
 export const defaultAgents: AgentProfile[] = [
@@ -182,7 +307,7 @@ export const defaultAgents: AgentProfile[] = [
   {
     id: "builder-agent",
     name: "Builder Agent",
-    role: "Implements code in supervised mock-mode runs.",
+    role: "Implements code in supervised local runs.",
     status: "working",
     workload: 72,
     currentTaskId: "task-command-center",
@@ -191,10 +316,10 @@ export const defaultAgents: AgentProfile[] = [
   {
     id: "qa-agent",
     name: "QA Agent",
-    role: "Runs tests and browser checks.",
+    role: "Runs tests and verification sweeps.",
     status: "blocked",
     workload: 58,
-    skills: ["test plans", "regression", "screenshots"]
+    skills: ["test plans", "regression", "checks"]
   },
   {
     id: "security-agent",
@@ -219,35 +344,17 @@ export const defaultAgents: AgentProfile[] = [
     status: "done",
     workload: 12,
     skills: ["readme", "runbooks", "changelog"]
-  },
-  {
-    id: "release-agent",
-    name: "Release Agent",
-    role: "Prepares deploy notes and rollout checklists.",
-    status: "offline",
-    workload: 0,
-    skills: ["release", "versioning", "rollout"]
   }
 ];
 
 export const defaultTasks: AgentTask[] = [
   {
     id: "task-command-center",
-    title: "Build the AgentOS Command Center MVP",
-    description: "Create mock-mode dashboard, API, memory, token usage, approvals, and Discord controls.",
-    prompt: "Build a polished local AgentOS demo that feels alive but remains safe.",
+    title: "Pivot AgentOS into a local-first AI dev hub",
+    description: "Replace the office-first demo surface with a mission-first command center.",
+    prompt: "Refactor AgentOS into a serious local-first developer operations hub.",
     status: "building",
     assignedAgentId: "builder-agent",
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  },
-  {
-    id: "task-asset-pass",
-    title: "Prepare Phaser-ready game assets",
-    description: "Slice concept sheets into clean transparent sprites, atlases, and interaction metadata.",
-    prompt: "Organize the executive asset pack and promote demo-ready art into the command center.",
-    status: "planning",
-    assignedAgentId: "product-agent",
     createdAt: nowIso(),
     updatedAt: nowIso()
   }
@@ -311,9 +418,12 @@ export const defaultApprovals: ApprovalRecord[] = [
   {
     id: "approval-terminal-run",
     agentId: "builder-agent",
-    tool: "terminal.run",
+    tool: "command.execute",
+    permissionLevel: "safe_execute",
     inputSummary: "Run local checks after scaffold creation.",
     status: "pending",
+    scope: "once",
+    command: "pnpm typecheck",
     createdAt: nowIso()
   }
 ];
@@ -323,7 +433,7 @@ export const defaultAuditEvents: AuditEvent[] = [
     id: "audit-seed",
     event: "system.seeded",
     actor: "AgentOS",
-    summary: "Mock-mode seed data loaded.",
+    summary: "Local-first seed data loaded.",
     createdAt: nowIso()
   }
 ];
@@ -341,6 +451,99 @@ export const defaultDemoMission: DemoMissionRun = {
   createdAt: nowIso(),
   updatedAt: nowIso()
 };
+
+export const defaultMissions: MissionRecord[] = [
+  {
+    id: "mission-seed-local-checks",
+    title: "Run local quality checks",
+    objective: "Validate the repository using safe local commands before a refactor lands.",
+    prompt: "Review the repo state, summarize the check plan, then run pnpm typecheck.",
+    operatorId: "builder-agent",
+    status: "awaiting_approval",
+    sandboxLevel: "workspace_write",
+    command: "pnpm typecheck",
+    commandPolicy: "auto_allowed",
+    provider: "mock",
+    model: "mock-agentos-local",
+    latestRunId: "mission-run-seed",
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  }
+];
+
+export const defaultMissionRuns: MissionRun[] = [
+  {
+    id: "mission-run-seed",
+    missionId: "mission-seed-local-checks",
+    operatorId: "builder-agent",
+    provider: "mock",
+    model: "mock-agentos-local",
+    status: "awaiting_approval",
+    commandPolicy: "approval_required",
+    requestedCommand: "pnpm typecheck",
+    approvalRequestId: "approval-terminal-run",
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  }
+];
+
+export const defaultMissionLogs: MissionRunLog[] = [
+  {
+    id: "mission-log-seed-1",
+    runId: "mission-run-seed",
+    level: "plan",
+    message: "Prepared a safe local validation mission and paused at Control Gate.",
+    createdAt: nowIso()
+  }
+];
+
+export const defaultRoutines: RoutineRecord[] = [
+  {
+    id: "routine-nightly-scan",
+    title: "Nightly Repository Scan",
+    objective: "Run lint and type checks every evening in mock-first mode.",
+    frequency: "daily",
+    enabled: false,
+    nextRunAt: undefined
+  }
+];
+
+export const defaultLoadout: LoadoutItem[] = [
+  {
+    id: "loadout-local-provider",
+    name: "Local Provider",
+    kind: "local_model",
+    status: "ready",
+    summary: "Mock by default, Ollama when configured."
+  },
+  {
+    id: "loadout-control-gate",
+    name: "Control Gate Policy",
+    kind: "command_policy",
+    status: "ready",
+    summary: "Approvals, audit trail, and safe command enforcement."
+  },
+  {
+    id: "loadout-gateway",
+    name: "Local Gateway",
+    kind: "tooling",
+    status: "ready",
+    summary: "Safe command execution for allow-listed commands."
+  }
+];
+
+export const defaultSessions: SessionRecord[] = [
+  {
+    id: "session-seed",
+    title: "Command Center Pivot Session",
+    missionId: "mission-seed-local-checks",
+    operatorId: "builder-agent",
+    status: "active",
+    summary: "Pivoting AgentOS from demo office toward a mission-first local ops hub.",
+    createdAt: nowIso(),
+    updatedAt: nowIso()
+  }
+];
 
 export const calculateUsageSummary = (events: UsageEvent[], budgets: UsageBudget[]) => {
   const today = new Date().toISOString().slice(0, 10);

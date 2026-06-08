@@ -10,6 +10,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@agentos/sandbox": "workspace:*",
+    "@agentos/shared": "workspace:*",
     "fastify": "^5.2.1"
   },
   "devDependencies": {
