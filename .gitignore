@@ -18,3 +18,4 @@ apps/*/dist/
 .agentos/state/*.db-wal
 .agentos/state/*.db-shm
 .agentos/state/agentos-local.json
+.agentos/stops/

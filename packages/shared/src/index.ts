@@ -361,6 +361,65 @@ export type RouteRiskLevel = "none" | "low" | "medium" | "high" | "critical";
 export type RoutingGate = "approval" | "qa" | "security" | "release";
 export type ProviderLane = "mock_local" | "ollama_local" | "defer";
 
+export type TaskEnvelopeGate = "qa" | "code_review" | "security_review" | "release_manager" | "human_approval";
+export type TaskEnvelopeMode = "manual" | "assisted" | "autopilot";
+export type TaskEnvelopeModelLane =
+  | "deterministic"
+  | "local_ollama"
+  | "mock_local"
+  | "subscription_codex"
+  | "subscription_chatgpt"
+  | "subscription_cursor"
+  | "subscription_anthropic"
+  | "premium_api"
+  | "defer_until_reset";
+
+export type TaskEnvelope = {
+  taskId: string;
+  createdAt: string;
+  userGoal: string;
+  normalizedGoal: string;
+  taskType: RouteTaskType;
+  complexity: RouteComplexity;
+  riskLevel: RouteRiskLevel;
+  requiresRepoContext: boolean;
+  requiresCodeChange: boolean;
+  requiresPlanning: boolean;
+  requiresQa: boolean;
+  requiresCodeReview: boolean;
+  requiresSecurityReview: boolean;
+  requiresReleaseGate: boolean;
+  preferredLane?: TaskEnvelopeModelLane;
+  selectedLane?: TaskEnvelopeModelLane;
+  filesInScope: string[];
+  inScope: string[];
+  outOfScope: string[];
+  relevantMemoryKeys: string[];
+  contextBudgetTokens: number;
+  acceptanceCriteria: string[];
+  requiredGates: TaskEnvelopeGate[];
+  mode: TaskEnvelopeMode;
+  notes: string[];
+};
+
+export type QuotaProviderId = "anthropic" | "openai_codex" | "cursor";
+
+export type QuotaBucketStatus = {
+  providerId: QuotaProviderId;
+  bucketId: string;
+  label: string;
+  utilizationPercent: number;
+  warning: boolean;
+  blocked: boolean;
+  resetsAt?: string;
+};
+
+export type QuotaStewardStatus = {
+  providers: QuotaBucketStatus[];
+  resumeQueueCount: number;
+  stoppedAgents: string[];
+};
+
 export type AgentRoutingDecisionRecord = {
   id: string;
   workspaceId: string;

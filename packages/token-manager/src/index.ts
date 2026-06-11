@@ -1,6 +1,18 @@
 import type { UsageBudget, UsageEvent } from "@agentos/shared";
 import { calculateUsageSummary } from "@agentos/shared";
 
+export {
+  clearAgentStopFile,
+  enqueueResumeItem,
+  evaluateQuotaSteward,
+  gatePremiumProviderRun,
+  listStoppedAgentIds,
+  readAgentStopFile,
+  readResumeQueue,
+  writeAgentStopFile
+} from "./quota-steward";
+export type { QuotaEvaluation, ResumeQueueItem, StopFileRecord } from "./quota-steward";
+
 export type BudgetDecision = {
   allowed: boolean;
   warning: boolean;

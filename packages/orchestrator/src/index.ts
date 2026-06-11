@@ -7,7 +7,10 @@ import type {
   RouteComplexity,
   RouteRiskLevel,
   RouteTaskType,
-  RoutingGate
+  RoutingGate,
+  TaskEnvelope,
+  TaskEnvelopeGate,
+  TaskEnvelopeModelLane
 } from "@agentos/shared";
 import { nowIso } from "@agentos/shared";
 import type { InstalledAgentProfileSet } from "@agentos/agents";
@@ -87,6 +90,72 @@ function buildRequiredGates(riskLevel: RouteRiskLevel, taskType: RouteTaskType, 
   return [...gates];
 }
 
+function mapProviderLaneToModelLane(lane: ProviderLane): TaskEnvelopeModelLane {
+  if (lane === "ollama_local") return "local_ollama";
+  if (lane === "defer") return "defer_until_reset";
+  return "mock_local";
+}
+
+function mapRoutingGatesToEnvelopeGates(gates: RoutingGate[], taskType: RouteTaskType): TaskEnvelopeGate[] {
+  const envelopeGates = new Set<TaskEnvelopeGate>();
+  for (const gate of gates) {
+    if (gate === "approval") envelopeGates.add("human_approval");
+    if (gate === "qa") envelopeGates.add("qa");
+    if (gate === "security") envelopeGates.add("security_review");
+    if (gate === "release") envelopeGates.add("release_manager");
+  }
+  if (taskType === "code_change" || taskType === "bug_fix" || taskType === "config") {
+    envelopeGates.add("code_review");
+  }
+  return [...envelopeGates];
+}
+
+export function buildTaskEnvelope(
+  mission: RouteContext,
+  route: Pick<AgentRoutingDecisionRecord, "taskType" | "complexity" | "riskLevel" | "requiredGates" | "providerLane" | "id">
+): TaskEnvelope {
+  const requiredGates = mapRoutingGatesToEnvelopeGates(route.requiredGates, route.taskType);
+  const requiresCodeChange = route.taskType === "code_change" || route.taskType === "bug_fix" || route.taskType === "config";
+  const requiresQa = requiredGates.includes("qa");
+  const requiresCodeReview = requiredGates.includes("code_review");
+  const requiresSecurityReview = requiredGates.includes("security_review");
+  const requiresReleaseGate = requiredGates.includes("release_manager");
+  const modelLane = mapProviderLaneToModelLane(route.providerLane);
+
+  return {
+    taskId: route.id,
+    createdAt: nowIso(),
+    userGoal: mission.prompt,
+    normalizedGoal: mission.objective,
+    taskType: route.taskType,
+    complexity: route.complexity,
+    riskLevel: route.riskLevel,
+    requiresRepoContext: requiresCodeChange || route.taskType === "repo_analysis",
+    requiresCodeChange,
+    requiresPlanning: route.complexity === "moderate" || route.complexity === "complex",
+    requiresQa,
+    requiresCodeReview,
+    requiresSecurityReview,
+    requiresReleaseGate,
+    preferredLane: modelLane,
+    selectedLane: modelLane,
+    filesInScope: [],
+    inScope: [mission.command],
+    outOfScope: ["unrelated repositories", "production deploys without release gate"],
+    relevantMemoryKeys: [],
+    contextBudgetTokens: route.complexity === "complex" ? 12000 : route.complexity === "moderate" ? 8000 : 4000,
+    acceptanceCriteria: [
+      `Mission "${mission.title}" completes without policy violations.`,
+      `Command "${mission.command}" is evaluated against sandbox policy.`,
+      ...(requiresQa ? ["QA gate evidence is recorded before completion."] : []),
+      ...(requiresSecurityReview ? ["Security review gate is satisfied for elevated risk."] : [])
+    ],
+    requiredGates,
+    mode: "assisted",
+    notes: [`Generated from deterministic route ${route.id} for mission ${mission.id}.`]
+  };
+}
+
 function choosePrimaryAgent(text: string, taskType: RouteTaskType) {
   if (taskType === "qa") return "qa-agent";
   if (taskType === "security") return "security-auditor";
@@ -144,8 +213,20 @@ export function determineMissionRoute(installed: InstalledAgentProfileSet, missi
     (complexity === "complex" ? -0.08 : complexity === "moderate" ? -0.03 : 0) +
     (primaryAgent === "code-implementer" ? 0.04 : 0);
 
+  const routeId = `route-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+  const providerLane = inferProviderLane(text);
+  const routeCore = {
+    id: routeId,
+    taskType,
+    complexity,
+    riskLevel,
+    requiredGates,
+    providerLane
+  };
+  const taskEnvelope = buildTaskEnvelope(mission, routeCore);
+
   return {
-    id: `route-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+    id: routeId,
     workspaceId: mission.workspaceId,
     missionId: mission.id,
     runId: mission.runId,
@@ -156,9 +237,14 @@ export function determineMissionRoute(installed: InstalledAgentProfileSet, missi
     supportingAgentIds: [...supportingAgents],
     skippedAgents,
     requiredGates,
-    providerLane: inferProviderLane(text),
+    providerLane,
     routeConfidence: Number(Math.max(0.2, Math.min(0.99, confidence)).toFixed(2)),
     reason: `Deterministic route selected from task type ${taskType}, risk ${riskLevel}, and domain keywords.`,
+    metadata: {
+      taskEnvelope,
+      providerLane,
+      requiredGates
+    },
     createdAt: nowIso()
   };
 }

@@ -1,0 +1,59 @@
+{
+  "warningThresholdPercent": 80,
+  "providers": {
+    "anthropic": {
+      "displayName": "Anthropic Claude Pro",
+      "sourceUrl": "https://support.anthropic.com/en/articles/8324991-about-claude-pro-usage",
+      "buckets": [
+        {
+          "id": "five_hour",
+          "label": "5-hour session",
+          "windowHours": 5,
+          "maxUnits": 45,
+          "unitLabel": "weighted messages"
+        },
+        {
+          "id": "weekly",
+          "label": "7-day weekly",
+          "windowDays": 7,
+          "maxUnits": 80,
+          "unitLabel": "sonnet-hours"
+        }
+      ]
+    },
+    "openai_codex": {
+      "displayName": "OpenAI Codex (ChatGPT Plus)",
+      "sourceUrl": "https://developers.openai.com/codex/pricing",
+      "buckets": [
+        {
+          "id": "five_hour",
+          "label": "5-hour session",
+          "windowHours": 5,
+          "maxUnits": 100,
+          "unitLabel": "local messages (GPT-5.4 upper bound)"
+        },
+        {
+          "id": "weekly",
+          "label": "Weekly",
+          "windowDays": 7,
+          "maxUnits": 100,
+          "unitLabel": "weekly allocation"
+        }
+      ]
+    },
+    "cursor": {
+      "displayName": "Cursor Pro",
+      "sourceUrl": "https://cursor.com/docs/models-and-pricing",
+      "billingReset": "monthly_billing_day",
+      "buckets": [
+        {
+          "id": "monthly_included",
+          "label": "Monthly included pool",
+          "windowDays": 31,
+          "maxUnits": 100,
+          "unitLabel": "spending percent"
+        }
+      ]
+    }
+  }
+}

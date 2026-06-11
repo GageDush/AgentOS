@@ -462,7 +462,8 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
     correlationId: claimedRun.correlationId ?? route.id,
     metadata: {
       requiredGates: route.requiredGates,
-      providerLane: route.providerLane
+      providerLane: route.providerLane,
+      taskEnvelope: route.metadata?.taskEnvelope
     }
   });
   if (!routeInfo) {

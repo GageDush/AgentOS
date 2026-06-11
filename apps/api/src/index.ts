@@ -16,8 +16,10 @@ import {
 import { assessCommandPolicy } from "@agentos/sandbox";
 import type { GatewayExecutionResult, LlmChatRequest, MissionRecord, MissionRun, SandboxPermissionLevel } from "@agentos/shared";
 import { searchMemories } from "@agentos/memory";
-import { evaluateBudget } from "@agentos/token-manager";
+import { findRepoRoot } from "@agentos/persistence";
+import { evaluateBudget, evaluateQuotaSteward } from "@agentos/token-manager";
 import { getProviderId, providers } from "./providers";
+import { createGitHubMissionIssue } from "./github";
 import {
   addAudit,
   addBudget,
@@ -51,12 +53,20 @@ import {
   runDemoMission,
   startTask,
   store,
+  updateMission,
   updateRoutine,
   usageSummary
 } from "./store";
 
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_API_PORT ?? 8787);
+const repoRoot = findRepoRoot(process.cwd());
+
+function quotaStatus() {
+  return evaluateQuotaSteward(store.usageEvents, repoRoot, {
+    cursorBillingDay: Number(process.env.AGENTOS_CURSOR_BILLING_DAY ?? 1)
+  });
+}
 
 await app.register(cors, { origin: true });
 await app.register(websocket);
@@ -92,6 +102,7 @@ app.get("/dashboard", async () => {
     chatMessages: database.chatMessages.slice(-120),
     routingDecisions: database.routingDecisions,
     usage: usageSummary(),
+    quota: quotaStatus(),
     system: {
       api: "online",
       worker: "online",
@@ -144,7 +155,7 @@ app.get("/users", async () => store.operators);
 
 app.get("/missions", async () => store.missions);
 app.post("/missions", async (request) => {
-  const body = request.body as Partial<MissionRecord>;
+  const body = request.body as Partial<MissionRecord> & { createGitHubIssue?: boolean };
   const chosen = chooseAgentForMission([], {
     title: body.title ?? "Untitled mission",
     objective: body.objective ?? "Run a local mission.",
@@ -154,12 +165,39 @@ app.post("/missions", async (request) => {
     title: body.title ? `${body.title} Control Thread` : "AgentOS Control Thread",
     scope: "mission"
   });
-  return createMission({
-    ...body,
-    operatorId: body.operatorId ?? chosen?.id ?? "agentos-operator",
-    activeThreadId: body.activeThreadId ?? thread.id,
-    status: "draft"
-  });
+  const wantsGitHubIssue = Boolean(body.createGitHubIssue ?? body.metadata?.createGitHubIssue);
+  let mission =
+    createMission({
+      ...body,
+      operatorId: body.operatorId ?? chosen?.id ?? "agentos-operator",
+      activeThreadId: body.activeThreadId ?? thread.id,
+      status: "draft",
+      metadata: {
+        ...(body.metadata ?? {}),
+        ...(wantsGitHubIssue ? { createGitHubIssue: true } : {})
+      }
+    }) ?? undefined;
+  if (!mission) {
+    throw new Error("Mission creation failed.");
+  }
+  if (wantsGitHubIssue) {
+    try {
+      const githubIssueUrl = createGitHubMissionIssue(mission);
+      mission = updateMission(mission.id, {
+        metadata: { ...(mission.metadata ?? {}), createGitHubIssue: true, githubIssueUrl }
+      }) ?? mission;
+    } catch (cause) {
+      mission =
+        updateMission(mission.id, {
+          metadata: {
+            ...(mission.metadata ?? {}),
+            createGitHubIssue: true,
+            githubIssueError: cause instanceof Error ? cause.message : "GitHub issue creation failed."
+          }
+        }) ?? mission;
+    }
+  }
+  return mission;
 });
 app.get("/missions/:id", async (request, reply) => {
   const mission = getMission((request.params as { id: string }).id);
@@ -365,6 +403,7 @@ app.post("/memory/:id/archive", async (request, reply) => {
 
 app.get("/usage", async () => store.usageEvents);
 app.get("/usage/summary", async () => usageSummary());
+app.get("/quota/status", async () => quotaStatus());
 app.get("/usage/budgets", async () => store.budgets);
 app.post("/usage/budgets", async (request) => addBudget(request.body as Parameters<typeof addBudget>[0]));
 app.post("/usage/mock-event", async (request, reply) => {

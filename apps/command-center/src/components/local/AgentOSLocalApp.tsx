@@ -7,6 +7,7 @@ import type {
   AgentProfile,
   AgentRoutingDecisionRecord,
   ApprovalRecord,
+  QuotaStewardStatus,
   AuditEvent,
   ChatMessageRecord,
   ChatThreadRecord,
@@ -60,6 +61,13 @@ type DashboardPayload = {
     warningThresholdPercent: number;
     totalTokens: number;
   };
+  quota?: {
+    allowed: boolean;
+    warning: boolean;
+    blocked: boolean;
+    reason?: string;
+    status: QuotaStewardStatus;
+  };
   system: {
     api: string;
     worker: string;
@@ -77,6 +85,7 @@ type MissionDraft = {
   sandboxLevel: SandboxPermissionLevel;
   provider: "mock" | "ollama";
   model: string;
+  createGitHubIssue: boolean;
 };
 
 type RoutineDraft = {
@@ -137,7 +146,8 @@ const defaultDraft: MissionDraft = {
   command: "pnpm typecheck",
   sandboxLevel: "workspace_write",
   provider: "mock",
-  model: "mock-agentos-local"
+  model: "mock-agentos-local",
+  createGitHubIssue: false
 };
 
 const defaultRoutineDraft: RoutineDraft = {
@@ -331,7 +341,12 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction("create-mission");
     setError("");
     try {
-      const mission = await postJson<MissionRecord>("/missions", draft);
+      const { createGitHubIssue, ...missionBody } = draft;
+      const mission = await postJson<MissionRecord>("/missions", {
+        ...missionBody,
+        createGitHubIssue,
+        metadata: createGitHubIssue ? { createGitHubIssue: true } : undefined
+      });
       const runPayload = await postJson<{ run: MissionRun }>(`/missions/${mission.id}/run`);
       setActiveRunId(runPayload.run.id);
       await refreshDashboard();
@@ -705,6 +720,27 @@ function DashboardView({
           <Snapshot label="Sessions" value={String(data.sessions.length)} copy="Long-running local work that can be resumed." />
         </div>
       </Panel>
+      {data.quota ? (
+        <Panel title="Quota Steward" subtitle="Subscription buckets warn at 80% and stop agents when depleted.">
+          {data.quota.reason ? <p className="quota-banner">{data.quota.reason}</p> : null}
+          <div className="table-list">
+            {data.quota.status.providers.map((bucket) => (
+              <div className="table-row" key={`${bucket.providerId}-${bucket.bucketId}`}>
+                <div>
+                  <strong>{bucket.label}</strong>
+                  <p>{bucket.utilizationPercent}% utilized</p>
+                </div>
+                <span className={`status-chip ${bucket.blocked ? "status-chip-denied" : bucket.warning ? "status-chip-awaiting_approval" : "status-chip-completed"}`}>
+                  {bucket.blocked ? "blocked" : bucket.warning ? "warning" : "ok"}
+                </span>
+              </div>
+            ))}
+          </div>
+          {data.quota.status.stoppedAgents.length ? (
+            <p className="field-hint">Stopped agents: {data.quota.status.stoppedAgents.join(", ")}</p>
+          ) : null}
+        </Panel>
+      ) : null}
       <Panel title="Current Focus" subtitle={activeMission ? activeMission.title : "Pick or run a mission to inspect it."}>
         <div className="focus-card">
           <div>
@@ -810,6 +846,15 @@ function MissionsView({
           <label className="wide-field">
             <span>Model</span>
             <input value={draft.model} onChange={(event) => setDraft((current) => ({ ...current, model: event.target.value }))} />
+          </label>
+          <label className="wide-field checkbox-field">
+            <span>GitHub issue (opt-in)</span>
+            <input
+              type="checkbox"
+              checked={draft.createGitHubIssue}
+              onChange={(event) => setDraft((current) => ({ ...current, createGitHubIssue: event.target.checked }))}
+            />
+            <p className="field-hint">Creates a triage issue on GageDush/AgentOS when the mission is saved.</p>
           </label>
         </div>
         <div className="snapshot-grid">
