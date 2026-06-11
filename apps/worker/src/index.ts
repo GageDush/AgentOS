@@ -1,18 +1,22 @@
-import { defaultAgents, defaultTasks } from "@agentos/shared";
+import { processPendingMissionRuns } from "@agentos/runtime";
 
-const heartbeat = () => {
-  const activeAgents = defaultAgents.filter((agent) => agent.status !== "offline").length;
-  const activeTasks = defaultTasks.filter((task) => task.status !== "done").length;
+const workerId = process.env.AGENTOS_WORKER_ID ?? "worker-local";
+const intervalMs = Number(process.env.AGENTOS_WORKER_INTERVAL_MS ?? 4000);
+
+async function heartbeat() {
+  const results = await processPendingMissionRuns({ workerId });
   console.log(
     JSON.stringify({
       service: "AgentOS Worker",
-      mode: "mock",
-      activeAgents,
-      activeTasks,
+      mode: "local-safe",
+      workerId,
+      processed: results.length,
       timestamp: new Date().toISOString()
     })
   );
-};
+}
 
-heartbeat();
-setInterval(heartbeat, 15000);
+await heartbeat();
+setInterval(() => {
+  void heartbeat();
+}, intervalMs);

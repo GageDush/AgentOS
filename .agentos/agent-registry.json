@@ -1,0 +1,47 @@
+{
+  "version": "0.1-test",
+  "memoryCuratorStatus": "excluded_for_later_design",
+  "coreAgents": [
+    "admin-agent",
+    "task-classifier",
+    "context-minimizer",
+    "quota-steward",
+    "planner-partitioner",
+    "repo-cartographer",
+    "code-implementer",
+    "systems-synthesizer",
+    "qa-agent",
+    "code-reviewer",
+    "security-auditor",
+    "release-manager",
+    "frontend-ui-agent",
+    "backend-service-agent"
+  ],
+  "addonAgents": [
+    "database-migration-agent",
+    "integration-broker"
+  ],
+  "conditionalPipeline": [
+    "admin-agent",
+    "task-classifier",
+    "context-minimizer?",
+    "quota-steward",
+    "planner-partitioner?",
+    "specialists?",
+    "qa-agent?",
+    "security-auditor?",
+    "code-reviewer?",
+    "release-manager?",
+    "admin-agent"
+  ],
+  "principles": [
+    "conditional_not_linear",
+    "agents_receive_envelopes_not_transcripts",
+    "reviewers_do_not_implement",
+    "deterministic_checks_beat_llm_opinions",
+    "subscription_capacity_is_premium_fuel",
+    "no_agent_self_approval",
+    "memory_is_curated_not_dumped",
+    "compact_agent_reports_only"
+  ]
+}

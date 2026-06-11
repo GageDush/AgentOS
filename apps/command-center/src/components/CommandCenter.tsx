@@ -25,7 +25,8 @@ import {
   defaultUsageEvents
 } from "@agentos/shared";
 import type { OfficeInteractable } from "@agentos/game-schema";
-import { officeAgentRoster, officeInteractables, officeVisualAnchors, officeWorkstations, panelLabels } from "@agentos/game-schema";
+import { officeInteractables, officeVisualAnchors, officeWorkstations, panelLabels } from "@agentos/game-schema";
+import { officeAgentRoster } from "../demo-office/legacyAgents";
 import { OfficeGame } from "../game/OfficeGame";
 import { useCommandCenterStore } from "../state/useCommandCenterStore";
 

@@ -13,6 +13,8 @@
     "@agentos/agents": "workspace:*",
     "@agentos/memory": "workspace:*",
     "@agentos/orchestrator": "workspace:*",
+    "@agentos/persistence": "workspace:*",
+    "@agentos/runtime": "workspace:*",
     "@agentos/sandbox": "workspace:*",
     "@agentos/shared": "workspace:*",
     "@agentos/token-manager": "workspace:*",

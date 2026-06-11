@@ -1,124 +1,47 @@
+import { getPersistenceAdapter } from "@agentos/persistence";
 import {
   calculateUsageSummary,
-  defaultAgents,
-  defaultApprovals,
-  defaultAuditEvents,
-  defaultBudgets,
-  defaultDemoMission,
-  defaultLoadout,
-  defaultMemories,
-  defaultMissionLogs,
-  defaultMissionRuns,
-  defaultMissions,
-  defaultRoutines,
-  defaultSessions,
-  defaultTasks,
-  defaultUsageEvents,
   nowIso,
   type AgentTask,
   type ApprovalRecord,
   type AuditEvent,
-  type DemoMissionRun,
-  type LoadoutItem,
+  type ChatMessageRecord,
+  type ChatThreadRecord,
   type MemoryRecord,
   type MissionRecord,
   type MissionRun,
   type MissionRunLog,
-  type MissionRunLogLevel,
+  type QuickActionRecord,
   type RoutineRecord,
   type SessionRecord,
   type UsageBudget,
   type UsageEvent
 } from "@agentos/shared";
+import type { AgentOSDatabase } from "@agentos/persistence";
 
-export const store = {
-  agents: structuredClone(defaultAgents),
-  tasks: structuredClone(defaultTasks),
-  memories: structuredClone(defaultMemories),
-  usageEvents: structuredClone(defaultUsageEvents),
-  budgets: structuredClone(defaultBudgets),
-  approvals: structuredClone(defaultApprovals),
-  auditEvents: structuredClone(defaultAuditEvents),
-  demoMission: structuredClone(defaultDemoMission),
-  missions: structuredClone(defaultMissions),
-  missionRuns: structuredClone(defaultMissionRuns),
-  missionLogs: structuredClone(defaultMissionLogs),
-  routines: structuredClone(defaultRoutines),
-  loadout: structuredClone(defaultLoadout),
-  sessions: structuredClone(defaultSessions),
-  runs: []
-};
+const persistence = getPersistenceAdapter();
 
-export const createTask = (input: Partial<AgentTask>) => {
-  const task: AgentTask = {
-    id: `task-${Date.now()}`,
-    title: input.title ?? "Untitled AgentOS task",
-    description: input.description ?? "Created from the AgentOS dashboard.",
-    prompt: input.prompt ?? input.description ?? input.title ?? "Create a new AgentOS task.",
-    status: input.status ?? "queued",
-    assignedAgentId: input.assignedAgentId,
-    result: input.result,
-    error: input.error,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-  store.tasks.unshift(task);
-  addAudit("task.created", "dashboard", `Created task: ${task.title}`);
-  return task;
-};
+function makeId(prefix: string) {
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
+}
 
-export const addUsageEvent = (event: Omit<UsageEvent, "id" | "createdAt">) => {
-  const usage: UsageEvent = {
-    ...event,
-    id: `usage-${Date.now()}`,
-    createdAt: nowIso()
-  };
-  store.usageEvents.unshift(usage);
-  addAudit("usage.recorded", "token-manager", `Recorded ${usage.totalTokens} tokens.`, undefined, usage.runId);
-  return usage;
-};
+// Compatibility note:
+// - Task CRUD, demo-mission helpers, generic partial mission/run edits, and budgets remain on mutate()
+//   for now because they are low-churn local/dev surfaces or still rely on broad patch-style updates.
+// - Operator-facing mission/run/chat/approval/session/quick-action persistence below prefers repository
+//   methods or transaction bundles so the hosting path is exercised by default.
+function mutate<T>(mutator: (database: AgentOSDatabase) => T) {
+  return persistence.mutate(mutator);
+}
 
-export const addBudget = (budget: Omit<UsageBudget, "id">) => {
-  const created: UsageBudget = {
-    ...budget,
-    id: `budget-${Date.now()}`
-  };
-  store.budgets.unshift(created);
-  addAudit("budget.created", "token-manager", `Created ${created.scope} budget.`);
-  return created;
-};
+function snapshot() {
+  return persistence.snapshot();
+}
 
-export const resolveApproval = (id: string, status: ApprovalRecord["status"], scope?: ApprovalRecord["scope"]) => {
-  const approval = store.approvals.find((item) => item.id === id);
-  if (!approval) return undefined;
-  approval.status = status;
-  approval.scope = scope ?? approval.scope;
-  approval.resolvedAt = nowIso();
-  addAudit(`approval.${status}`, "operator", `${status} ${approval.tool}.`, approval.missionId, approval.runId);
-  return approval;
-};
-
-export const createApproval = (input: Omit<ApprovalRecord, "id" | "createdAt" | "status">) => {
-  const approval: ApprovalRecord = {
-    ...input,
-    id: `approval-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
-    status: "pending",
-    createdAt: nowIso()
-  };
-  store.approvals.unshift(approval);
-  addAudit(
-    "approval.requested",
-    input.agentId,
-    `Requested ${input.permissionLevel} approval for ${input.tool}.`,
-    input.missionId,
-    input.runId
-  );
-  return approval;
-};
-
-export const addAudit = (event: string, actor: string, summary: string, missionId?: string, runId?: string) => {
+function addAuditInternal(database: AgentOSDatabase, event: string, actor: string, summary: string, missionId?: string, runId?: string) {
   const audit: AuditEvent = {
-    id: `audit-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    id: makeId("audit"),
+    workspaceId: database.workspaces[0].id,
     event,
     actor,
     summary,
@@ -126,221 +49,206 @@ export const addAudit = (event: string, actor: string, summary: string, missionI
     runId,
     createdAt: nowIso()
   };
-  store.auditEvents.unshift(audit);
+  database.auditEvents.unshift(audit);
   return audit;
+}
+
+export const store = {
+  get workspaces() {
+    return snapshot().workspaces;
+  },
+  get operators() {
+    return snapshot().operators;
+  },
+  get agents() {
+    return snapshot().agents;
+  },
+  get tasks() {
+    return snapshot().tasks;
+  },
+  get memories() {
+    return snapshot().memories;
+  },
+  get usageEvents() {
+    return snapshot().usageEvents;
+  },
+  get budgets() {
+    return snapshot().budgets;
+  },
+  get approvals() {
+    return snapshot().approvals;
+  },
+  get auditEvents() {
+    return snapshot().auditEvents;
+  },
+  get demoMission() {
+    return snapshot().demoMission;
+  },
+  get missions() {
+    return snapshot().missions;
+  },
+  get missionRuns() {
+    return snapshot().missionRuns;
+  },
+  get missionLogs() {
+    return snapshot().missionLogs;
+  },
+  get routines() {
+    return snapshot().routines;
+  },
+  get loadout() {
+    return snapshot().loadout;
+  },
+  get sessions() {
+    return snapshot().sessions;
+  },
+  get routingDecisions() {
+    return snapshot().routingDecisions;
+  },
+  get chatThreads() {
+    return snapshot().chatThreads;
+  },
+  get chatMessages() {
+    return snapshot().chatMessages;
+  },
+  get quickActions() {
+    return snapshot().quickActions;
+  }
 };
 
-export const usageSummary = () => calculateUsageSummary(store.usageEvents, store.budgets);
+export const getDatabaseSnapshot = snapshot;
 
-export const getTask = (id: string) => store.tasks.find((item) => item.id === id);
+export const createTask = (input: Partial<AgentTask>) =>
+  mutate((database) => {
+    const task: AgentTask = {
+      id: makeId("task"),
+      workspaceId: database.workspaces[0].id,
+      title: input.title ?? "Untitled AgentOS task",
+      description: input.description ?? "Created from the AgentOS dashboard.",
+      prompt: input.prompt ?? input.description ?? input.title ?? "Create a new AgentOS task.",
+      status: input.status ?? "queued",
+      assignedAgentId: input.assignedAgentId,
+      result: input.result,
+      error: input.error,
+      createdAt: nowIso(),
+      updatedAt: nowIso()
+    };
+    database.tasks.unshift(task);
+    addAuditInternal(database, "task.created", "dashboard", `Created task: ${task.title}`);
+    return task;
+  });
 
-export const updateTask = (id: string, updates: Partial<AgentTask>) => {
-  const task = getTask(id);
-  if (!task) return undefined;
-  Object.assign(task, updates, { updatedAt: nowIso() });
-  return task;
+export const addUsageEvent = (event: Omit<UsageEvent, "id" | "createdAt">) =>
+  persistence.appendUsageEvent({
+    ...event,
+    workspaceId: event.workspaceId ?? persistence.getOrCreateDefaultWorkspace().id
+  });
+
+export const addBudget = (budget: Omit<UsageBudget, "id">) =>
+  mutate((database) => {
+    const created: UsageBudget = {
+      ...budget,
+      workspaceId: budget.workspaceId ?? database.workspaces[0].id,
+      id: makeId("budget")
+    };
+    database.budgets.unshift(created);
+    addAuditInternal(database, "budget.created", "token-manager", `Created ${created.scope} budget.`);
+    return created;
+  });
+
+export const resolveApproval = (id: string, status: ApprovalRecord["status"], scope?: ApprovalRecord["scope"]) =>
+  persistence.resolveApprovalRequest(id, status, scope);
+
+export const createApproval = (input: Omit<ApprovalRecord, "id" | "createdAt" | "status">) =>
+  persistence.createApprovalRequest(input);
+
+export const addAudit = (event: string, actor: string, summary: string, missionId?: string, runId?: string) =>
+  mutate((database) => addAuditInternal(database, event, actor, summary, missionId, runId));
+
+export const usageSummary = () => {
+  const database = snapshot();
+  return calculateUsageSummary(database.usageEvents, database.budgets);
 };
+
+export const getTask = (id: string) => snapshot().tasks.find((item) => item.id === id);
+
+export const updateTask = (id: string, updates: Partial<AgentTask>) =>
+  mutate((database) => {
+    const task = database.tasks.find((item) => item.id === id);
+    if (!task) return undefined;
+    Object.assign(task, updates, { updatedAt: nowIso() });
+    return task;
+  });
 
 export const startTask = (id: string) => updateTask(id, { status: "running", error: undefined });
+export const completeTask = (id: string, result: string) => updateTask(id, { status: "complete", result, error: undefined });
+export const failTask = (id: string, error: string) => updateTask(id, { status: "failed", error });
 
-export const completeTask = (id: string, result: string) =>
-  updateTask(id, {
-    status: "complete",
-    result,
-    error: undefined
+export const createMission = (input: Partial<MissionRecord>) =>
+  persistence.createMission(input);
+
+export const getMission = (id: string) => snapshot().missions.find((item) => item.id === id);
+
+export const updateMission = (id: string, updates: Partial<MissionRecord>) =>
+  mutate((database) => {
+    const mission = database.missions.find((item) => item.id === id);
+    if (!mission) return undefined;
+    Object.assign(mission, updates, { updatedAt: nowIso() });
+    return mission;
   });
 
-export const failTask = (id: string, error: string) =>
-  updateTask(id, {
-    status: "failed",
-    error
+export const createMissionRun = (input: Omit<MissionRun, "id" | "createdAt" | "updatedAt">) =>
+  persistence.createMissionRun(input);
+
+export const getMissionRun = (id: string) => snapshot().missionRuns.find((item) => item.id === id);
+
+export const updateMissionRun = (id: string, updates: Partial<MissionRun>) =>
+  mutate((database) => {
+    const run = database.missionRuns.find((item) => item.id === id);
+    if (!run) return undefined;
+    Object.assign(run, updates, { updatedAt: nowIso() });
+    return run;
   });
 
-export const createMission = (input: Partial<MissionRecord>) => {
-  const mission: MissionRecord = {
-    id: `mission-${Date.now()}`,
-    title: input.title ?? "Untitled mission",
-    objective: input.objective ?? "Run a local-first agent mission.",
-    prompt: input.prompt ?? input.objective ?? input.title ?? "Describe the next mission.",
-    operatorId: input.operatorId ?? "agentos-operator",
-    sessionId: input.sessionId,
-    status: input.status ?? "draft",
-    sandboxLevel: input.sandboxLevel ?? "safe_execute",
-    command: input.command ?? "git status",
-    commandPolicy: input.commandPolicy ?? "approval_required",
-    provider: input.provider ?? "mock",
-    model: input.model ?? "mock-agentos-local",
-    latestRunId: input.latestRunId,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-  store.missions.unshift(mission);
-  addAudit("mission.created", mission.operatorId, `Created mission: ${mission.title}`, mission.id);
-  return mission;
-};
+export const appendMissionLog = (runId: string, level: MissionRunLog["level"], message: string) =>
+  persistence.appendMissionLog(runId, level, message);
 
-export const getMission = (id: string) => store.missions.find((item) => item.id === id);
+export const getMissionLogs = (runId: string) => snapshot().missionLogs.filter((item) => item.runId === runId);
 
-export const updateMission = (id: string, updates: Partial<MissionRecord>) => {
-  const mission = getMission(id);
-  if (!mission) return undefined;
-  Object.assign(mission, updates, { updatedAt: nowIso() });
-  return mission;
-};
+export const getRoutine = (id: string) => persistence.getRoutineById(id);
 
-export const createMissionRun = (input: Omit<MissionRun, "id" | "createdAt" | "updatedAt">) => {
-  const run: MissionRun = {
-    ...input,
-    id: `run-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-  store.missionRuns.unshift(run);
-  const missionStatus =
-    run.status === "completed"
-      ? "completed"
-      : run.status === "failed"
-        ? "failed"
-        : run.status === "denied"
-          ? "denied"
-          : run.status === "awaiting_approval"
-            ? "awaiting_approval"
-            : "running";
-  updateMission(run.missionId, { latestRunId: run.id, status: missionStatus });
-  if (run.sessionId) {
-    updateSession(run.sessionId, {
-      latestRunId: run.id,
-      status: missionStatus === "completed" ? "complete" : missionStatus === "failed" ? "failed" : "active",
-      summary: `Tracking ${run.requestedCommand ?? "mission execution"}`
-    });
-  }
-  addAudit("mission.run.created", run.operatorId, `Started run for mission ${run.missionId}.`, run.missionId, run.id);
-  return run;
-};
+export const createRoutine = (input: Partial<RoutineRecord>) =>
+  persistence.createRoutine(input);
 
-export const getMissionRun = (id: string) => store.missionRuns.find((item) => item.id === id);
+export const updateRoutine = (id: string, updates: Partial<RoutineRecord>) => persistence.updateRoutine(id, updates);
 
-export const updateMissionRun = (id: string, updates: Partial<MissionRun>) => {
-  const run = getMissionRun(id);
-  if (!run) return undefined;
-  Object.assign(run, updates, { updatedAt: nowIso() });
-  if (updates.status) {
-    const missionStatus =
-      updates.status === "completed"
-        ? "completed"
-        : updates.status === "failed"
-          ? "failed"
-          : updates.status === "denied"
-            ? "denied"
-            : updates.status === "awaiting_approval"
-              ? "awaiting_approval"
-              : "running";
-    updateMission(run.missionId, { status: missionStatus });
-    if (run.sessionId) {
-      updateSession(run.sessionId, {
-        latestRunId: run.id,
-        status:
-          missionStatus === "completed"
-            ? "complete"
-            : missionStatus === "failed" || missionStatus === "denied"
-              ? "failed"
-              : missionStatus === "awaiting_approval"
-                ? "paused"
-                : "active"
-      });
-    }
-  }
-  return run;
-};
+export const getSession = (id: string) => persistence.getSessionById(id);
 
-export const appendMissionLog = (runId: string, level: MissionRunLogLevel, message: string) => {
-  const log: MissionRunLog = {
-    id: `run-log-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
-    runId,
-    level,
-    message,
-    createdAt: nowIso()
-  };
-  store.missionLogs.push(log);
-  return log;
-};
+export const createSession = (input: Partial<SessionRecord>) =>
+  persistence.createSession(input);
 
-export const getMissionLogs = (runId: string) => store.missionLogs.filter((item) => item.runId === runId);
-
-export const getRoutine = (id: string) => store.routines.find((item) => item.id === id);
-
-export const createRoutine = (input: Partial<RoutineRecord>) => {
-  const routine: RoutineRecord = {
-    id: `routine-${Date.now()}`,
-    title: input.title ?? "Untitled routine",
-    objective: input.objective ?? "Run a scheduled local mission.",
-    prompt: input.prompt ?? input.objective ?? "Plan a recurring local mission safely.",
-    command: input.command ?? "pnpm typecheck",
-    sandboxLevel: input.sandboxLevel ?? "workspace_write",
-    provider: input.provider ?? "mock",
-    model: input.model ?? "mock-agentos-local",
-    frequency: input.frequency ?? "manual",
-    enabled: input.enabled ?? true,
-    status: input.status ?? "scheduled",
-    latestRunId: input.latestRunId,
-    lastRunAt: input.lastRunAt,
-    nextRunAt: input.nextRunAt
-  };
-  store.routines.unshift(routine);
-  addAudit("routine.created", "agentos-operator", `Created routine: ${routine.title}`);
-  return routine;
-};
-
-export const updateRoutine = (id: string, updates: Partial<RoutineRecord>) => {
-  const routine = getRoutine(id);
-  if (!routine) return undefined;
-  Object.assign(routine, updates);
-  return routine;
-};
-
-export const getSession = (id: string) => store.sessions.find((item) => item.id === id);
-
-export const createSession = (input: Partial<SessionRecord>) => {
-  const session: SessionRecord = {
-    id: `session-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
-    title: input.title ?? "Untitled session",
-    missionId: input.missionId,
-    operatorId: input.operatorId ?? "agentos-operator",
-    status: input.status ?? "active",
-    summary: input.summary ?? "Local mission session in progress.",
-    latestRunId: input.latestRunId,
-    resumedAt: input.resumedAt,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-  store.sessions.unshift(session);
-  addAudit("session.created", session.operatorId, `Created session: ${session.title}`, session.missionId, session.latestRunId);
-  return session;
-};
-
-export const updateSession = (id: string, updates: Partial<SessionRecord>) => {
-  const session = getSession(id);
-  if (!session) return undefined;
-  Object.assign(session, updates, { updatedAt: nowIso() });
-  return session;
-};
+export const updateSession = (id: string, updates: Partial<SessionRecord>) => persistence.updateSession(id, updates);
 
 export const ensureSessionForMission = (mission: MissionRecord) => {
+  const database = snapshot();
   if (mission.sessionId) {
-    return getSession(mission.sessionId) ?? createSession({
-      id: mission.sessionId,
+    return database.sessions.find((session) => session.id === mission.sessionId) ?? createSession({
+      workspaceId: mission.workspaceId,
+      requestedByOperatorId: mission.requestedByOperatorId,
       title: `${mission.title} session`,
       missionId: mission.id,
       operatorId: mission.operatorId,
       summary: `Tracking ${mission.title}.`
     });
   }
-  const existing = store.sessions.find((session) => session.missionId === mission.id);
+  const existing = database.sessions.find((session) => session.missionId === mission.id);
   if (existing) {
     updateMission(mission.id, { sessionId: existing.id });
     return existing;
   }
   const created = createSession({
+    workspaceId: mission.workspaceId,
+    requestedByOperatorId: mission.requestedByOperatorId,
     title: `${mission.title} session`,
     missionId: mission.id,
     operatorId: mission.operatorId,
@@ -357,9 +265,8 @@ export const createMissionResultMemory = (input: {
   title: string;
   content: string;
   tags?: string[];
-}) => {
-  const memory: MemoryRecord = {
-    id: `mem-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+}) =>
+  persistence.createArchiveEntry({
     type: "task_memory",
     title: input.title,
     content: input.content,
@@ -369,54 +276,69 @@ export const createMissionResultMemory = (input: {
     agentId: input.agentId,
     tags: input.tags ?? ["mission", "run"],
     importance: 7,
-    archived: false,
-    createdAt: nowIso(),
-    updatedAt: nowIso()
-  };
-  store.memories.unshift(memory);
-  return memory;
-};
-
-export const runDemoMission = (): DemoMissionRun => {
-  const mission = store.demoMission;
-  mission.status = "running";
-  mission.updatedAt = nowIso();
-  mission.steps = mission.steps.map((step, index) => {
-    if (index < mission.steps.length - 1) {
-      return { ...step, status: "complete" };
-    }
-    return { ...step, status: "running" };
+    archived: false
   });
 
-  addAudit("mission.demo.started", "agentos-operator", `Started demo mission: ${mission.title}`);
-
-  createTask({
-    title: "Demo mission briefing",
-    description: "Walk through a safe multi-agent mission for the local demo.",
-    prompt: "Summarize a safe, exciting AgentOS demo mission for friends and family.",
-    assignedAgentId: "agentos-operator",
-    status: "queued"
+export const runDemoMission = () =>
+  mutate((database) => {
+    database.demoMission.status = "running";
+    database.demoMission.updatedAt = nowIso();
+    database.demoMission.steps = database.demoMission.steps.map((step, index) => {
+      if (index < database.demoMission.steps.length - 1) {
+        return { ...step, status: "complete" };
+      }
+      return { ...step, status: "running" };
+    });
+    addAuditInternal(database, "mission.demo.started", "agentos-operator", `Started demo mission: ${database.demoMission.title}`);
+    return database.demoMission;
   });
 
-  return mission;
-};
+export const completeDemoMission = (summary: string) =>
+  mutate((database) => {
+    database.demoMission.status = "complete";
+    database.demoMission.updatedAt = nowIso();
+    database.demoMission.steps = database.demoMission.steps.map((step) => ({ ...step, status: "complete" }));
+    addAuditInternal(database, "mission.demo.completed", "reviewer-agent", summary);
+    return database.demoMission;
+  });
 
-export const completeDemoMission = (summary: string) => {
-  store.demoMission.status = "complete";
-  store.demoMission.updatedAt = nowIso();
-  store.demoMission.steps = store.demoMission.steps.map((step) => ({ ...step, status: "complete" }));
-  addAudit("mission.demo.completed", "reviewer-agent", summary);
-  return store.demoMission;
-};
+export const listPendingApprovals = () => snapshot().approvals.filter((item) => item.status === "pending");
 
-export const listPendingApprovals = () => store.approvals.filter((item) => item.status === "pending");
+export const getChatThread = (id: string) => snapshot().chatThreads.find((thread) => thread.id === id);
+export const listChatThreads = () => persistence.listChatThreads();
+export const listChatMessages = (threadId: string) => persistence.listChatMessages(threadId);
 
-export type AppStore = typeof store;
-export type AppCollections = {
-  missions: MissionRecord[];
-  missionRuns: MissionRun[];
-  missionLogs: MissionRunLog[];
-  routines: RoutineRecord[];
-  loadout: LoadoutItem[];
-  sessions: SessionRecord[];
-};
+export const createChatThread = (input: Partial<ChatThreadRecord>) =>
+  persistence.createChatThread(input);
+
+export const createChatMessage = (input: Omit<ChatMessageRecord, "id" | "workspaceId" | "createdAt">) =>
+  (() => {
+    const exchange = persistence.appendChatExchangeBundle({
+      threadId: input.threadId,
+      userMessage: input.role === "user" ? input : undefined,
+      assistantMessage: input.role === "assistant" || input.role === "system" ? input : undefined,
+      audit: {
+        event: "chat.message_received",
+        actor: input.operatorId ?? "system",
+        summary: input.content,
+        missionId: input.missionId,
+        runId: input.runId,
+        correlationId: input.correlationId,
+        metadata: input.metadata
+      }
+    });
+    return exchange.userMessage ?? exchange.assistantMessage ?? persistence.appendChatMessage(input);
+  })();
+
+export const listQuickActions = () => snapshot().quickActions;
+export const getQuickAction = (id: string) => snapshot().quickActions.find((action) => action.id === id);
+
+export const persistMemory = (input: Omit<MemoryRecord, "id" | "workspaceId" | "createdAt" | "updatedAt">) =>
+  persistence.createArchiveEntry(input);
+
+export const archiveMemoryEntry = (id: string) => persistence.archiveMemoryEntry(id);
+
+export const createQuickAction = (input: Omit<QuickActionRecord, "id" | "workspaceId" | "createdAt">) =>
+  persistence.createQuickAction(input);
+
+export const consumeQuickAction = (id: string, operatorId: string) => persistence.consumeQuickAction(id, operatorId);

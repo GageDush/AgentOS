@@ -10,6 +10,8 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@agentos/persistence": "workspace:*",
+    "@agentos/runtime": "workspace:*",
     "@agentos/shared": "workspace:*"
   },
   "devDependencies": {

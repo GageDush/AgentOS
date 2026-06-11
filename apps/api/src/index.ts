@@ -1,251 +1,68 @@
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
-import { productionTeam } from "@agentos/agents";
-import { createMemory, searchMemories } from "@agentos/memory";
 import { chooseAgentForMission } from "@agentos/orchestrator";
+import {
+  continueMissionRunAfterApproval,
+  executeQuickAction,
+  handleChatMessage,
+  pauseMissionRun,
+  processPendingMissionRuns,
+  processRun,
+  resolveApprovalDecision,
+  resumeMissionRun,
+  retryMissionRun
+} from "@agentos/runtime";
 import { assessCommandPolicy } from "@agentos/sandbox";
-import type {
-  ApprovalRecord,
-  GatewayExecutionResult,
-  LlmChatRequest,
-  MissionRecord,
-  MissionRun,
-  SandboxPermissionLevel
-} from "@agentos/shared";
+import type { GatewayExecutionResult, LlmChatRequest, MissionRecord, MissionRun, SandboxPermissionLevel } from "@agentos/shared";
+import { searchMemories } from "@agentos/memory";
 import { evaluateBudget } from "@agentos/token-manager";
 import { getProviderId, providers } from "./providers";
 import {
   addAudit,
   addBudget,
   addUsageEvent,
-  appendMissionLog,
   completeDemoMission,
   completeTask,
-  createApproval,
+  createChatMessage,
+  createChatThread,
   createMission,
-  createMissionResultMemory,
   createMissionRun,
   createRoutine,
   createSession,
   createTask,
   ensureSessionForMission,
   failTask,
+  archiveMemoryEntry,
+  getChatThread,
+  getDatabaseSnapshot,
   getMission,
   getMissionLogs,
   getMissionRun,
+  getQuickAction,
   getRoutine,
   getSession,
   getTask,
+  listChatMessages,
+  listChatThreads,
   listPendingApprovals,
-  resolveApproval,
+  listQuickActions,
+  persistMemory,
   runDemoMission,
   startTask,
   store,
   updateRoutine,
-  updateSession,
-  updateMission,
-  updateMissionRun,
   usageSummary
 } from "./store";
 
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_API_PORT ?? 8787);
-const gatewayBase = process.env.AGENTOS_GATEWAY_URL ?? "http://127.0.0.1:8790";
 
 await app.register(cors, { origin: true });
 await app.register(websocket);
 
 function permissionEscalates(level: SandboxPermissionLevel) {
   return !["observe", "safe_execute"].includes(level);
-}
-
-async function executeThroughGateway(command: string, missionId: string, runId: string) {
-  try {
-    const response = await fetch(`${gatewayBase}/execute`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ command, missionId, runId })
-    });
-    const payload = (await response.json()) as {
-      ok?: boolean;
-      result?: GatewayExecutionResult;
-      decision?: { reason?: string };
-    };
-
-    if (!response.ok || !payload.result) {
-      return {
-        ok: false,
-        exitCode: 1,
-        stdout: "",
-        stderr: payload.decision?.reason ?? "Gateway rejected the command.",
-        durationMs: 0,
-        command
-      } satisfies GatewayExecutionResult;
-    }
-
-    return payload.result;
-  } catch (error) {
-    return {
-      ok: true,
-      command,
-      exitCode: 0,
-      stdout: `Gateway unavailable, using mock execution fallback for: ${command}`,
-      stderr: "",
-      durationMs: 1
-    } satisfies GatewayExecutionResult;
-  }
-}
-
-async function runMissionExecution(runId: string) {
-  const run = getMissionRun(runId);
-  if (!run) return;
-  const mission = getMission(run.missionId);
-  if (!mission) return;
-
-  updateMissionRun(run.id, { status: "planning", startedAt: run.startedAt ?? new Date().toISOString() });
-  updateMission(mission.id, { status: "running" });
-  appendMissionLog(run.id, "system", `Mission ${mission.title} entered planning.`);
-
-  const provider = providers[mission.provider];
-  let planResponse: Awaited<ReturnType<typeof provider.chat>>;
-  try {
-    planResponse = await provider.chat({
-      prompt: [
-        `Mission title: ${mission.title}`,
-        `Objective: ${mission.objective}`,
-        `Command request: ${mission.command}`,
-        "Respond with a short operator plan, risk note, and whether the selected provider is ready."
-      ].join("\n"),
-      model: mission.model,
-      agentId: mission.operatorId,
-      saveMemory: false
-    });
-  } catch (error) {
-    if (mission.provider === "ollama") {
-      appendMissionLog(run.id, "system", `Ollama planning unavailable. Falling back to mock planner. Reason: ${error instanceof Error ? error.message : "Unknown error."}`);
-      planResponse = await providers.mock.chat({
-        prompt: [
-          `Mission title: ${mission.title}`,
-          `Objective: ${mission.objective}`,
-          `Command request: ${mission.command}`,
-          "Provide a short fallback plan because Ollama is unavailable."
-        ].join("\n"),
-        model: "mock-agentos-local",
-        agentId: mission.operatorId,
-        saveMemory: false
-      });
-    } else {
-      const message = error instanceof Error ? error.message : "Mission planning failed.";
-      updateMissionRun(run.id, {
-        status: "failed",
-        error: message,
-        completedAt: new Date().toISOString()
-      });
-      updateMission(mission.id, { status: "failed" });
-      appendMissionLog(run.id, "stderr", message);
-      addAudit("mission.failed", mission.operatorId, message, mission.id, run.id);
-      return;
-    }
-  }
-
-  addUsageEvent({
-    provider: planResponse.provider,
-    model: planResponse.model,
-    promptTokens: Math.ceil(mission.prompt.length / 4),
-    completionTokens: Math.ceil(planResponse.response.length / 4),
-    totalTokens: Math.ceil(mission.prompt.length / 4) + Math.ceil(planResponse.response.length / 4),
-    estimatedCostUsd: 0,
-    agentId: mission.operatorId,
-    runId: run.id
-  });
-
-  appendMissionLog(run.id, "plan", planResponse.response);
-
-  const commandDecision = assessCommandPolicy(mission.command);
-  const needsApproval = commandDecision.policy === "approval_required" || permissionEscalates(mission.sandboxLevel);
-
-  if (commandDecision.policy === "denied") {
-    updateMissionRun(run.id, {
-      status: "denied",
-      error: commandDecision.reason,
-      completedAt: new Date().toISOString()
-    });
-    updateMission(mission.id, { status: "denied" });
-    appendMissionLog(run.id, "approval", commandDecision.reason);
-    addAudit("mission.denied", mission.operatorId, commandDecision.reason, mission.id, run.id);
-    return;
-  }
-
-  if (needsApproval) {
-    const approval = createApproval({
-      agentId: mission.operatorId,
-      missionId: mission.id,
-      sessionId: mission.sessionId,
-      runId: run.id,
-      tool: "command.execute",
-      permissionLevel: permissionEscalates(mission.sandboxLevel) ? mission.sandboxLevel : commandDecision.permissionLevel,
-      inputSummary: `Mission requests ${mission.sandboxLevel} to run "${mission.command}".`,
-      scope: "once",
-      command: mission.command
-    });
-    updateMissionRun(run.id, {
-      status: "awaiting_approval",
-      approvalRequestId: approval.id
-    });
-    updateMission(mission.id, { status: "awaiting_approval" });
-    appendMissionLog(run.id, "approval", `Control Gate paused execution. Approval ${approval.id} is pending.`);
-    return;
-  }
-
-  await continueMissionRun(run.id);
-}
-
-async function continueMissionRun(runId: string) {
-  const run = getMissionRun(runId);
-  if (!run) return undefined;
-  const mission = getMission(run.missionId);
-  if (!mission) return undefined;
-
-  updateMissionRun(run.id, { status: "running" });
-  updateMission(mission.id, { status: "running" });
-  appendMissionLog(run.id, "exec", `Executing command: ${mission.command}`);
-
-  const result = await executeThroughGateway(mission.command, mission.id, run.id);
-
-  if (result.stdout) appendMissionLog(run.id, "stdout", result.stdout);
-  if (result.stderr) appendMissionLog(run.id, "stderr", result.stderr);
-
-  if (!result.ok) {
-    updateMissionRun(run.id, {
-      status: "failed",
-      error: result.stderr || `Command failed with exit code ${result.exitCode}.`,
-      completedAt: new Date().toISOString()
-    });
-    updateMission(mission.id, { status: "failed" });
-    appendMissionLog(run.id, "result", "Mission failed during command execution.");
-    addAudit("mission.failed", mission.operatorId, `Mission failed: ${mission.title}`, mission.id, run.id);
-    return getMissionRun(run.id);
-  }
-
-  const summary = `Executed "${mission.command}" in ${result.durationMs}ms with exit code ${result.exitCode}.`;
-  updateMissionRun(run.id, {
-    status: "completed",
-    resultSummary: summary,
-    completedAt: new Date().toISOString()
-  });
-  updateMission(mission.id, { status: "completed" });
-  appendMissionLog(run.id, "result", summary);
-  createMissionResultMemory({
-    missionId: mission.id,
-    runId: run.id,
-    agentId: mission.operatorId,
-    title: `Mission result: ${mission.title}`,
-    content: `${summary}\n\n${result.stdout || "No stdout output."}`,
-    tags: ["mission", "command", mission.command]
-  });
-  addAudit("mission.completed", mission.operatorId, `Mission completed: ${mission.title}`, mission.id, run.id);
-  return getMissionRun(run.id);
 }
 
 app.get("/health", async () => ({
@@ -256,25 +73,34 @@ app.get("/health", async () => ({
   timestamp: new Date().toISOString()
 }));
 
-app.get("/dashboard", async () => ({
-  agents: store.agents,
-  missions: store.missions,
-  runs: store.missionRuns,
-  approvals: store.approvals,
-  audit: store.auditEvents,
-  archive: store.memories,
-  routines: store.routines,
-  loadout: store.loadout,
-  sessions: store.sessions,
-  usage: usageSummary(),
-  system: {
-    api: "online",
-    worker: "online",
-    gateway: "online",
-    discordMode: process.env.DISCORD_BOT_TOKEN ? "real" : "mock",
-    providerMode: getProviderId() === "mock" ? "mock" : "real"
-  }
-}));
+app.get("/dashboard", async () => {
+  const database = getDatabaseSnapshot();
+  return {
+    workspaces: database.workspaces,
+    operators: database.operators,
+    agents: database.agents,
+    missions: database.missions,
+    runs: database.missionRuns,
+    approvals: database.approvals,
+    audit: database.auditEvents,
+    archive: database.memories,
+    routines: database.routines,
+    loadout: database.loadout,
+    sessions: database.sessions,
+    quickActions: database.quickActions,
+    chatThreads: database.chatThreads,
+    chatMessages: database.chatMessages.slice(-120),
+    routingDecisions: database.routingDecisions,
+    usage: usageSummary(),
+    system: {
+      api: "online",
+      worker: "online",
+      gateway: "online",
+      discordMode: process.env.DISCORD_BOT_TOKEN ? "real" : "mock",
+      providerMode: getProviderId() === "mock" ? "mock" : "real"
+    }
+  };
+});
 
 app.get("/policy/check", async (request) => {
   const query = request.query as { command?: string; sandboxLevel?: SandboxPermissionLevel };
@@ -313,17 +139,25 @@ app.get("/providers/status", async () => {
 });
 
 app.get("/operators", async () => store.agents);
+app.get("/workspaces", async () => store.workspaces);
+app.get("/users", async () => store.operators);
+
 app.get("/missions", async () => store.missions);
 app.post("/missions", async (request) => {
   const body = request.body as Partial<MissionRecord>;
-  const chosen = chooseAgentForMission(productionTeam, {
+  const chosen = chooseAgentForMission([], {
     title: body.title ?? "Untitled mission",
     objective: body.objective ?? "Run a local mission.",
     command: body.command ?? "git status"
   });
+  const thread = createChatThread({
+    title: body.title ? `${body.title} Control Thread` : "AgentOS Control Thread",
+    scope: "mission"
+  });
   return createMission({
     ...body,
     operatorId: body.operatorId ?? chosen?.id ?? "agentos-operator",
+    activeThreadId: body.activeThreadId ?? thread.id,
     status: "draft"
   });
 });
@@ -336,10 +170,11 @@ app.post("/missions/:id/run", async (request, reply) => {
   const mission = getMission((request.params as { id: string }).id);
   if (!mission) return reply.code(404).send({ error: "Mission not found" });
   const session = ensureSessionForMission(mission);
-
   const run = createMissionRun({
+    workspaceId: mission.workspaceId,
     missionId: mission.id,
     sessionId: session.id,
+    requestedByOperatorId: mission.requestedByOperatorId,
     operatorId: mission.operatorId,
     provider: mission.provider,
     model: mission.model,
@@ -347,9 +182,8 @@ app.post("/missions/:id/run", async (request, reply) => {
     commandPolicy: mission.commandPolicy,
     requestedCommand: mission.command
   });
-
-  void runMissionExecution(run.id);
-  return { mission: getMission(mission.id), run };
+  const result = await processRun(run.id);
+  return { mission: getMission(mission.id), run: getMissionRun(run.id), result };
 });
 
 app.get("/runs", async () => store.missionRuns);
@@ -366,11 +200,23 @@ app.get("/runs/:id/logs", async (request, reply) => {
 app.post("/runs/:id/continue", async (request, reply) => {
   const run = getMissionRun((request.params as { id: string }).id);
   if (!run) return reply.code(404).send({ error: "Run not found" });
-  if (run.status !== "awaiting_approval") {
-    return reply.code(409).send({ error: "Run is not waiting on approval." });
-  }
-  void continueMissionRun(run.id);
-  return { run: getMissionRun(run.id) };
+  const result = await continueMissionRunAfterApproval(run.id);
+  return { run: getMissionRun(run.id), result };
+});
+app.post("/runs/:id/pause", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  return pauseMissionRun(run.id);
+});
+app.post("/runs/:id/resume", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  return resumeMissionRun(run.id);
+});
+app.post("/runs/:id/retry", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  return retryMissionRun(run.id);
 });
 
 app.get("/routines", async () => store.routines);
@@ -389,6 +235,8 @@ app.post("/routines/:id/run", async (request, reply) => {
   const routine = getRoutine((request.params as { id: string }).id);
   if (!routine) return reply.code(404).send({ error: "Routine not found" });
   const mission = createMission({
+    workspaceId: routine.workspaceId,
+    requestedByOperatorId: routine.requestedByOperatorId,
     title: routine.title,
     objective: routine.objective,
     prompt: routine.prompt,
@@ -396,7 +244,7 @@ app.post("/routines/:id/run", async (request, reply) => {
     sandboxLevel: routine.sandboxLevel,
     provider: routine.provider,
     model: routine.model,
-    operatorId: chooseAgentForMission(productionTeam, {
+    operatorId: chooseAgentForMission([], {
       title: routine.title,
       objective: routine.objective,
       command: routine.command
@@ -404,8 +252,10 @@ app.post("/routines/:id/run", async (request, reply) => {
   });
   const session = ensureSessionForMission(mission);
   const run = createMissionRun({
+    workspaceId: mission.workspaceId,
     missionId: mission.id,
     sessionId: session.id,
+    requestedByOperatorId: mission.requestedByOperatorId,
     operatorId: mission.operatorId,
     provider: mission.provider,
     model: mission.model,
@@ -418,25 +268,24 @@ app.post("/routines/:id/run", async (request, reply) => {
     lastRunAt: new Date().toISOString(),
     status: "running"
   });
-  void runMissionExecution(run.id);
-  return { mission, run, routine: getRoutine(routine.id) };
+  const result = await processRun(run.id);
+  return { mission, run: getMissionRun(run.id), routine: getRoutine(routine.id), result };
 });
+
 app.get("/loadout", async () => store.loadout);
 app.get("/sessions", async () => store.sessions);
 app.post("/sessions", async (request) => createSession(request.body as Record<string, unknown>));
 app.post("/sessions/:id/pause", async (request, reply) => {
   const session = getSession((request.params as { id: string }).id);
   if (!session) return reply.code(404).send({ error: "Session not found" });
-  return updateSession(session.id, { status: "paused", summary: `Paused ${session.title}.` });
+  if (session.latestRunId) return pauseMissionRun(session.latestRunId);
+  return { ok: false, summary: "Session has no run to pause." };
 });
 app.post("/sessions/:id/resume", async (request, reply) => {
   const session = getSession((request.params as { id: string }).id);
   if (!session) return reply.code(404).send({ error: "Session not found" });
-  return updateSession(session.id, {
-    status: "active",
-    resumedAt: new Date().toISOString(),
-    summary: `Resumed ${session.title}.`
-  });
+  if (session.latestRunId) return resumeMissionRun(session.latestRunId);
+  return { ok: false, summary: "Session has no run to resume." };
 });
 
 app.get("/agents", async () => store.agents);
@@ -449,7 +298,7 @@ app.get("/agents/:id", async (request, reply) => {
 app.get("/tasks", async () => store.tasks);
 app.post("/tasks", async (request) => createTask(request.body as Record<string, string>));
 app.get("/tasks/:id", async (request, reply) => {
-  const task = store.tasks.find((item) => item.id === (request.params as { id: string }).id);
+  const task = getTask((request.params as { id: string }).id);
   if (!task) return reply.code(404).send({ error: "Task not found" });
   return task;
 });
@@ -470,17 +319,25 @@ app.post("/tasks/:id/run", async (request, reply) => {
     });
     completeTask(id, result.response);
     addAudit("task.completed", task.assignedAgentId ?? "agentos-operator", `Completed task: ${task.title}`);
-    store.memories.unshift(
-      createMemory({
-        type: "task_memory",
-        title: `Task result: ${task.title}`,
-        content: result.response,
-        taskId: task.id,
-        agentId: task.assignedAgentId,
-        source: result.provider
-      })
-    );
-    return { task: getTask(id), llm: result };
+    const memory = persistMemory({
+      type: "task_memory",
+      title: `Task result: ${task.title}`,
+      content: result.response,
+      taskId: task.id,
+      agentId: task.assignedAgentId,
+      source: result.provider,
+      tags: ["task", "result"],
+      importance: 6,
+      archived: false
+    });
+    createChatMessage({
+      threadId: store.chatThreads[0]?.id ?? "thread-local-command-center",
+      role: "system",
+      content: `Task completed: ${task.title}`,
+      operatorId: task.assignedAgentId
+    });
+    addAudit("archive.entry_written", task.assignedAgentId ?? "agentos-operator", `Stored task result for ${task.title}`);
+    return { task: getTask(id), llm: result, memory };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown task execution failure.";
     failTask(id, message);
@@ -492,8 +349,8 @@ app.post("/tasks/:id/run", async (request, reply) => {
 app.get("/archive", async () => store.memories);
 app.get("/memory", async () => store.memories);
 app.post("/memory", async (request) => {
-  const memory = createMemory(request.body as Parameters<typeof createMemory>[0]);
-  store.memories.unshift(memory);
+  const body = request.body as Omit<Parameters<typeof persistMemory>[0], "workspaceId" | "id" | "createdAt" | "updatedAt">;
+  const memory = persistMemory(body);
   return memory;
 });
 app.post("/memory/search", async (request) => {
@@ -501,10 +358,8 @@ app.post("/memory/search", async (request) => {
   return searchMemories(store.memories, body.query ?? "");
 });
 app.post("/memory/:id/archive", async (request, reply) => {
-  const memory = store.memories.find((item) => item.id === (request.params as { id: string }).id);
+  const memory = archiveMemoryEntry((request.params as { id: string }).id);
   if (!memory) return reply.code(404).send({ error: "Memory not found" });
-  memory.archived = true;
-  memory.updatedAt = new Date().toISOString();
   return memory;
 });
 
@@ -537,31 +392,35 @@ app.post("/usage/mock-event", async (request, reply) => {
 app.get("/approvals", async () => store.approvals);
 app.get("/control-gate", async () => ({
   pending: listPendingApprovals(),
-  recent: store.approvals.slice(0, 20)
+  recent: store.approvals.slice(0, 20),
+  quickActions: listQuickActions().filter((action) => !action.consumedAt)
 }));
-app.post("/approvals/:id/approve-once", async (request, reply) => {
-  const approval = resolveApproval((request.params as { id: string }).id, "approved", "once");
-  if (!approval) return reply.code(404).send({ error: "Approval not found" });
-  return { approval };
+app.post("/approvals/:id/approve-once", async (request, reply) => resolveApprovalDecision((request.params as { id: string }).id, "approved", "once", store.operators[0]?.id ?? "operator-local"));
+app.post("/approvals/:id/approve-for-mission", async (request, reply) =>
+  resolveApprovalDecision((request.params as { id: string }).id, "approved", "mission", store.operators[0]?.id ?? "operator-local")
+);
+app.post("/approvals/:id/deny", async (request, reply) => resolveApprovalDecision((request.params as { id: string }).id, "denied", undefined, store.operators[0]?.id ?? "operator-local"));
+
+app.get("/quick-actions", async () => listQuickActions());
+app.post("/quick-actions/:id/consume", async (request, reply) => {
+  const action = getQuickAction((request.params as { id: string }).id);
+  if (!action) return reply.code(404).send({ error: "Quick action not found" });
+  return executeQuickAction(action.id, store.operators[0]?.id ?? "operator-local");
 });
-app.post("/approvals/:id/approve-for-mission", async (request, reply) => {
-  const approval = resolveApproval((request.params as { id: string }).id, "approved", "mission");
-  if (!approval) return reply.code(404).send({ error: "Approval not found" });
-  return { approval };
+
+app.get("/chat/threads", async () => listChatThreads());
+app.post("/chat/threads", async (request) => createChatThread(request.body as Record<string, unknown>));
+app.get("/chat/threads/:id/messages", async (request, reply) => {
+  const thread = getChatThread((request.params as { id: string }).id);
+  if (!thread) return reply.code(404).send({ error: "Thread not found" });
+  return listChatMessages(thread.id);
 });
-app.post("/approvals/:id/deny", async (request, reply) => {
-  const approval = resolveApproval((request.params as { id: string }).id, "denied");
-  if (!approval) return reply.code(404).send({ error: "Approval not found" });
-  const run = approval.runId ? getMissionRun(approval.runId) : undefined;
-  if (run) {
-    updateMissionRun(run.id, {
-      status: "denied",
-      error: "Control Gate denied the request.",
-      completedAt: new Date().toISOString()
-    });
-    appendMissionLog(run.id, "approval", "Control Gate denied the request.");
-  }
-  return { approval };
+app.post("/chat/threads/:id/messages", async (request, reply) => {
+  const thread = getChatThread((request.params as { id: string }).id);
+  if (!thread) return reply.code(404).send({ error: "Thread not found" });
+  const body = request.body as { content?: string; operatorId?: string };
+  if (!body.content?.trim()) return reply.code(400).send({ error: "Message content is required." });
+  return handleChatMessage(thread.id, body.operatorId ?? thread.operatorId, body.content);
 });
 
 app.get("/audit", async () => store.auditEvents);
@@ -577,21 +436,22 @@ app.post("/llm/chat", async (request, reply) => {
     let savedMemoryId: string | undefined;
 
     if (body.saveMemory !== false) {
-      const memory = createMemory({
+      const memory = persistMemory({
         type: "tool_result",
         title: `Local AI console response (${result.model})`,
         content: result.response,
         source: result.provider,
         agentId: body.agentId,
-        tags: ["llm", "local-ai"]
+        tags: ["llm", "local-ai"],
+        importance: 5,
+        archived: false
       });
-      store.memories.unshift(memory);
       savedMemoryId = memory.id;
     }
 
     addAudit("llm.chat.completed", body.agentId ?? "agentos-operator", `Local AI response from ${result.provider}.`);
 
-    const estimatedCostUsd = result.provider === "ollama" ? 0 : 0;
+    const estimatedCostUsd = 0;
     const promptTokens = Math.ceil(body.prompt.length / 4);
     const completionTokens = Math.ceil(result.response.length / 4);
     addUsageEvent({
@@ -618,20 +478,12 @@ app.post("/llm/chat", async (request, reply) => {
 app.get("/mission/demo", async () => store.demoMission);
 app.post("/mission/demo/run", async () => {
   const mission = runDemoMission();
-  const summary =
-    "Planner drafted the brief, Builder outlined the implementation, Reviewer signed off, and AgentOS stored the mission note.";
-  store.memories.unshift(
-    createMemory({
-      type: "decision_log",
-      title: "Demo mission completed",
-      content: summary,
-      source: "demo-mission",
-      tags: ["demo", "mission"]
-    })
-  );
+  const summary = "The Office Demo is archival, but its safe playback still works for demos.";
   completeDemoMission(summary);
   return store.demoMission;
 });
+
+app.post("/worker/process", async () => processPendingMissionRuns());
 
 app.get("/system", async () => ({
   api: "online",
@@ -643,27 +495,31 @@ app.get("/system", async () => ({
     ollama: (process.env.FEATURE_OLLAMA ?? "true") === "true",
     discord: (process.env.FEATURE_DISCORD ?? "false") === "true" && Boolean(process.env.DISCORD_BOT_TOKEN),
     demoMode: (process.env.FEATURE_DEMO_MODE ?? "true") === "true",
-    cloudProviders: (process.env.FEATURE_CLOUD_PROVIDERS ?? "false") === "true",
-    toolExecution: true
+    cloudProviders: false,
+    toolExecution: true,
+    conversationalControl: true,
+    quickActions: true
   }
 }));
 
 app.get("/discord/mock", async () => ({
   mode: process.env.DISCORD_BOT_TOKEN ? "real-configured" : "mock",
   configured: Boolean(process.env.DISCORD_BOT_TOKEN),
-  commands: ["/status", "/agents", "/missions", "/health"]
+  commands: ["status summary", "show active mission", "approve that", "show details"]
 }));
 
 app.get("/events", { websocket: true }, (connection) => {
   connection.send(JSON.stringify({ event: "system.health.changed", data: { api: "online" } }));
   const timer = setInterval(() => {
+    const database = getDatabaseSnapshot();
     connection.send(
       JSON.stringify({
         event: "agentos.snapshot",
         data: {
-          approvals: listPendingApprovals(),
-          runs: store.missionRuns.slice(0, 10),
-          audit: store.auditEvents.slice(0, 10)
+          approvals: database.approvals.filter((approval) => approval.status === "pending"),
+          runs: database.missionRuns.slice(0, 10),
+          audit: database.auditEvents.slice(0, 10),
+          quickActions: database.quickActions.filter((action) => !action.consumedAt).slice(0, 10)
         }
       })
     );

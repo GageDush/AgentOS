@@ -5,16 +5,22 @@ import { startTransition, useEffect, useMemo, useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type {
   AgentProfile,
+  AgentRoutingDecisionRecord,
   ApprovalRecord,
   AuditEvent,
+  ChatMessageRecord,
+  ChatThreadRecord,
   LoadoutItem,
   MemoryRecord,
   MissionRecord,
   MissionRun,
   MissionRunLog,
+  QuickActionRecord,
   RoutineRecord,
   SandboxPermissionLevel,
-  SessionRecord
+  SessionRecord,
+  WorkspaceRecord,
+  OperatorRecord
 } from "@agentos/shared";
 
 const apiBase = process.env.NEXT_PUBLIC_AGENTOS_API_URL ?? "http://localhost:8787";
@@ -31,6 +37,8 @@ type SectionKey =
   | "settings";
 
 type DashboardPayload = {
+  workspaces: WorkspaceRecord[];
+  operators: OperatorRecord[];
   agents: AgentProfile[];
   missions: MissionRecord[];
   runs: MissionRun[];
@@ -40,6 +48,10 @@ type DashboardPayload = {
   routines: RoutineRecord[];
   loadout: LoadoutItem[];
   sessions: SessionRecord[];
+  quickActions: QuickActionRecord[];
+  chatThreads: ChatThreadRecord[];
+  chatMessages: ChatMessageRecord[];
+  routingDecisions: AgentRoutingDecisionRecord[];
   usage: {
     dailySpend: number;
     monthlySpend: number;
@@ -179,12 +191,15 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const [policyPreview, setPolicyPreview] = useState<PolicyPreview>();
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>();
   const [busyAction, setBusyAction] = useState<string>();
+  const [chatDraft, setChatDraft] = useState("show details");
   const [error, setError] = useState("");
 
   useEffect(() => {
     let mounted = true;
     const refresh = async () => {
       const nextData = await getJson<DashboardPayload>("/dashboard", {
+        workspaces: [],
+        operators: [],
         agents: [],
         missions: [],
         runs: [],
@@ -194,6 +209,10 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
         routines: [],
         loadout: [],
         sessions: [],
+        quickActions: [],
+        chatThreads: [],
+        chatMessages: [],
+        routingDecisions: [],
         usage: {
           dailySpend: 0,
           monthlySpend: 0,
@@ -280,6 +299,25 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const activeRun = useMemo(() => data?.runs.find((run) => run.id === activeRunId), [data?.runs, activeRunId]);
   const activeMission = useMemo(() => data?.missions.find((mission) => mission.latestRunId === activeRunId), [data?.missions, activeRunId]);
   const pendingApprovals = data?.approvals.filter((approval) => approval.status === "pending") ?? [];
+  const activeThread = useMemo(
+    () =>
+      data?.chatThreads.find((thread) => thread.id === activeMission?.activeThreadId) ??
+      data?.chatThreads[0],
+    [data?.chatThreads, activeMission?.activeThreadId]
+  );
+  const activeQuickActions = useMemo(
+    () =>
+      (data?.quickActions ?? []).filter(
+        (action) =>
+          !action.consumedAt &&
+          (!activeMission || action.missionId === activeMission.id || action.runId === activeRun?.id || action.approvalRequestId === activeRun?.approvalRequestId)
+      ),
+    [data?.quickActions, activeMission, activeRun]
+  );
+  const activeRoute = useMemo(
+    () => data?.routingDecisions.find((route) => route.id === activeRun?.routeDecisionId),
+    [data?.routingDecisions, activeRun?.routeDecisionId]
+  );
 
   async function refreshDashboard() {
     const nextData = await getJson<DashboardPayload>("/dashboard", data as DashboardPayload);
@@ -409,6 +447,35 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     }
   }
 
+  async function sendChatMessage() {
+    if (!activeThread || !chatDraft.trim()) return;
+    setBusyAction("send-chat");
+    setError("");
+    try {
+      await postJson(`/chat/threads/${activeThread.id}/messages`, { content: chatDraft });
+      setChatDraft("");
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Chat message failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function consumeQuickAction(actionId: string) {
+    setBusyAction(`quick-${actionId}`);
+    setError("");
+    try {
+      const payload = await postJson<{ runId?: string }>(`/quick-actions/${actionId}/consume`);
+      if (payload.runId) setActiveRunId(payload.runId);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Quick action failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
   if (!data) {
     return (
       <main className="local-shell">
@@ -463,7 +530,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
         <div className="content-grid">
           <section className="primary-column">
             {section === "dashboard" ? (
-              <DashboardView data={data} activeRun={activeRun} activeMission={activeMission} activeLogs={activeLogs} onRunMission={runMission} />
+              <DashboardView data={data} activeRun={activeRun} activeMission={activeMission} activeLogs={activeLogs} activeRoute={activeRoute} onRunMission={runMission} />
             ) : null}
             {section === "missions" ? (
               <MissionsView
@@ -512,10 +579,23 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
             <RunInspector
               mission={activeMission}
               run={activeRun}
+              route={activeRoute}
               logs={activeLogs}
               approvals={pendingApprovals}
+              quickActions={activeQuickActions}
               onResolveApproval={resolveApprovalAction}
+              onConsumeQuickAction={consumeQuickAction}
               busyAction={busyAction}
+            />
+            <ConversationPanel
+              thread={activeThread}
+              messages={data.chatMessages}
+              quickActions={activeQuickActions}
+              chatDraft={chatDraft}
+              setChatDraft={setChatDraft}
+              busyAction={busyAction}
+              onSendChat={sendChatMessage}
+              onConsumeQuickAction={consumeQuickAction}
             />
             <RecentHistory runs={data.runs} missions={data.missions} onSelectRun={setActiveRunId} activeRunId={activeRunId} />
           </aside>
@@ -604,12 +684,14 @@ function DashboardView({
   activeRun,
   activeMission,
   activeLogs,
+  activeRoute,
   onRunMission
 }: {
   data: DashboardPayload;
   activeRun?: MissionRun;
   activeMission?: MissionRecord;
   activeLogs: MissionRunLog[];
+  activeRoute?: AgentRoutingDecisionRecord;
   onRunMission: (missionId: string) => Promise<void>;
 }) {
   const pendingApprovals = data.approvals.filter((approval) => approval.status === "pending");
@@ -628,6 +710,7 @@ function DashboardView({
           <div>
             <strong>{activeMission?.objective ?? "No mission selected"}</strong>
             <p>{activeRun?.resultSummary ?? activeRun?.error ?? "This panel follows the newest run and its logs."}</p>
+            {activeRoute ? <p>Route: {activeRoute.selectedPrimaryAgentId} with {activeRoute.supportingAgentIds.length} supporting agents.</p> : null}
           </div>
           {activeMission ? (
             <button className="primary-button" onClick={() => void onRunMission(activeMission.id)}>
@@ -1102,16 +1185,22 @@ function SettingsView({ data, providerStatus }: { data: DashboardPayload; provid
 function RunInspector({
   mission,
   run,
+  route,
   logs,
   approvals,
+  quickActions,
   onResolveApproval,
+  onConsumeQuickAction,
   busyAction
 }: {
   mission?: MissionRecord;
   run?: MissionRun;
+  route?: AgentRoutingDecisionRecord;
   logs: MissionRunLog[];
   approvals: ApprovalRecord[];
+  quickActions: QuickActionRecord[];
   onResolveApproval: (approval: ApprovalRecord, mode: "approve-once" | "approve-for-mission" | "deny") => Promise<void>;
+  onConsumeQuickAction: (actionId: string) => Promise<void>;
   busyAction?: string;
 }) {
   const approval = run?.approvalRequestId ? approvals.find((item) => item.id === run.approvalRequestId) : undefined;
@@ -1139,6 +1228,16 @@ function RunInspector({
               <Snapshot label="Session" value={run.sessionId ? "linked" : "none"} copy={run.sessionId ?? "No session linked"} />
               <Snapshot label="Result" value={run.resultSummary ? "saved" : run.error ? "error" : "pending"} copy={run.resultSummary ?? run.error ?? "Still running"} />
             </div>
+            {route ? (
+              <div className="mini-log">
+                <div className="log-line">
+                  <span className="log-level log-level-plan">route</span>
+                  <span>
+                    {`${route.selectedPrimaryAgentId} -> ${route.supportingAgentIds.join(", ")} | gates: ${route.requiredGates.join(", ") || "none"}`}
+                  </span>
+                </div>
+              </div>
+            ) : null}
             {latestStdout ? (
               <div className="mini-log">
                 <div className="log-line">
@@ -1163,6 +1262,20 @@ function RunInspector({
                 </div>
               ))}
             </div>
+            {quickActions.length > 0 ? (
+              <div className="button-row">
+                {quickActions.slice(0, 6).map((action) => (
+                  <button
+                    className="ghost-button"
+                    disabled={busyAction === `quick-${action.id}`}
+                    key={action.id}
+                    onClick={() => void onConsumeQuickAction(action.id)}
+                  >
+                    {action.emoji} {action.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="empty-state">Pick a mission run from the history list.</div>
@@ -1186,6 +1299,61 @@ function RunInspector({
         </Panel>
       ) : null}
     </>
+  );
+}
+
+function ConversationPanel({
+  thread,
+  messages,
+  quickActions,
+  chatDraft,
+  setChatDraft,
+  busyAction,
+  onSendChat,
+  onConsumeQuickAction
+}: {
+  thread?: ChatThreadRecord;
+  messages: ChatMessageRecord[];
+  quickActions: QuickActionRecord[];
+  chatDraft: string;
+  setChatDraft: Dispatch<SetStateAction<string>>;
+  busyAction?: string;
+  onSendChat: () => Promise<void>;
+  onConsumeQuickAction: (actionId: string) => Promise<void>;
+}) {
+  const visibleMessages = thread ? messages.filter((message) => message.threadId === thread.id) : messages;
+  return (
+    <Panel title="Conversational Control" subtitle={thread ? thread.title : "No active thread"}>
+      <div className="mini-log">
+        {visibleMessages.slice(-6).map((message) => (
+          <div className="log-line" key={message.id}>
+            <span className={`log-level log-level-${message.role === "assistant" ? "result" : message.role === "system" ? "system" : "plan"}`}>
+              {message.role}
+            </span>
+            <span>{message.content}</span>
+          </div>
+        ))}
+      </div>
+      <label className="wide-field">
+        <span>Message</span>
+        <textarea rows={3} value={chatDraft} onChange={(event) => setChatDraft(event.target.value)} placeholder='Try "approve that", "pause it", "run QA", or "show details".' />
+      </label>
+      <div className="button-row">
+        <button className="primary-button" disabled={busyAction === "send-chat" || !thread} onClick={() => void onSendChat()}>
+          {busyAction === "send-chat" ? "Sending..." : "Send"}
+        </button>
+        {quickActions.slice(0, 4).map((action) => (
+          <button
+            className="ghost-button"
+            disabled={busyAction === `quick-${action.id}`}
+            key={action.id}
+            onClick={() => void onConsumeQuickAction(action.id)}
+          >
+            {action.emoji} {action.label}
+          </button>
+        ))}
+      </div>
+    </Panel>
   );
 }
 

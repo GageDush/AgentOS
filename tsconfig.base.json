@@ -11,11 +11,18 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@agentos/shared": ["packages/shared/src/index.ts"],
-      "@agentos/game-schema": ["packages/game-schema/src/index.ts"],
       "@agentos/agents": ["packages/agents/src/index.ts"],
+      "@agentos/config": ["packages/config/src/index.ts"],
+      "@agentos/game-schema": ["packages/game-schema/src/index.ts"],
       "@agentos/memory": ["packages/memory/src/index.ts"],
-      "@agentos/token-manager": ["packages/token-manager/src/index.ts"]
+      "@agentos/orchestrator": ["packages/orchestrator/src/index.ts"],
+      "@agentos/persistence": ["packages/persistence/src/index.ts"],
+      "@agentos/runtime": ["packages/runtime/src/index.ts"],
+      "@agentos/sandbox": ["packages/sandbox/src/index.ts"],
+      "@agentos/shared": ["packages/shared/src/index.ts"],
+      "@agentos/token-manager": ["packages/token-manager/src/index.ts"],
+      "@agentos/tools": ["packages/tools/src/index.ts"],
+      "@agentos/ui": ["packages/ui/src/index.ts"]
     }
   }
 }
