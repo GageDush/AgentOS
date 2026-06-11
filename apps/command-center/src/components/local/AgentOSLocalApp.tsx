@@ -3,6 +3,14 @@
 import Link from "next/link";
 import { startTransition, useEffect, useMemo, useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
+import {
+  apiGet,
+  apiPost,
+  discordLoginUrl,
+  fetchAuthSession,
+  logoutOperator,
+  type OperatorAuthSession
+} from "../../lib/agentos-api";
 import type {
   AgentProfile,
   AgentRoutingDecisionRecord,
@@ -23,8 +31,6 @@ import type {
   WorkspaceRecord,
   OperatorRecord
 } from "@agentos/shared";
-
-const apiBase = process.env.NEXT_PUBLIC_AGENTOS_API_URL ?? "http://localhost:8787";
 
 type SectionKey =
   | "dashboard"
@@ -145,8 +151,8 @@ const defaultDraft: MissionDraft = {
   prompt: "Review the mission, explain the command intent, and note any local risks before execution.",
   command: "pnpm typecheck",
   sandboxLevel: "workspace_write",
-  provider: "mock",
-  model: "mock-agentos-local",
+  provider: "ollama",
+  model: "qwen2.5-coder:7b",
   createGitHubIssue: false
 };
 
@@ -161,37 +167,6 @@ const defaultRoutineDraft: RoutineDraft = {
   frequency: "daily"
 };
 
-async function getJson<T>(path: string, fallback: T): Promise<T> {
-  try {
-    const response = await fetch(`${apiBase}${path}`, { cache: "no-store" });
-    if (!response.ok) return fallback;
-    return (await response.json()) as T;
-  } catch {
-    return fallback;
-  }
-}
-
-async function postJson<T>(path: string, body: unknown = {}): Promise<T> {
-  const response = await fetch(`${apiBase}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  const payload = (await response.json().catch(() => ({ error: "Request failed." }))) as T | { error?: string; message?: string };
-  if (!response.ok) {
-    const message =
-      typeof payload === "object" && payload
-        ? "error" in payload && payload.error
-          ? payload.error
-          : "message" in payload && payload.message
-            ? payload.message
-            : `Request failed with HTTP ${response.status}.`
-        : `Request failed with HTTP ${response.status}.`;
-    throw new Error(message);
-  }
-  return payload as T;
-}
-
 export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [draft, setDraft] = useState<MissionDraft>(defaultDraft);
@@ -203,11 +178,27 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const [busyAction, setBusyAction] = useState<string>();
   const [chatDraft, setChatDraft] = useState("show details");
   const [error, setError] = useState("");
+  const [operatorAuth, setOperatorAuth] = useState<OperatorAuthSession | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const refreshAuth = async () => {
+      const auth = await fetchAuthSession();
+      if (!mounted) return;
+      setOperatorAuth(auth.authenticated ? auth.session : null);
+    };
+    void refreshAuth();
+    const interval = setInterval(refreshAuth, 15000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
     const refresh = async () => {
-      const nextData = await getJson<DashboardPayload>("/dashboard", {
+      const nextData = await apiGet<DashboardPayload>("/dashboard", {
         workspaces: [],
         operators: [],
         agents: [],
@@ -259,7 +250,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     if (!activeRunId) return;
 
     const refreshLogs = async () => {
-      const logs = await getJson<MissionRunLog[]>(`/runs/${activeRunId}/logs`, []);
+      const logs = await apiGet<MissionRunLog[]>(`/runs/${activeRunId}/logs`, []);
       if (!mounted) return;
       setActiveLogs(logs);
     };
@@ -276,7 +267,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     let mounted = true;
     const refreshAux = async () => {
       const [nextPolicy, nextProviderStatus] = await Promise.all([
-        getJson<PolicyPreview>(
+        apiGet<PolicyPreview>(
           `/policy/check?command=${encodeURIComponent(draft.command)}&sandboxLevel=${encodeURIComponent(draft.sandboxLevel)}`,
           {
             decision: {
@@ -289,7 +280,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
             explanation: "Policy preview unavailable."
           }
         ),
-        getJson<ProviderStatus>("/providers/status", {
+        apiGet<ProviderStatus>("/providers/status", {
           defaultProvider: "mock",
           ollama: { available: false, message: "Ollama status unavailable." },
           mock: { available: true, message: "Mock provider is always available." }
@@ -330,7 +321,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   );
 
   async function refreshDashboard() {
-    const nextData = await getJson<DashboardPayload>("/dashboard", data as DashboardPayload);
+    const nextData = await apiGet<DashboardPayload>("/dashboard", data as DashboardPayload);
     startTransition(() => {
       setData(nextData);
       if (!activeRunId) setActiveRunId(nextData.runs[0]?.id);
@@ -342,12 +333,12 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setError("");
     try {
       const { createGitHubIssue, ...missionBody } = draft;
-      const mission = await postJson<MissionRecord>("/missions", {
+      const mission = await apiPost<MissionRecord>("/missions", {
         ...missionBody,
         createGitHubIssue,
         metadata: createGitHubIssue ? { createGitHubIssue: true } : undefined
       });
-      const runPayload = await postJson<{ run: MissionRun }>(`/missions/${mission.id}/run`);
+      const runPayload = await apiPost<{ run: MissionRun }>(`/missions/${mission.id}/run`);
       setActiveRunId(runPayload.run.id);
       await refreshDashboard();
     } catch (cause) {
@@ -361,7 +352,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`run-${missionId}`);
     setError("");
     try {
-      const payload = await postJson<{ run: MissionRun }>(`/missions/${missionId}/run`);
+      const payload = await apiPost<{ run: MissionRun }>(`/missions/${missionId}/run`);
       setActiveRunId(payload.run.id);
       await refreshDashboard();
     } catch (cause) {
@@ -382,9 +373,9 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
             ? `/approvals/${approval.id}/approve-for-mission`
             : `/approvals/${approval.id}/deny`;
 
-      await postJson(endpoint);
+      await apiPost(endpoint);
       if (mode !== "deny" && approval.runId) {
-        await postJson(`/runs/${approval.runId}/continue`);
+        await apiPost(`/runs/${approval.runId}/continue`);
         setActiveRunId(approval.runId);
       }
       await refreshDashboard();
@@ -399,7 +390,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction("create-routine");
     setError("");
     try {
-      await postJson("/routines", routineDraft);
+      await apiPost("/routines", routineDraft);
       setRoutineDraft(defaultRoutineDraft);
       await refreshDashboard();
     } catch (cause) {
@@ -413,7 +404,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`toggle-routine-${routineId}`);
     setError("");
     try {
-      await postJson(`/routines/${routineId}/toggle`);
+      await apiPost(`/routines/${routineId}/toggle`);
       await refreshDashboard();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Routine update failed.");
@@ -426,7 +417,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`run-routine-${routineId}`);
     setError("");
     try {
-      const payload = await postJson<{ run: MissionRun }>(`/routines/${routineId}/run`);
+      const payload = await apiPost<{ run: MissionRun }>(`/routines/${routineId}/run`);
       setActiveRunId(payload.run.id);
       await refreshDashboard();
     } catch (cause) {
@@ -440,7 +431,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`pause-session-${sessionId}`);
     setError("");
     try {
-      await postJson(`/sessions/${sessionId}/pause`);
+      await apiPost(`/sessions/${sessionId}/pause`);
       await refreshDashboard();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Session pause failed.");
@@ -453,7 +444,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`resume-session-${sessionId}`);
     setError("");
     try {
-      await postJson(`/sessions/${sessionId}/resume`);
+      await apiPost(`/sessions/${sessionId}/resume`);
       await refreshDashboard();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Session resume failed.");
@@ -467,7 +458,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction("send-chat");
     setError("");
     try {
-      await postJson(`/chat/threads/${activeThread.id}/messages`, { content: chatDraft });
+      await apiPost(`/chat/threads/${activeThread.id}/messages`, { content: chatDraft });
       setChatDraft("");
       await refreshDashboard();
     } catch (cause) {
@@ -481,7 +472,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     setBusyAction(`quick-${actionId}`);
     setError("");
     try {
-      const payload = await postJson<{ runId?: string }>(`/quick-actions/${actionId}/consume`);
+      const payload = await apiPost<{ runId?: string }>(`/quick-actions/${actionId}/consume`);
       if (payload.runId) setActiveRunId(payload.runId);
       await refreshDashboard();
     } catch (cause) {
@@ -519,6 +510,13 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
           </Link>
         </nav>
         <div className="nav-meta">
+          <OperatorAuthCard
+            session={operatorAuth}
+            onLogout={async () => {
+              await logoutOperator();
+              setOperatorAuth(null);
+            }}
+          />
           <StatPill label="API" value={data.system.api} />
           <StatPill label="Gateway" value={data.system.gateway} />
           <StatPill label="Provider" value={data.system.providerMode} />
@@ -660,6 +658,44 @@ function descriptionForSection(section: SectionKey) {
     default:
       return "AgentOS Local stays mock-first, local-safe, and ready for Ollama when you want it.";
   }
+}
+
+function OperatorAuthCard({
+  session,
+  onLogout
+}: {
+  session: OperatorAuthSession | null;
+  onLogout: () => Promise<void>;
+}) {
+  if (!session) {
+    return (
+      <div className="operator-auth-card">
+        <p className="operator-auth-kicker">Operator access</p>
+        <p className="operator-auth-copy">Sign in with Discord to link your operator session across app and API.</p>
+        <a className="operator-auth-button" href={discordLoginUrl()}>
+          Continue with Discord
+        </a>
+      </div>
+    );
+  }
+
+  const displayName = session.globalName ?? session.username;
+  return (
+    <div className="operator-auth-card operator-auth-card-signed-in">
+      <p className="operator-auth-kicker">Signed in</p>
+      <strong className="operator-auth-name">{displayName}</strong>
+      <span className="operator-auth-handle">@{session.username}</span>
+      <button
+        className="operator-auth-logout"
+        type="button"
+        onClick={() => {
+          void onLogout();
+        }}
+      >
+        Sign out
+      </button>
+    </div>
+  );
 }
 
 function StatPill({ label, value }: { label: string; value: string }) {

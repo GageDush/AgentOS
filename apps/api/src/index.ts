@@ -1,3 +1,7 @@
+import { loadRepoEnv } from "./load-env";
+
+loadRepoEnv();
+
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
@@ -20,6 +24,22 @@ import { findRepoRoot } from "@agentos/persistence";
 import { evaluateBudget, evaluateQuotaSteward } from "@agentos/token-manager";
 import { getProviderId, providers } from "./providers";
 import { createGitHubMissionIssue } from "./github";
+import { renderAuthLoginRequiredPage, renderAuthMePage, renderAuthSuccessPage } from "./auth-pages";
+import {
+  buildDiscordAuthorizeUrl,
+  createDiscordOperatorSession,
+  getDiscordOAuthSuccessRedirect,
+  isDiscordOAuthConfigured
+} from "./discord-auth";
+import {
+  buildSessionCookie,
+  clearSessionCookie,
+  createOAuthState,
+  createSessionToken,
+  readCookieValue,
+  readSessionToken,
+  sessionCookieName
+} from "./session";
 import {
   addAudit,
   addBudget,
@@ -68,7 +88,7 @@ function quotaStatus() {
   });
 }
 
-await app.register(cors, { origin: true });
+await app.register(cors, { origin: true, credentials: true });
 await app.register(websocket);
 
 function permissionEscalates(level: SandboxPermissionLevel) {
@@ -147,6 +167,88 @@ app.get("/providers/status", async () => {
     ollama,
     mock: { available: true, message: "Mock provider is always available." }
   };
+});
+
+app.get("/auth/discord", async (request, reply) => {
+  if (!isDiscordOAuthConfigured()) {
+    return reply.code(503).send({ error: "Discord OAuth is not configured." });
+  }
+  const state = createOAuthState();
+  reply.header("Set-Cookie", `agentos_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600`);
+  return reply.redirect(buildDiscordAuthorizeUrl(state));
+});
+
+app.get("/auth/discord/callback", async (request, reply) => {
+  if (!isDiscordOAuthConfigured()) {
+    return reply.code(503).send({ error: "Discord OAuth is not configured." });
+  }
+  const query = request.query as { code?: string; state?: string; error?: string };
+  if (query.error) {
+    return reply.code(400).send({ error: query.error });
+  }
+  const expectedState = readCookieValue(request.headers.cookie, "agentos_oauth_state");
+  if (!query.code || !query.state || !expectedState || query.state !== expectedState) {
+    return reply.code(400).send({ error: "Invalid OAuth state." });
+  }
+  try {
+    const session = await createDiscordOperatorSession(query.code);
+    const token = createSessionToken(session);
+    reply.header("Set-Cookie", [
+      buildSessionCookie(token),
+      "agentos_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0"
+    ]);
+    return reply.redirect(getDiscordOAuthSuccessRedirect());
+  } catch (error) {
+    return reply.code(502).send({
+      error: error instanceof Error ? error.message : "Discord OAuth callback failed."
+    });
+  }
+});
+
+function publicApiBaseUrl() {
+  const port = process.env.AGENTOS_API_PORT ?? 8787;
+  return process.env.AGENTOS_API_BASE_URL?.trim() || `http://127.0.0.1:${port}`;
+}
+
+function prefersHtmlResponse(acceptHeader?: string) {
+  if (!acceptHeader) return false;
+  return acceptHeader.includes("text/html") && !acceptHeader.includes("application/json");
+}
+
+app.get("/auth/success", async (request, reply) => {
+  const token = readCookieValue(request.headers.cookie, sessionCookieName());
+  const session = readSessionToken(token);
+  const appUrl = process.env.AGENTOS_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
+  reply.type("text/html; charset=utf-8");
+  if (!session) {
+    return renderAuthLoginRequiredPage(publicApiBaseUrl());
+  }
+  return renderAuthSuccessPage(session, appUrl);
+});
+
+app.get("/auth/me", async (request, reply) => {
+  const token = readCookieValue(request.headers.cookie, sessionCookieName());
+  const session = readSessionToken(token);
+  const appUrl = process.env.AGENTOS_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
+  if (!session) {
+    if (prefersHtmlResponse(request.headers.accept)) {
+      reply.type("text/html; charset=utf-8");
+      return reply.code(401).send(renderAuthLoginRequiredPage(publicApiBaseUrl()));
+    }
+    return reply.code(401).send({ authenticated: false });
+  }
+  if (prefersHtmlResponse(request.headers.accept)) {
+    reply.type("text/html; charset=utf-8");
+    return renderAuthMePage(session, appUrl);
+  }
+  return { authenticated: true, session };
+});
+
+app.get("/", async (_request, reply) => reply.redirect("/auth/success"));
+
+app.post("/auth/logout", async (_request, reply) => {
+  reply.header("Set-Cookie", clearSessionCookie());
+  return { ok: true };
 });
 
 app.get("/operators", async () => store.agents);
