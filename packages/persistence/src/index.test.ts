@@ -470,11 +470,112 @@ describe("json fallback adapter", () => {
 });
 
 describe("postgres adapter scaffold", () => {
-  it("matches the repository contract surface with explicit unsupported behavior", () => {
+  const bundleMethods = [
+    "createMissionBundle",
+    "recordRouteDecisionBundle",
+    "createApprovalRequestBundle",
+    "resolveApprovalDecisionBundle",
+    "consumeQuickActionBundle",
+    "completeRunBundle",
+    "failRunBundle",
+    "pauseRunBundle",
+    "resumeRunBundle",
+    "retryRunBundle",
+    "startRunExecutionBundle",
+    "appendChatExchangeBundle"
+  ] as const;
+
+  it("exposes the full PersistenceAdapter method surface", () => {
     const adapter = new PostgresPersistenceAdapter();
-    expect(typeof adapter.createMissionBundle).toBe("function");
-    expect(typeof adapter.pauseRunBundle).toBe("function");
-    expect(typeof adapter.appendChatExchangeBundle).toBe("function");
-    expect(() => adapter.snapshot()).toThrow(/host-ready scaffold/i);
+    for (const method of bundleMethods) {
+      expect(typeof adapter[method]).toBe("function");
+    }
+    expect(typeof adapter.claimNextQueuedRun).toBe("function");
+    expect(adapter.filePath).toMatch(/^postgres:\/\//);
+  });
+
+  it("serves read-only snapshot paths without throwing", () => {
+    const adapter = new PostgresPersistenceAdapter();
+    expect(() => adapter.snapshot()).not.toThrow();
+    expect(() => adapter.listWorkspaces()).not.toThrow();
+    expect(() => adapter.listOperators()).not.toThrow();
+    expect(() => adapter.getMissionById("mission-missing")).not.toThrow();
+    expect(() => adapter.listMissionsForWorkspace("workspace-default")).not.toThrow();
+    expect(() => adapter.getMissionRunById("run-missing")).not.toThrow();
+    expect(() => adapter.listMissionLogs("run-missing")).not.toThrow();
+    expect(() => adapter.listPendingApprovals()).not.toThrow();
+    expect(() => adapter.listAuditEvents()).not.toThrow();
+    expect(() => adapter.getRoutineById("routine-missing")).not.toThrow();
+    expect(() => adapter.getSessionById("session-missing")).not.toThrow();
+    expect(() => adapter.listRoutingDecisionsForMission("mission-missing")).not.toThrow();
+    expect(() => adapter.listUsageEvents()).not.toThrow();
+    expect(() => adapter.listBudgets()).not.toThrow();
+    expect(() => adapter.listChatThreads()).not.toThrow();
+    expect(() => adapter.listChatMessages("thread-missing")).not.toThrow();
+    expect(() => adapter.listQuickActions()).not.toThrow();
+
+    const snapshot = adapter.snapshot();
+    expect(snapshot.schemaVersion).toBeGreaterThan(0);
+    expect(Array.isArray(snapshot.workspaces)).toBe(true);
+  });
+
+  it("returns a structured not-connected result for hosted lease claims", () => {
+    const adapter = new PostgresPersistenceAdapter();
+    const result = adapter.claimNextQueuedRun({
+      workerId: "worker-1",
+      maxAttempts: 3,
+      leaseDurationMs: 30_000
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.reason).toMatch(/AGENTOS_DATABASE_URL/i);
+    }
+  });
+
+  it("uses documented bundle scaffolds instead of blanket unsupported errors", () => {
+    const adapter = new PostgresPersistenceAdapter();
+    expect(() =>
+      adapter.createMissionBundle({
+        mission: { title: "Hosted mission" }
+      })
+    ).toThrow(/createMissionBundle.*AGENTOS_DATABASE_URL/i);
+    expect(() =>
+      adapter.recordRouteDecisionBundle({
+        missionId: "mission-1",
+        routeDecision: {
+          id: "route-1",
+          workspaceId: "workspace-default",
+          missionId: "mission-1",
+          taskType: "code_change",
+          complexity: "simple",
+          riskLevel: "low",
+          selectedPrimaryAgentId: "agent-1",
+          supportingAgentIds: [],
+          skippedAgents: [],
+          requiredGates: [],
+          providerLane: "mock_local",
+          routeConfidence: 1,
+          reason: "test",
+          createdAt: new Date().toISOString()
+        }
+      })
+    ).toThrow(/recordRouteDecisionBundle.*Planned SQL/i);
+    expect(() =>
+      adapter.resolveApprovalDecisionBundle({
+        approvalId: "approval-1",
+        status: "approved",
+        operatorId: "operator-1"
+      })
+    ).toThrow(/resolveApprovalDecisionBundle/i);
+  });
+
+  it("still defers non-scaffolded bundle helpers with not-implemented errors", () => {
+    const adapter = new PostgresPersistenceAdapter();
+    expect(() =>
+      adapter.pauseRunBundle({
+        runId: "run-1",
+        actor: "operator-1"
+      })
+    ).toThrow(/not implemented/i);
   });
 });
