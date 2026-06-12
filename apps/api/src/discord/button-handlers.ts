@@ -1,4 +1,5 @@
 import { resolveApprovalDecision, executeRichQuickAction } from "@agentos/runtime";
+import type { AgentRichMessageScope } from "@agentos/shared";
 import type { ApprovalRecord } from "@agentos/shared";
 import { getTask, listPendingApprovals, store } from "../store";
 import { parseCustomId } from "./components";
@@ -211,7 +212,7 @@ export async function handleButtonPress(
 
   const richActionType = richActionTypeFromDiscordAction(action);
   if (richActionType) {
-    const scope = richActionScopeFromButton(action, targetId);
+    const scope = enrichRichActionScope(richActionScopeFromButton(action, targetId));
     const result = await executeRichQuickAction({
       actionType: richActionType,
       operatorId,
@@ -242,6 +243,22 @@ export async function handleButtonPress(
     tone: "warning",
     ephemeral: true
   });
+}
+
+function enrichRichActionScope(scope: AgentRichMessageScope): AgentRichMessageScope {
+  if (!scope.approvalRequestId) {
+    return scope;
+  }
+  const approval = store.approvals.find((item) => item.id === scope.approvalRequestId);
+  if (!approval) {
+    return scope;
+  }
+  return {
+    ...scope,
+    missionId: scope.missionId ?? approval.missionId,
+    runId: scope.runId ?? approval.runId,
+    correlationId: scope.correlationId ?? approval.correlationId
+  };
 }
 
 export function approvalActionButtons(approval: ApprovalRecord) {

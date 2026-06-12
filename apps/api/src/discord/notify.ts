@@ -1,37 +1,83 @@
 import type { ApprovalRecord, AuditEvent, AgentTask } from "@agentos/shared";
+import { buildAgentDiscordEmbed } from "@agentos/shared";
 import { listPendingApprovals, store } from "../store";
-import { approvalActionButtons } from "./button-handlers";
+import { buildAgentRichMessageInput } from "./agent-profiles";
+import { loadDiscordGuildState } from "./bootstrap";
 import { isDiscordBotEnabled } from "./client";
-import { hasNotifiedApproval, markApprovalNotified } from "./registry";
+import { hasNotifiedApproval, markApprovalNotified, registerDiscordMessage } from "./registry";
+import { buildRichQuickActionRows } from "./rich-action-buttons";
 import { sendAgentMessage } from "./messenger";
+import { postPersonaRichMessage } from "./webhook-post";
+
+function approvalsWebhook() {
+  return loadDiscordGuildState()?.webhooks?.approvals;
+}
+
+function approvalRichScope(approval: ApprovalRecord) {
+  return {
+    approvalRequestId: approval.id,
+    ...(approval.missionId ? { missionId: approval.missionId } : {}),
+    ...(approval.runId ? { runId: approval.runId } : {}),
+    ...(approval.correlationId ? { correlationId: approval.correlationId } : {})
+  };
+}
+
+function buildApprovalGateMessage(approval: ApprovalRecord) {
+  const lines = [
+    "An agent is requesting elevated execution authority.",
+    "",
+    `**Tool:** \`${approval.tool}\``,
+    `**Permission:** \`${approval.permissionLevel}\``,
+    ...(approval.command ? [`**Command:** \`${approval.command}\``] : []),
+    "",
+    approval.inputSummary.slice(0, 900)
+  ];
+  return lines.join("\n");
+}
 
 export async function notifyApprovalGate(approval: ApprovalRecord) {
   if (!isDiscordBotEnabled() || hasNotifiedApproval(approval.id)) {
-    return { ok: false, reason: "skipped" };
+    return { ok: false as const, reason: "skipped" };
   }
 
-  const result = await sendAgentMessage({
-    channel: "approvals",
+  const webhook = approvalsWebhook();
+  if (!webhook) {
+    return { ok: false as const, reason: "no-webhook" };
+  }
+
+  const scope = approvalRichScope(approval);
+  const richInput = {
+    agentId: "admin-agent" as const,
+    recipient: "Operator",
+    message: buildApprovalGateMessage(approval),
+    status: { label: "Control gate request", routing: "AgentOS Local" as const },
+    scope
+  };
+  const richMessage = buildAgentRichMessageInput(richInput);
+  const embedSnapshot = buildAgentDiscordEmbed(richMessage).embeds[0];
+  const componentsSnapshot = buildRichQuickActionRows(scope, listPendingApprovals());
+
+  const message = await postPersonaRichMessage(webhook, richInput);
+
+  registerDiscordMessage(message.id, {
+    channelId: message.channel_id,
     kind: "approval",
     entityId: approval.id,
-    agentId: approval.agentId,
-    title: "Control gate request",
-    description: "An agent is requesting elevated execution authority. Select a control action below.",
-    tone: "warning",
-    fields: [
-      { name: "Tool", value: approval.tool, inline: true },
-      { name: "Permission", value: approval.permissionLevel, inline: true },
-      { name: "Summary", value: approval.inputSummary.slice(0, 900), inline: false },
-      ...(approval.command ? [{ name: "Command", value: `\`${approval.command}\``, inline: false }] : [])
-    ],
-    footerHint: "Operator action required",
-    actions: approvalActionButtons(approval)
+    embedSnapshot,
+    componentsSnapshot
   });
 
-  if (result.ok) {
-    markApprovalNotified(approval.id);
-  }
-  return result;
+  markApprovalNotified(approval.id);
+  return {
+    ok: true as const,
+    mode: "webhook" as const,
+    messageId: message.id,
+    channelId: message.channel_id
+  };
+}
+
+export function queueDiscordApproval(approval: ApprovalRecord) {
+  void notifyApprovalGate(approval).catch(() => undefined);
 }
 
 export async function syncPendingApprovalsToDiscord() {
