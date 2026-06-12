@@ -891,7 +891,7 @@
         "flow"
       ],
       "path": "flows/cursor-memory.md",
-      "updatedAt": "2026-06-12T14:40:53.870Z",
+      "updatedAt": "2026-06-12T15:09:47.426Z",
       "archived": false
     },
     "flows/memory-curator": {
@@ -1272,7 +1272,7 @@
         "chat"
       ],
       "path": "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a.md",
-      "updatedAt": "2026-06-12T13:43:30.916Z",
+      "updatedAt": "2026-06-12T14:59:57.546Z",
       "archived": false
     },
     "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": {
@@ -1284,7 +1284,7 @@
         "chat"
       ],
       "path": "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961.md",
-      "updatedAt": "2026-06-12T14:39:53.810Z",
+      "updatedAt": "2026-06-12T15:08:47.360Z",
       "archived": false
     },
     "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": {
@@ -1428,7 +1428,7 @@
         "index"
       ],
       "path": "sessions/cursor/index.md",
-      "updatedAt": "2026-06-12T14:40:53.870Z",
+      "updatedAt": "2026-06-12T15:09:47.426Z",
       "archived": false
     },
     "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319": {
@@ -2283,10 +2283,10 @@
     ],
     "flows/cursor-memory": [
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
       "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
       "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
-      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
       "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
@@ -2627,7 +2627,6 @@
       "index"
     ],
     "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": [
-      "flows/pipeline",
       "packages/orchestrator",
       "packages/agents",
       "packages/runtime",
@@ -2736,10 +2735,10 @@
     ],
     "sessions/cursor/index": [
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
       "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
       "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
-      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
       "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
@@ -3229,8 +3228,7 @@
       "agents/systems-synthesizer",
       "agents/task-classifier",
       "flows/memory-curator",
-      "index",
-      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961"
+      "index"
     ],
     "packages/agents": [
       "agents/admin-agent",
@@ -3859,6 +3857,10 @@
       "flows/cursor-memory",
       "sessions/cursor/index"
     ],
+    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
     "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": [
       "flows/cursor-memory",
       "sessions/cursor/index"
@@ -3868,10 +3870,6 @@
       "sessions/cursor/index"
     ],
     "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": [
       "flows/cursor-memory",
       "sessions/cursor/index"
     ],

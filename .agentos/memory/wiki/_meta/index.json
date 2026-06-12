@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-12T14:40:53.910Z",
+  "generatedAt": "2026-06-12T15:09:47.467Z",
   "articles": [
     {
       "slug": "agents/admin-agent",
@@ -6065,10 +6065,10 @@
       ],
       "outLinks": [
         "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+        "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
         "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
         "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
         "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
-        "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
         "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
         "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
         "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
@@ -6079,7 +6079,7 @@
         "sessions/cursor/index",
         "flows/memory-curator"
       ],
-      "updatedAt": "2026-06-12T14:40:53.870Z",
+      "updatedAt": "2026-06-12T15:09:47.426Z",
       "sections": [
         {
           "heading": "Overview",
@@ -9860,7 +9860,7 @@
         "flows/cursor-memory",
         "index"
       ],
-      "updatedAt": "2026-06-12T13:43:30.916Z",
+      "updatedAt": "2026-06-12T14:59:57.546Z",
       "sections": [
         {
           "heading": "Overview",
@@ -9874,7 +9874,7 @@
         {
           "heading": "Metadata",
           "anchor": "metadata",
-          "summary": "- Messages: 68",
+          "summary": "- Messages: 70",
           "entities": []
         },
         {
@@ -9926,7 +9926,7 @@
         {
           "heading": "Recent excerpt",
           "anchor": "recent-excerpt",
-          "summary": "**User:** <user_query>",
+          "summary": "**Assistant:** Implementing hidden background startup (no terminal windows) and optional Windows logon autostart.",
           "entities": []
         },
         {
@@ -9947,7 +9947,8 @@
             "pnpm stack:stop",
             "pnpm stack:status",
             "gaged",
-            "C:\\Users\\gaged\\Documents\\AgenOS\\.agentos\\logs"
+            "C:\\Users\\gaged\\Documents\\AgenOS\\.agentos\\logs",
+            "#ops-feed"
           ]
         },
         {
@@ -9970,21 +9971,25 @@
       "entities": [
         "3d0d698f-760f-43dc-bac9-8e461a184961",
         "3d0d698f-760f-43dc-bac9-8e461a184961/3d0d698f-760f-43dc-bac9-8e461a184961.jsonl",
-        "flows/pipeline",
-        "to",
-        "-",
-        ",",
+        "extractRepoPathsFromText",
+        "packages/orchestrator/src/context-minimizer.ts",
+        "repoPaths",
+        "packages/agents/src/implementer-dispatch.ts",
+        "apps/api",
+        "scripts/bench-baseline.mjs",
+        "docs/brainstorms/",
+        "apps/api/src/discord/...",
+        "filesInScope",
+        "isMockAgentExecutionEnabled",
         "packages/orchestrator",
         "packages/agents",
         "packages/runtime",
         "packages/ui",
         "packages/shared",
         "packages/foo",
-        "packages/memory",
-        "apps/api"
+        "packages/memory"
       ],
       "outLinks": [
-        "flows/pipeline",
         "packages/orchestrator",
         "packages/agents",
         "packages/runtime",
@@ -9996,7 +10001,7 @@
         "flows/cursor-memory",
         "index"
       ],
-      "updatedAt": "2026-06-12T14:39:53.810Z",
+      "updatedAt": "2026-06-12T15:08:47.360Z",
       "sections": [
         {
           "heading": "Overview",
@@ -10010,7 +10015,7 @@
         {
           "heading": "Metadata",
           "anchor": "metadata",
-          "summary": "- Messages: 71",
+          "summary": "- Messages: 91",
           "entities": []
         },
         {
@@ -10022,16 +10027,12 @@
         {
           "heading": "Outcomes",
           "anchor": "outcomes",
-          "summary": "- Here’s how the wiki memory system is wired into the **actual agent workflow** — not as a sidecar, but as the read/write loop around every mission.",
-          "entities": []
-        },
-        {
-          "heading": "1. Ship what you have",
-          "anchor": "1-ship-what-you-have",
-          "summary": "- **Push** `1e400a36` to `origin/main` and confirm CI (bench baseline + mis",
+          "summary": "- Short answer: **install it for yourself in Cursor if you want Every’s IDE workflow — don’t wire it into AgentOS as a core dependency.** It overlaps a lot with what you’re already building, and it so",
           "entities": [
-            "1e400a36",
-            "origin/main"
+            "extractRepoPathsFromText",
+            "packages/orchestrator/src/context-minimizer.ts",
+            "repoPaths",
+            "packages/agents/src/implementer-dispatch.ts"
           ]
         },
         {
@@ -10041,6 +10042,8 @@
           "entities": [
             "apps/api",
             "scripts/bench-baseline.mjs",
+            "docs/brainstorms/",
+            "apps/api/src/discord/...",
             "packages/orchestrator",
             "packages/agents",
             "packages/runtime",
@@ -10053,32 +10056,20 @@
         {
           "heading": "Recent excerpt",
           "anchor": "recent-excerpt",
-          "summary": "**Assistant:** Adding a Memory loop section to the pipeline flow doc and updating the memory-curator flow to match current behavior.",
-          "entities": []
-        },
-        {
-          "heading": "[[flows/pipeline]] — new **Memory loop** section",
-          "anchor": "flows-pipeline-new-memory-loop-section",
-          "summary": "- Read path: orchestrator → runtime triggers → context-minimizer → manifest/section retrieval → who consumes the packet",
-          "entities": [
-            "packages/memory",
-            "flows/memory-curator",
-            "flows/test-commands"
-          ]
-        },
-        {
-          "heading": "[[flows/me",
-          "anchor": "flows-me",
           "summary": "**User:** <user_query>",
           "entities": []
         },
         {
-          "heading": "1. Ship what you have",
-          "anchor": "1-ship-what-you-have",
-          "summary": "- **Push** `1e400a36` to `origin/main` and confirm CI (bench baseline + mission smoke + tests).",
+          "heading": "Implemented (verified)",
+          "anchor": "implemented-verified",
+          "summary": "| Change | Where |",
           "entities": [
-            "1e400a36",
-            "origin/main"
+            "extractRepoPathsFromText",
+            "packages/orchestrator/src/context-minimizer.ts",
+            "repoPaths",
+            "packages/agents/src/implementer-dispatch.ts",
+            "filesInScope",
+            "isMockAgentExecutionEnabled"
           ]
         },
         {
@@ -11379,10 +11370,10 @@
       ],
       "outLinks": [
         "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+        "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
         "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
         "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
         "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
-        "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
         "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
         "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
         "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
@@ -11429,7 +11420,7 @@
         "flows/cursor-memory",
         "index"
       ],
-      "updatedAt": "2026-06-12T14:40:53.870Z",
+      "updatedAt": "2026-06-12T15:09:47.426Z",
       "sections": [
         {
           "heading": "Overview",

@@ -91,6 +91,7 @@ export async function notifyTaskCreated(task: AgentTask, operatorLabel: string) 
     title: "Task envelope created",
     description: `New work item registered from ${operatorLabel}.`,
     tone: "info",
+    lane: "Missions",
     fields: [
       { name: "Task", value: task.title, inline: false },
       { name: "Status", value: task.status, inline: true },
@@ -104,19 +105,22 @@ export async function notifyTaskCreated(task: AgentTask, operatorLabel: string) 
 }
 
 export async function notifyAuditEvent(event: AuditEvent) {
+  const gateFailed = event.event.includes("gate") && event.event.includes("fail");
   return sendAgentMessage({
     channel: "opsFeed",
     kind: "audit",
     entityId: event.id,
-    agentId: "admin-agent",
-    title: "Audit signal",
+    agentId: event.actor,
+    title: gateFailed ? "Gate failed" : "Audit signal",
     description: event.summary,
-    tone: "info",
+    tone: gateFailed ? "danger" : "info",
+    lane: "Ops Feed",
     fields: [
       { name: "Event", value: event.event, inline: true },
-      { name: "Actor", value: event.actor, inline: true }
+      { name: "Actor", value: event.actor, inline: true },
+      ...(event.missionId ? [{ name: "Mission", value: event.missionId, inline: false as const }] : [])
     ],
-    footerHint: "Logged to AgentOS audit plane"
+    footerHint: "Ops Feed"
   });
 }
 
@@ -130,6 +134,7 @@ export async function postSystemPulse() {
     title: "System pulse",
     description: "AgentOS telemetry stream is online.",
     tone: "info",
+    lane: "Status",
     fields: [
       { name: "Pending approvals", value: `${pending}`, inline: true },
       { name: "Running missions", value: `${running}`, inline: true },

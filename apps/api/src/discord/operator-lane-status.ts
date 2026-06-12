@@ -96,6 +96,7 @@ function buildStatusEmbed() {
     description: `${headline}\n\n${description}`,
     fields,
     tone,
+    lane: "Cursor",
     footerHint: status.ready ? "Ready for input" : "Cursor busy",
     showPortrait: true
   });

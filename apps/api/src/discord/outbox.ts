@@ -47,12 +47,13 @@ export async function dispatchAuditToDiscord(event: AuditEvent) {
     title: gateFailed ? "Gate failed" : "Audit signal",
     description: event.summary,
     tone: gateFailed ? "danger" : "info",
+    lane: "Ops Feed",
     fields: [
       { name: "Event", value: event.event, inline: true },
       { name: "Actor", value: event.actor, inline: true },
-      ...(event.missionId ? [{ name: "Mission", value: `\`${event.missionId}\``, inline: true }] : [])
+      ...(event.missionId ? [{ name: "Mission", value: event.missionId, inline: false }] : [])
     ],
-    footerHint: "Audit plane"
+    footerHint: "Ops Feed"
   });
 
   markNotifiedOutbox("audit", event.id);
@@ -71,13 +72,14 @@ export async function dispatchUsageToDiscord(event: UsageEvent) {
     title: "Token usage event",
     description: "Budget telemetry recorded from the AgentOS control plane.",
     tone: event.estimatedCostUsd > 0 ? "warning" : "info",
+    lane: "Token Plane",
     fields: [
       { name: "Provider", value: event.provider, inline: true },
       { name: "Model", value: event.model, inline: true },
       { name: "Tokens", value: `${event.totalTokens}`, inline: true },
       { name: "Cost", value: `$${event.estimatedCostUsd.toFixed(4)}`, inline: true }
     ],
-    footerHint: "Token plane"
+    footerHint: "Token Plane"
   });
 
   markNotifiedOutbox("usage", event.id);

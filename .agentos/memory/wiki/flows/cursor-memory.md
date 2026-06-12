@@ -11,10 +11,10 @@ Rolling digest of Cursor IDE sessions for this repo. Updated by `AGENTOS_CURSOR_
 ## Recent session themes
 
 - **Summarize all active agents in AgentOS, include all agent data and purpose in prompt cycles/agent ch** → [[sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961]]
+- **can you ge the discord running: For live replies: API must be running with FEATURE_DISCORD=true: pnp** → [[sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a]]
 - **Analyze the complete file structure, integration network, and any other system schematic profile you** → [[sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709]]
 - **Make a plan for all of the Agent profiles and routing of agents for AgentOS. Give me a map of what i** → [[sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d]]
 - **help me find free equipment to host AgentOS on. Like search facebook marketplace free stuff, or crai** → [[sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7]]
-- **can you ge the discord running: For live replies: API must be running with FEATURE_DISCORD=true: pnp** → [[sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a]]
 - **Discord Commands/Prompts** → [[sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3]]
 - **Create me a 100 step prompt pathway to completion of this project to a demo worthy state. each step ** → [[sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028]]
 - **Reply with exactly one word: pong** → [[sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13]]
