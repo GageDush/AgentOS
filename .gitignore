@@ -12,10 +12,13 @@ apps/*/dist/
 .agentos/state/*.db-wal
 .agentos/state/*.db-shm
 .agentos/state/agentos-local.json
-
-# Local AgentOS runtime state (keep profiles/contracts tracked)
-.agentos/state/*.db
-.agentos/state/*.db-wal
-.agentos/state/*.db-shm
-.agentos/state/agentos-local.json
+.agentos/state/discord-guild.json
+.agentos/state/discord-chat-rooms.json
+.agentos/state/discord-registry.json
 .agentos/stops/
+
+# Local AgentOS backups (zipped runtime snapshots; may contain .env)
+.agentos/backups/
+
+# TypeScript incremental build info
+*.tsbuildinfo

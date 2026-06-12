@@ -5,7 +5,7 @@
 
 .DESCRIPTION
   - Creates tunnel "agentos" (idempotent if already exists)
-  - Routes api.flous.dev -> :8787, app.flous.dev -> :3000
+  - Routes api.flous.dev -> :8787, flous.dev + app.flous.dev -> :3000
   - Writes %USERPROFILE%\.cloudflared\config.yml
   - Installs cloudflared as a Windows service (optional)
 
@@ -77,7 +77,7 @@ if (-not $tunnel) {
 $tunnelId = $tunnel.id
 Write-Host "Tunnel id: $tunnelId"
 
-foreach ($hostName in @("api.flous.dev", "app.flous.dev")) {
+foreach ($hostName in @("api.flous.dev", "flous.dev", "app.flous.dev", "agentos.flous.dev")) {
   Write-Host "Routing DNS: $hostName"
   Invoke-Cloudflared tunnel route dns $TunnelName $hostName | ForEach-Object { Write-Host $_ }
 }
@@ -90,7 +90,11 @@ credentials-file: $cloudflaredDir\$tunnelId.json
 ingress:
   - hostname: api.flous.dev
     service: http://127.0.0.1:8787
+  - hostname: flous.dev
+    service: http://127.0.0.1:3000
   - hostname: app.flous.dev
+    service: http://127.0.0.1:3000
+  - hostname: agentos.flous.dev
     service: http://127.0.0.1:3000
   - service: http_status:404
 "@
@@ -108,6 +112,7 @@ Write-Host ""
 Write-Host "Done. Verify:" -ForegroundColor Green
 Write-Host "  nslookup api.flous.dev"
 Write-Host "  curl https://api.flous.dev/health"
+Write-Host "  https://flous.dev"
 Write-Host "  https://app.flous.dev"
 Write-Host ""
 Write-Host "Then flip .env production URLs (see .env flous.dev section) and add Discord redirect:"

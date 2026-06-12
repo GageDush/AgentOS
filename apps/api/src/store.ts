@@ -18,6 +18,7 @@ import {
   type UsageEvent
 } from "@agentos/shared";
 import type { AgentOSDatabase } from "@agentos/persistence";
+import { queueDiscordAudit } from "./discord/outbox";
 
 const persistence = getPersistenceAdapter();
 
@@ -50,6 +51,7 @@ function addAuditInternal(database: AgentOSDatabase, event: string, actor: strin
     createdAt: nowIso()
   };
   database.auditEvents.unshift(audit);
+  queueDiscordAudit(audit);
   return audit;
 }
 

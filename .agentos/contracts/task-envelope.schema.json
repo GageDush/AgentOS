@@ -94,6 +94,27 @@
         "assisted",
         "autopilot"
       ]
+    },
+    "uiGeneration": {
+      "type": "object",
+      "properties": {
+        "uiPreset": {
+          "enum": ["agentos-forge", "default"],
+          "default": "agentos-forge"
+        },
+        "surfaces": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "dashboard",
+              "mission-control",
+              "approval-center",
+              "integration-settings",
+              "generated-app-preview"
+            ]
+          }
+        }
+      }
     }
   }
 }

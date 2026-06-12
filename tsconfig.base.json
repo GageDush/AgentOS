@@ -22,7 +22,11 @@
       "@agentos/shared": ["packages/shared/src/index.ts"],
       "@agentos/token-manager": ["packages/token-manager/src/index.ts"],
       "@agentos/tools": ["packages/tools/src/index.ts"],
-      "@agentos/ui": ["packages/ui/src/index.ts"]
+      "@agentos/ui": ["packages/ui/src/index.ts"],
+      "@agentos/app-generator": ["packages/app-generator/src/index.ts"],
+      "@agentos/app-generator/templates/agentos-forge/sample-data": [
+        "packages/app-generator/templates/agentos-forge/sample-data.ts"
+      ]
     }
   }
 }

@@ -7,6 +7,10 @@ credentials-file: C:\Users\gaged\.cloudflared\TUNNEL_ID.json
 ingress:
   - hostname: api.flous.dev
     service: http://127.0.0.1:8787
+  - hostname: flous.dev
+    service: http://127.0.0.1:3000
   - hostname: app.flous.dev
+    service: http://127.0.0.1:3000
+  - hostname: agentos.flous.dev
     service: http://127.0.0.1:3000
   - service: http_status:404

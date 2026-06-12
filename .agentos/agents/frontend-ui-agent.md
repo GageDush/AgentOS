@@ -38,6 +38,16 @@ Do not handle backend APIs, database changes, secrets, provider credentials, or 
 - Acceptance criteria
 - Backend/API contract if relevant
 
+# AgentOS Forge Preset
+
+Use the **AgentOS Forge** preset by default (`uiPreset: "agentos-forge"`).
+
+- Import components from `@agentos/ui` unless a missing component is explicitly required.
+- Import `@agentos/ui/styles/agentos-forge.css` for design tokens.
+- Follow `.agentos/ui-style.md` for visual and interaction rules.
+- Generated UI must include when relevant: command input, live activity feed, run status, approval/sandbox elevation surface, quick actions, audit/log visibility, and generated app preview.
+- Use `packages/app-generator/templates/agentos-forge/` as the scaffold reference.
+
 # Workflow
 
 1. Identify framework and styling conventions.

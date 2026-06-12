@@ -1,7 +1,5 @@
 import { loadRepoEnv } from "./load-env";
 
-loadRepoEnv();
-
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
@@ -9,6 +7,7 @@ import { chooseAgentForMission } from "@agentos/orchestrator";
 import {
   continueMissionRunAfterApproval,
   executeQuickAction,
+  executeRichQuickAction,
   handleChatMessage,
   pauseMissionRun,
   processPendingMissionRuns,
@@ -18,7 +17,7 @@ import {
   retryMissionRun
 } from "@agentos/runtime";
 import { assessCommandPolicy } from "@agentos/sandbox";
-import type { GatewayExecutionResult, LlmChatRequest, MissionRecord, MissionRun, SandboxPermissionLevel } from "@agentos/shared";
+import type { AgentRichQuickActionType, GatewayExecutionResult, LlmChatRequest, MissionRecord, MissionRun, SandboxPermissionLevel } from "@agentos/shared";
 import { searchMemories } from "@agentos/memory";
 import { findRepoRoot } from "@agentos/persistence";
 import { evaluateBudget, evaluateQuotaSteward } from "@agentos/token-manager";
@@ -31,6 +30,12 @@ import {
   getDiscordOAuthSuccessRedirect,
   isDiscordOAuthConfigured
 } from "./discord-auth";
+import { bootstrapDiscordGuild, loadDiscordGuildState, postChannelGuides, restructureDiscordGuild, syncDiscordCommands, syncDiscordRoles } from "./discord/bootstrap";
+import { isDiscordBotEnabled } from "./discord/client";
+import { startDiscordGateway } from "./discord/gateway";
+import { dispatchDiscordInteraction, interactionPublicKeyConfigured, verifyInteractionRequest, type DiscordInteraction } from "./discord/interactions";
+import { installDiscordPersistenceHooks } from "./discord/persistence-hooks";
+import { postSystemPulse, syncPendingApprovalsToDiscord } from "./discord/notify";
 import {
   buildSessionCookie,
   clearSessionCookie,
@@ -78,9 +83,26 @@ import {
   usageSummary
 } from "./store";
 
+loadRepoEnv();
+installDiscordPersistenceHooks();
+
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_API_PORT ?? 8787);
 const repoRoot = findRepoRoot(process.cwd());
+
+app.addHook("preParsing", async (request, _reply, payload) => {
+  if (!request.url.startsWith("/discord/interactions")) {
+    return payload;
+  }
+  const chunks: Buffer[] = [];
+  for await (const chunk of payload) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  const raw = Buffer.concat(chunks);
+  (request as { rawBody?: string }).rawBody = raw.toString("utf8");
+  const { Readable } = await import("node:stream");
+  return Readable.from([raw]);
+});
 
 function quotaStatus() {
   return evaluateQuotaSteward(store.usageEvents, repoRoot, {
@@ -549,6 +571,33 @@ app.post("/quick-actions/:id/consume", async (request, reply) => {
   return executeQuickAction(action.id, store.operators[0]?.id ?? "operator-local");
 });
 
+app.post("/rich-actions/execute", async (request, reply) => {
+  const body = request.body as {
+    actionType?: AgentRichQuickActionType;
+    scope?: {
+      missionId?: string;
+      runId?: string;
+      approvalRequestId?: string;
+      correlationId?: string;
+    };
+    threadId?: string;
+    operatorId?: string;
+  };
+  if (!body.actionType) {
+    return reply.code(400).send({ error: "actionType is required." });
+  }
+  const result = await executeRichQuickAction({
+    actionType: body.actionType,
+    operatorId: body.operatorId ?? store.operators[0]?.id ?? "operator-local",
+    scope: body.scope ?? {},
+    threadId: body.threadId
+  });
+  if (result.ok && body.actionType === "approve" && result.runId) {
+    await continueMissionRunAfterApproval(result.runId);
+  }
+  return result;
+});
+
 app.get("/chat/threads", async () => listChatThreads());
 app.post("/chat/threads", async (request) => createChatThread(request.body as Record<string, unknown>));
 app.get("/chat/threads/:id/messages", async (request, reply) => {
@@ -646,8 +695,122 @@ app.get("/system", async () => ({
 app.get("/discord/mock", async () => ({
   mode: process.env.DISCORD_BOT_TOKEN ? "real-configured" : "mock",
   configured: Boolean(process.env.DISCORD_BOT_TOKEN),
-  commands: ["status summary", "show active mission", "approve that", "show details"]
+  guild: loadDiscordGuildState(),
+  commands: ["/agentos chat", "/agentos commands", "/agentos status", "/agentos tasks", "/agentos tokens"]
 }));
+
+app.post("/discord/interactions", async (request, reply) => {
+  const rawBody = (request as { rawBody?: string }).rawBody ?? "";
+  if (!verifyInteractionRequest(request.headers, rawBody)) {
+    request.log.warn("Discord interaction signature verification failed.");
+    return reply.code(401).send({ error: "Invalid request signature." });
+  }
+  try {
+    const payload = JSON.parse(rawBody) as DiscordInteraction;
+    const response = await dispatchDiscordInteraction(payload, "http");
+    if (response === undefined) {
+      return reply.code(204).send();
+    }
+    return reply.send(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Discord interaction failed.";
+    request.log.error({ err: error }, "Discord interaction handler error.");
+    return reply.send({
+      type: 4,
+      data: {
+        embeds: [
+          {
+            title: "AgentOS error",
+            description: message,
+            color: 0xff3b5c
+          }
+        ],
+        flags: 64
+      }
+    });
+  }
+});
+
+app.post("/discord/restructure", async (_request, reply) => {
+  if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
+    return reply.code(503).send({ error: "Discord bot restructure is not configured." });
+  }
+  try {
+    const state = await restructureDiscordGuild();
+    return { ok: true, state };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Discord restructure failed.";
+    return reply.code(502).send({ error: message });
+  }
+});
+
+app.post("/discord/bootstrap", async (_request, reply) => {
+  if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
+    return reply.code(503).send({ error: "Discord bot bootstrap is not configured." });
+  }
+  try {
+    const state = await bootstrapDiscordGuild();
+    return { ok: true, state };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Discord bootstrap failed.";
+    return reply.code(502).send({ error: message });
+  }
+});
+
+app.post("/discord/sync-commands", async (_request, reply) => {
+  if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
+    return reply.code(503).send({ error: "Discord command sync is not configured." });
+  }
+  try {
+    const result = await syncDiscordCommands();
+    return { ok: true, ...result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Discord command sync failed.";
+    return reply.code(502).send({ error: message });
+  }
+});
+
+app.post("/discord/sync-roles", async (_request, reply) => {
+  if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
+    return reply.code(503).send({ error: "Discord role sync is not configured." });
+  }
+  try {
+    const result = await syncDiscordRoles();
+    return { ok: true, ...result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Discord role sync failed.";
+    return reply.code(502).send({ error: message });
+  }
+});
+
+app.post("/discord/sync-outbox", async () => {
+  if (!isDiscordBotEnabled()) {
+    return { ok: false, mode: "mock" };
+  }
+  const approvals = await syncPendingApprovalsToDiscord();
+  return { ok: true, approvals };
+});
+
+app.post("/discord/post-guides", async (_request, reply) => {
+  if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
+    return reply.code(503).send({ error: "Discord bot is not configured." });
+  }
+  try {
+    const result = await postChannelGuides();
+    return { ok: true, ...result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Discord channel guides failed.";
+    return reply.code(502).send({ error: message });
+  }
+});
+
+app.post("/discord/pulse", async () => {
+  if (!isDiscordBotEnabled()) {
+    return { ok: false, mode: "mock" };
+  }
+  const pulse = await postSystemPulse();
+  return { ok: pulse.ok, pulse };
+});
 
 app.get("/events", { websocket: true }, (connection) => {
   connection.send(JSON.stringify({ event: "system.health.changed", data: { api: "online" } }));
@@ -670,6 +833,19 @@ app.get("/events", { websocket: true }, (connection) => {
 
 try {
   await app.listen({ port, host: "0.0.0.0" });
+  if (isDiscordBotEnabled()) {
+    if (!interactionPublicKeyConfigured()) {
+      app.log.warn(
+        "DISCORD_PUBLIC_KEY is missing — slash commands and buttons will fail until it is set in .env and the Interactions Endpoint URL is reachable."
+      );
+    }
+    void syncPendingApprovalsToDiscord().catch((error) => {
+      app.log.warn({ err: error }, "Discord approval outbox sync failed on startup.");
+    });
+    void startDiscordGateway().then((result) => {
+      app.log.info({ result }, "Discord gateway for #general chat.");
+    });
+  }
 } catch (error) {
   app.log.error(error);
   process.exit(1);

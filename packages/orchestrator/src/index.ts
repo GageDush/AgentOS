@@ -10,8 +10,10 @@ import type {
   RoutingGate,
   TaskEnvelope,
   TaskEnvelopeGate,
-  TaskEnvelopeModelLane
+  TaskEnvelopeModelLane,
+  UiGenerationSpec
 } from "@agentos/shared";
+import { DEFAULT_UI_PRESET, DEFAULT_UI_SURFACES } from "@agentos/shared";
 import { nowIso } from "@agentos/shared";
 import type { InstalledAgentProfileSet } from "@agentos/agents";
 
@@ -29,7 +31,7 @@ const keywordSets = {
   qa: ["qa", "test", "typecheck", "lint", "smoke", "verify"],
   security: ["security", "secret", ".env", "approval", "network", "risk", "sandbox"],
   release: ["release", "commit", "push", "ship", "deploy"],
-  frontend: ["ui", "frontend", "page", "layout", "css", "react", "next"],
+  frontend: ["ui", "frontend", "page", "layout", "css", "react", "next", "dashboard", "generate"],
   backend: ["api", "backend", "server", "gateway", "worker", "route", "endpoint"],
   database: ["database", "sql", "migration", "schema", "postgres", "sqlite"],
   integration: ["github", "linear", "discord", "integration", "webhook"],
@@ -96,6 +98,20 @@ function mapProviderLaneToModelLane(lane: ProviderLane): TaskEnvelopeModelLane {
   return "mock_local";
 }
 
+function inferUiGeneration(mission: RouteContext, taskType: RouteTaskType): UiGenerationSpec | undefined {
+  const text = `${mission.title}\n${mission.objective}\n${mission.prompt}\n${mission.command}`.toLowerCase();
+  const isUiTask =
+    containsAny(text, keywordSets.frontend) ||
+    taskType === "code_change" && containsAny(text, ["component", "style", "design", "forge"]);
+
+  if (!isUiTask) return undefined;
+
+  return {
+    uiPreset: DEFAULT_UI_PRESET,
+    surfaces: DEFAULT_UI_SURFACES
+  };
+}
+
 function mapRoutingGatesToEnvelopeGates(gates: RoutingGate[], taskType: RouteTaskType): TaskEnvelopeGate[] {
   const envelopeGates = new Set<TaskEnvelopeGate>();
   for (const gate of gates) {
@@ -152,7 +168,8 @@ export function buildTaskEnvelope(
     ],
     requiredGates,
     mode: "assisted",
-    notes: [`Generated from deterministic route ${route.id} for mission ${mission.id}.`]
+    notes: [`Generated from deterministic route ${route.id} for mission ${mission.id}.`],
+    uiGeneration: inferUiGeneration(mission, route.taskType)
   };
 }
 

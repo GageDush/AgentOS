@@ -24,7 +24,7 @@ function loadRootEnv() {
 loadRootEnv();
 
 const nextConfig = {
-  transpilePackages: ["@agentos/shared", "@agentos/game-schema"],
+  transpilePackages: ["@agentos/shared", "@agentos/game-schema", "@agentos/ui", "@agentos/app-generator"],
   env: {
     NEXT_PUBLIC_AGENTOS_API_URL:
       process.env.NEXT_PUBLIC_AGENTOS_API_URL?.trim() ||

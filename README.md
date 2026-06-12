@@ -13,6 +13,8 @@ The Office Demo remains in the repo only as an archival/demo surface under `/dem
 - Safe local worker spine for claiming queued runs and executing allow-listed commands
 - Conversational control layer for normal-language prompts like `approve that`, `pause it`, `run QA`, and `show details`
 - Quick actions with emoji-driven controls such as `✅`, `❌`, `⏸️`, `▶️`, `👀`, `🧪`, `🔒`, `🔁`, and `🧾`
+- Rich agent message cards for chat-first control (`[Admin] Ash` placard layout with destination, context, and structured quick-action emojis)
+- Rich-card emoji actions route through `POST /rich-actions/execute` with scoped approve/deny Control Gate enforcement
 - Mock-first behavior with optional Ollama support for local prompt work
 
 ## Core Principles
@@ -24,6 +26,7 @@ The Office Demo remains in the repo only as an archival/demo surface under `/dem
 - `.agentos` profiles drive deterministic routing
 - Conversational prompts and quick actions are the intended control surface
 - Slash commands are not the intended UX
+- Rich agent message cards reuse the same quick-action model for chat-first control and can render in Discord later without requiring slash commands
 - Cloud APIs are disabled by default
 - Unsafe autonomous execution is out of scope
 

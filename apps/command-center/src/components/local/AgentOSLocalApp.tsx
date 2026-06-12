@@ -1,8 +1,31 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
+import { ForgeDashboardShell } from "../forge/ForgeDashboardShell";
+import { ForgeDashboardView } from "../forge/ForgeDashboardView";
+import { ForgeControlGateView } from "../forge/ForgeControlGateView";
+import {
+  buildCommandPaletteItems,
+  buildDefaultQuickActions,
+  toActivityFeed,
+  toAgentPresences,
+  toApprovalItems,
+  toDashboardStats,
+  toHealthMetrics,
+  toMissionControlData,
+  toMissionTimeline,
+  toQuickActions
+} from "../forge/dashboard-adapters";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
+import {
+  ForgeFaqAccordion,
+  ForgeSectionHeader,
+  ForgeSegmentedControl,
+  ForgeStatCard,
+  TerminalWindow,
+  type ForgeFaqItem
+} from "@agentos/ui";
 import {
   apiGet,
   apiPost,
@@ -13,6 +36,8 @@ import {
 } from "../../lib/agentos-api";
 import type {
   AgentProfile,
+  AgentRichQuickActionType,
+  AgentRichMessageScope,
   AgentRoutingDecisionRecord,
   ApprovalRecord,
   QuotaStewardStatus,
@@ -122,18 +147,6 @@ type PolicyPreview = {
   explanation: string;
 };
 
-const navItems: Array<{ href: string; key: SectionKey; label: string }> = [
-  { href: "/", key: "dashboard", label: "Command Center" },
-  { href: "/missions", key: "missions", label: "Missions" },
-  { href: "/routines", key: "routines", label: "Routines" },
-  { href: "/operators", key: "operators", label: "Operators" },
-  { href: "/control-gate", key: "control-gate", label: "Control Gate" },
-  { href: "/blackbox", key: "blackbox", label: "Blackbox" },
-  { href: "/archive", key: "archive", label: "Archive" },
-  { href: "/loadout", key: "loadout", label: "Loadout" },
-  { href: "/settings", key: "settings", label: "Settings" }
-];
-
 const sandboxLevels: SandboxPermissionLevel[] = [
   "observe",
   "workspace_write",
@@ -168,6 +181,7 @@ const defaultRoutineDraft: RoutineDraft = {
 };
 
 export function AgentOSLocalApp({ section }: { section: SectionKey }) {
+  const router = useRouter();
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [draft, setDraft] = useState<MissionDraft>(defaultDraft);
   const [routineDraft, setRoutineDraft] = useState<RoutineDraft>(defaultRoutineDraft);
@@ -176,6 +190,7 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const [policyPreview, setPolicyPreview] = useState<PolicyPreview>();
   const [providerStatus, setProviderStatus] = useState<ProviderStatus>();
   const [busyAction, setBusyAction] = useState<string>();
+  const [busyRichAction, setBusyRichAction] = useState<AgentRichQuickActionType>();
   const [chatDraft, setChatDraft] = useState("show details");
   const [error, setError] = useState("");
   const [operatorAuth, setOperatorAuth] = useState<OperatorAuthSession | null>(null);
@@ -386,6 +401,37 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     }
   }
 
+  async function executeRichQuickActionHandler(
+    actionType: AgentRichQuickActionType,
+    scope?: AgentRichMessageScope
+  ) {
+    setBusyRichAction(actionType);
+    setError("");
+    try {
+      const result = await apiPost<{
+        ok: boolean;
+        summary: string;
+        runId?: string;
+      }>("/rich-actions/execute", {
+        actionType,
+        scope: scope ?? {},
+        threadId: activeThread?.id
+      });
+      if (!result.ok) {
+        setError(result.summary);
+        return;
+      }
+      if (actionType === "approve" && result.runId) {
+        setActiveRunId(result.runId);
+      }
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Rich action failed.");
+    } finally {
+      setBusyRichAction(undefined);
+    }
+  }
+
   async function createRoutineAction() {
     setBusyAction("create-routine");
     setError("");
@@ -482,69 +528,132 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     }
   }
 
+  const healthMetrics = useMemo(
+    () =>
+      data
+        ? toHealthMetrics({
+            system: data.system,
+            agents: data.agents,
+            runs: data.runs,
+            pendingApprovals: pendingApprovals.length
+          })
+        : [],
+    [data, pendingApprovals.length]
+  );
+
+  const commandItems = useMemo(
+    () =>
+      data
+        ? buildCommandPaletteItems({
+            quickActions: data.quickActions,
+            agents: data.agents,
+            recentMessages: data.chatMessages.slice(-5).map((m) => m.content)
+          })
+        : [],
+    [data]
+  );
+
+  const forgeQuickActions = useMemo(() => {
+    const fromApi = data ? toQuickActions(activeQuickActions) : [];
+    return fromApi.length > 0 ? fromApi : buildDefaultQuickActions();
+  }, [data, activeQuickActions]);
+
+  async function handleForgeQuickAction(actionId: string) {
+    if (actionId === "open-approvals") {
+      router.push("/control-gate");
+      return;
+    }
+    if (actionId === "start-mission" || actionId === "run-tests") {
+      router.push("/missions");
+      return;
+    }
+    if (actionId === "sync-memory") {
+      router.push("/archive");
+      return;
+    }
+    if (actionId === "inspect-server") {
+      router.push("/settings");
+      return;
+    }
+    if (actionId === "generate-ui") {
+      router.push("/preview/forge");
+      return;
+    }
+    const match = activeQuickActions.find((a) => a.id === actionId);
+    if (match) await consumeQuickAction(actionId);
+  }
+
   if (!data) {
     return (
-      <main className="local-shell">
-        <div className="loading-state">Loading AgentOS Local...</div>
+      <main className="forge-root" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
+        <div className="loading-state">Loading AgentOS Forge...</div>
       </main>
     );
   }
 
   return (
-    <main className="local-shell">
-      <div className="ambient-grid" />
-      <aside className="local-nav">
-        <div className="nav-brand">
-          <p className="nav-kicker">AgentOS Local</p>
-          <h1>Developer Operations Hub</h1>
-          <p>Schedule, run, approve, and observe local AI missions without leaving your machine.</p>
-        </div>
-        <nav className="nav-list">
-          {navItems.map((item) => (
-            <Link className={`nav-link ${item.key === section ? "nav-link-active" : ""}`} href={item.href} key={item.href}>
-              {item.label}
-            </Link>
-          ))}
-          <Link className="nav-link nav-link-muted" href="/demo/office">
-            Deprecated Office Demo
-          </Link>
-        </nav>
-        <div className="nav-meta">
-          <OperatorAuthCard
-            session={operatorAuth}
-            onLogout={async () => {
-              await logoutOperator();
-              setOperatorAuth(null);
-            }}
-          />
-          <StatPill label="API" value={data.system.api} />
-          <StatPill label="Gateway" value={data.system.gateway} />
-          <StatPill label="Provider" value={data.system.providerMode} />
-        </div>
-      </aside>
-
-      <section className="local-main">
-        <header className="hero-bar">
-          <div>
-            <p className="hero-kicker">{labelForSection(section)}</p>
-            <h2>{titleForSection(section)}</h2>
-            <p className="hero-copy">{descriptionForSection(section)}</p>
-          </div>
-          <div className="hero-metrics">
-            <MetricCard label="Active Missions" value={String(data.missions.filter((mission) => mission.status !== "completed").length)} />
-            <MetricCard label="Pending Gate" value={String(pendingApprovals.length)} />
-            <MetricCard label="Sessions" value={String(data.sessions.length)} />
-            <MetricCard label="Tokens" value={String(data.usage.totalTokens)} />
-          </div>
-        </header>
+    <ForgeDashboardShell
+      section={section}
+      healthMetrics={healthMetrics}
+      commandItems={commandItems}
+      pendingApprovals={pendingApprovals.length}
+    >
+      <section className="forge-page-grid">
+        <ForgeSectionHeader
+          kicker={labelForSection(section)}
+          title={titleForSection(section)}
+          accentWord={section === "control-gate" ? "Approval" : undefined}
+          copy={descriptionForSection(section)}
+          actions={
+            <OperatorAuthCard
+              session={operatorAuth}
+              onLogout={async () => {
+                await logoutOperator();
+                setOperatorAuth(null);
+              }}
+            />
+          }
+        />
 
         {error ? <div className="alert error-alert">{error}</div> : null}
 
-        <div className="content-grid">
-          <section className="primary-column">
-            {section === "dashboard" ? (
-              <DashboardView data={data} activeRun={activeRun} activeMission={activeMission} activeLogs={activeLogs} activeRoute={activeRoute} onRunMission={runMission} />
-            ) : null}
+        {section === "dashboard" ? (
+          <ForgeDashboardView
+            stats={toDashboardStats({
+              missions: data.missions.length,
+              pendingApprovals: pendingApprovals.length,
+              archive: data.archive.length,
+              sessions: data.sessions.length
+            })}
+            missionControl={toMissionControlData({
+              mission: activeMission,
+              run: activeRun,
+              route: activeRoute,
+              logs: activeLogs,
+              tools: data.loadout.map((item) => item.name)
+            })}
+            activity={toActivityFeed(data.audit, activeLogs)}
+            agents={toAgentPresences(data.agents, activeRun, activeRoute)}
+            timeline={toMissionTimeline(activeRun, activeLogs)}
+            approvals={toApprovalItems(pendingApprovals)}
+            quickActions={forgeQuickActions}
+            onRunAgain={activeMission ? () => void runMission(activeMission.id) : undefined}
+            onQuickAction={(id) => void handleForgeQuickAction(id)}
+            onAllowOnce={(id) => {
+              const approval = pendingApprovals.find((a) => a.id === id);
+              if (approval) void resolveApprovalAction(approval, "approve-once");
+            }}
+            onAllowMission={(id) => {
+              const approval = pendingApprovals.find((a) => a.id === id);
+              if (approval) void resolveApprovalAction(approval, "approve-for-mission");
+            }}
+            onDeny={(id) => {
+              const approval = pendingApprovals.find((a) => a.id === id);
+              if (approval) void resolveApprovalAction(approval, "deny");
+            }}
+            busyId={busyAction}
+          />
+        ) : null}
             {section === "missions" ? (
               <MissionsView
                 data={data}
@@ -579,16 +688,35 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
                 onResumeSession={resumeSessionAction}
               />
             ) : null}
-            {section === "control-gate" ? (
-              <ControlGateView approvals={pendingApprovals} busyAction={busyAction} onResolveApproval={resolveApprovalAction} />
-            ) : null}
-            {section === "blackbox" ? <BlackboxView audit={data.audit} activeLogs={activeLogs} /> : null}
-            {section === "archive" ? <ArchiveView archive={data.archive} /> : null}
-            {section === "loadout" ? <LoadoutView loadout={data.loadout} providerStatus={providerStatus} /> : null}
-            {section === "settings" ? <SettingsView data={data} providerStatus={providerStatus} /> : null}
-          </section>
+        {section === "control-gate" ? (
+          <ForgeControlGateView
+            approvals={toApprovalItems(pendingApprovals)}
+            pendingApprovals={pendingApprovals}
+            operatorName={data.operators[0]?.displayName ?? "Operator"}
+            busyId={busyAction}
+            busyRichAction={busyRichAction}
+            onRichAction={executeRichQuickActionHandler}
+            onAllowOnce={(id) => {
+              const approval = pendingApprovals.find((a) => a.id === id);
+              if (approval) void resolveApprovalAction(approval, "approve-once");
+            }}
+            onAllowMission={(id) => {
+              const approval = pendingApprovals.find((a) => a.id === id);
+              if (approval) void resolveApprovalAction(approval, "approve-for-mission");
+            }}
+            onDeny={(id) => {
+              const approval = pendingApprovals.find((a) => a.id === id);
+              if (approval) void resolveApprovalAction(approval, "deny");
+            }}
+          />
+        ) : null}
+        {section === "blackbox" ? <BlackboxView audit={data.audit} activeLogs={activeLogs} /> : null}
+        {section === "archive" ? <ArchiveView archive={data.archive} /> : null}
+        {section === "loadout" ? <LoadoutView loadout={data.loadout} providerStatus={providerStatus} /> : null}
+        {section === "settings" ? <SettingsView data={data} providerStatus={providerStatus} /> : null}
+      </section>
 
-          <aside className="secondary-column">
+      <aside className="forge-sidebar-panel">
             <RunInspector
               mission={activeMission}
               run={activeRun}
@@ -610,11 +738,9 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
               onSendChat={sendChatMessage}
               onConsumeQuickAction={consumeQuickAction}
             />
-            <RecentHistory runs={data.runs} missions={data.missions} onSelectRun={setActiveRunId} activeRunId={activeRunId} />
-          </aside>
-        </div>
-      </section>
-    </main>
+        <RecentHistory runs={data.runs} missions={data.missions} onSelectRun={setActiveRunId} activeRunId={activeRunId} />
+      </aside>
+    </ForgeDashboardShell>
   );
 }
 
@@ -698,124 +824,12 @@ function OperatorAuthCard({
   );
 }
 
-function StatPill({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="stat-pill">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
 
 function Panel({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
-    <section className="panel-card">
-      <div className="panel-card-head">
-        <div>
-          <h3>{title}</h3>
-          {subtitle ? <p>{subtitle}</p> : null}
-        </div>
-      </div>
+    <TerminalWindow title={title} subtitle={subtitle}>
       {children}
-    </section>
-  );
-}
-
-function DashboardView({
-  data,
-  activeRun,
-  activeMission,
-  activeLogs,
-  activeRoute,
-  onRunMission
-}: {
-  data: DashboardPayload;
-  activeRun?: MissionRun;
-  activeMission?: MissionRecord;
-  activeLogs: MissionRunLog[];
-  activeRoute?: AgentRoutingDecisionRecord;
-  onRunMission: (missionId: string) => Promise<void>;
-}) {
-  const pendingApprovals = data.approvals.filter((approval) => approval.status === "pending");
-  return (
-    <>
-      <Panel title="First Vertical Slice" subtitle="Create mission -> plan -> gate -> execute -> archive">
-        <div className="snapshot-grid">
-          <Snapshot label="Missions" value={String(data.missions.length)} copy="One-off agent jobs with run history." />
-          <Snapshot label="Approvals" value={String(pendingApprovals.length)} copy="Control Gate requests waiting on an operator." />
-          <Snapshot label="Archive" value={String(data.archive.length)} copy="Saved mission outputs and decision memory." />
-          <Snapshot label="Sessions" value={String(data.sessions.length)} copy="Long-running local work that can be resumed." />
-        </div>
-      </Panel>
-      {data.quota ? (
-        <Panel title="Quota Steward" subtitle="Subscription buckets warn at 80% and stop agents when depleted.">
-          {data.quota.reason ? <p className="quota-banner">{data.quota.reason}</p> : null}
-          <div className="table-list">
-            {data.quota.status.providers.map((bucket) => (
-              <div className="table-row" key={`${bucket.providerId}-${bucket.bucketId}`}>
-                <div>
-                  <strong>{bucket.label}</strong>
-                  <p>{bucket.utilizationPercent}% utilized</p>
-                </div>
-                <span className={`status-chip ${bucket.blocked ? "status-chip-denied" : bucket.warning ? "status-chip-awaiting_approval" : "status-chip-completed"}`}>
-                  {bucket.blocked ? "blocked" : bucket.warning ? "warning" : "ok"}
-                </span>
-              </div>
-            ))}
-          </div>
-          {data.quota.status.stoppedAgents.length ? (
-            <p className="field-hint">Stopped agents: {data.quota.status.stoppedAgents.join(", ")}</p>
-          ) : null}
-        </Panel>
-      ) : null}
-      <Panel title="Current Focus" subtitle={activeMission ? activeMission.title : "Pick or run a mission to inspect it."}>
-        <div className="focus-card">
-          <div>
-            <strong>{activeMission?.objective ?? "No mission selected"}</strong>
-            <p>{activeRun?.resultSummary ?? activeRun?.error ?? "This panel follows the newest run and its logs."}</p>
-            {activeRoute ? <p>Route: {activeRoute.selectedPrimaryAgentId} with {activeRoute.supportingAgentIds.length} supporting agents.</p> : null}
-          </div>
-          {activeMission ? (
-            <button className="primary-button" onClick={() => void onRunMission(activeMission.id)}>
-              Run Again
-            </button>
-          ) : null}
-        </div>
-        <div className="log-preview">
-          {activeLogs.slice(-4).map((log) => (
-            <div className="log-line" key={log.id}>
-              <span className={`log-level log-level-${log.level}`}>{log.level}</span>
-              <span>{log.message}</span>
-            </div>
-          ))}
-        </div>
-      </Panel>
-      <Panel title="Recent Missions" subtitle="Latest command-center activity">
-        <div className="table-list">
-          {data.missions.slice(0, 6).map((mission) => (
-            <div className="table-row" key={mission.id}>
-              <div>
-                <strong>{mission.title}</strong>
-                <p>{mission.command}</p>
-              </div>
-              <div className="row-meta">
-                <span className={`status-chip status-chip-${mission.status}`}>{mission.status}</span>
-                <span>{mission.sandboxLevel}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Panel>
-    </>
+    </TerminalWindow>
   );
 }
 
@@ -893,9 +907,14 @@ function MissionsView({
             <p className="field-hint">Creates a triage issue on GageDush/AgentOS when the mission is saved.</p>
           </label>
         </div>
-        <div className="snapshot-grid">
+        <div className="forge-page-grid-cards">
           <Snapshot label="Command policy" value={policyPreview?.decision.policy ?? "loading"} copy={policyPreview?.decision.reason ?? "Checking policy posture."} />
-          <Snapshot label="Control Gate" value={policyPreview?.requiresControlGate ? "required" : "clear"} copy={policyPreview?.explanation ?? "Checking gate posture."} />
+          <Snapshot
+            label="Control Gate"
+            value={policyPreview?.requiresControlGate ? "required" : "clear"}
+            copy={policyPreview?.explanation ?? "Checking gate posture."}
+            accent={policyPreview?.requiresControlGate}
+          />
           <Snapshot label="Ollama" value={providerStatus?.ollama.available ? "ready" : "offline"} copy={providerStatus?.ollama.message ?? "Checking Ollama reachability."} />
           <Snapshot
             label="Provider path"
@@ -1074,57 +1093,6 @@ function OperatorsView({
   );
 }
 
-function ControlGateView({
-  approvals,
-  busyAction,
-  onResolveApproval
-}: {
-  approvals: ApprovalRecord[];
-  busyAction?: string;
-  onResolveApproval: (approval: ApprovalRecord, mode: "approve-once" | "approve-for-mission" | "deny") => Promise<void>;
-}) {
-  const permissionCopy: Record<SandboxPermissionLevel, string> = {
-    observe: "Read-only mission observation.",
-    workspace_write: "May change files inside the current workspace.",
-    safe_execute: "May run small allow-listed local commands.",
-    network_limited: "May reach reviewed loopback or narrow network targets.",
-    dependency_install: "May install dependencies and update lockfiles.",
-    external_action: "May send state to external systems or remotes.",
-    repo_mutation: "May mutate repository history or durable git state.",
-    system_elevated: "Would require operating-system level power."
-  };
-
-  return (
-    <Panel title="Control Gate" subtitle="Every risky action becomes a logged decision.">
-      <div className="table-list">
-        {approvals.length === 0 ? <div className="empty-state">No pending approvals.</div> : null}
-        {approvals.map((approval) => (
-          <div className="approval-card" key={approval.id}>
-            <div className="row-title-inline">
-              <strong>{approval.tool}</strong>
-              <span className="status-chip status-chip-awaiting_approval">{approval.permissionLevel}</span>
-            </div>
-            <p>{approval.inputSummary}</p>
-            <p>{permissionCopy[approval.permissionLevel]}</p>
-            {approval.command ? <p className="command-line">{approval.command}</p> : null}
-            <div className="button-row">
-              <button className="primary-button" disabled={busyAction === `approve-once-${approval.id}`} onClick={() => void onResolveApproval(approval, "approve-once")}>
-                Approve Once
-              </button>
-              <button className="secondary-button" disabled={busyAction === `approve-for-mission-${approval.id}`} onClick={() => void onResolveApproval(approval, "approve-for-mission")}>
-                Approve for Mission
-              </button>
-              <button className="danger-button" disabled={busyAction === `deny-${approval.id}`} onClick={() => void onResolveApproval(approval, "deny")}>
-                Deny
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Panel>
-  );
-}
-
 function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: MissionRunLog[] }) {
   const [query, setQuery] = useState("");
   const [eventFilter, setEventFilter] = useState<"all" | MissionRunLog["level"]>("all");
@@ -1240,16 +1208,70 @@ function LoadoutView({ loadout, providerStatus }: { loadout: LoadoutItem[]; prov
   );
 }
 
+const operatorFaqItems: ForgeFaqItem[] = [
+  {
+    id: "local-first",
+    question: "What does local-first mean here?",
+    answer:
+      "AgentOS runs against your local API and workspace by default. Missions plan and execute on your machine with mock or Ollama providers — no cloud credentials are required until you opt in."
+  },
+  {
+    id: "control-gate",
+    question: "When does Control Gate pause a mission?",
+    answer:
+      "Runs pause when a command crosses the mission sandbox level or policy boundary. Approve once for a single step, approve for mission to relax the gate for that run, or deny to stop with an audit event."
+  },
+  {
+    id: "missions-vs-routines",
+    question: "How are missions different from routines?",
+    answer:
+      "Missions are one-off jobs you compose and run immediately. Routines save the same recipe for manual, hourly, daily, or weekly triggers while staying mock-first until you schedule real execution."
+  },
+  {
+    id: "command-palette",
+    question: "What does the command palette do?",
+    answer:
+      "Open it from the forge header to jump to approvals, start a mission, sync archive memory, or trigger quick actions wired to the active run. It mirrors the sidebar inspector without leaving your current section."
+  }
+];
+
 function SettingsView({ data, providerStatus }: { data: DashboardPayload; providerStatus?: ProviderStatus }) {
+  const [runtimeView, setRuntimeView] = useState<"system" | "providers">("system");
+
   return (
     <>
       <Panel title="Runtime Mode" subtitle="Mock-first by default, Ollama when you opt in.">
+        <div style={{ marginBottom: "14px" }}>
+          <ForgeSegmentedControl
+            options={[
+              { id: "system", label: "System" },
+              { id: "providers", label: "Providers" }
+            ]}
+            value={runtimeView}
+            onChange={(id) => setRuntimeView(id as "system" | "providers")}
+            ariaLabel="Runtime settings view"
+          />
+        </div>
         <div className="settings-grid">
-          <Setting label="Provider mode" value={data.system.providerMode} />
-          <Setting label="Gateway" value={data.system.gateway} />
-          <Setting label="Discord" value={data.system.discordMode} />
-          <Setting label="Monthly budget" value={`$${data.usage.monthlyLimit.toFixed(2)}`} />
-          <Setting label="Ollama" value={providerStatus?.ollama.available ? "reachable" : "unavailable"} />
+          {runtimeView === "system" ? (
+            <>
+              <Setting label="API" value={data.system.api} />
+              <Setting label="Worker" value={data.system.worker} />
+              <Setting label="Gateway" value={data.system.gateway} />
+              <Setting label="Discord" value={data.system.discordMode} />
+              <Setting label="Monthly budget" value={`$${data.usage.monthlyLimit.toFixed(2)}`} />
+              <Setting label="Daily spend" value={`$${data.usage.dailySpend.toFixed(2)}`} />
+            </>
+          ) : (
+            <>
+              <Setting label="Provider mode" value={data.system.providerMode} />
+              <Setting label="Mock provider" value={providerStatus?.mock.available ? "ready" : "offline"} />
+              <Setting label="Mock status" value={providerStatus?.mock.message ?? "Checking mock provider."} />
+              <Setting label="Ollama" value={providerStatus?.ollama.available ? "reachable" : "unavailable"} />
+              <Setting label="Ollama status" value={providerStatus?.ollama.message ?? "Checking Ollama reachability."} />
+              <Setting label="Default provider" value={providerStatus?.defaultProvider ?? data.system.providerMode} />
+            </>
+          )}
         </div>
       </Panel>
       <Panel title="Policy Snapshot" subtitle="Safe commands are small by design during the pivot.">
@@ -1258,6 +1280,9 @@ function SettingsView({ data, providerStatus }: { data: DashboardPayload; provid
           <div><strong>Approval required:</strong> installs, repo writes, network access, `.env` reads</div>
           <div><strong>Denied:</strong> `sudo`, `rm -rf /`, unrestricted system writes</div>
         </div>
+      </Panel>
+      <Panel title="Operator Help" subtitle="Local-first posture, approvals, and forge navigation.">
+        <ForgeFaqAccordion items={operatorFaqItems} />
       </Panel>
     </>
   );
@@ -1304,7 +1329,7 @@ function RunInspector({
                 <span>{mission.sandboxLevel}</span>
               </div>
             </div>
-            <div className="snapshot-grid">
+            <div className="forge-page-grid-cards">
               <Snapshot label="Provider" value={run.provider} copy={run.model} />
               <Snapshot label="Session" value={run.sessionId ? "linked" : "none"} copy={run.sessionId ?? "No session linked"} />
               <Snapshot label="Result" value={run.resultSummary ? "saved" : run.error ? "error" : "pending"} copy={run.resultSummary ?? run.error ?? "Still running"} />
@@ -1469,14 +1494,20 @@ function RecentHistory({
   );
 }
 
-function Snapshot({ label, value, copy }: { label: string; value: string; copy: string }) {
-  return (
-    <div className="snapshot-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <p>{copy}</p>
-    </div>
-  );
+function Snapshot({
+  label,
+  value,
+  copy,
+  accent,
+  featured
+}: {
+  label: string;
+  value: string;
+  copy: string;
+  accent?: boolean;
+  featured?: boolean;
+}) {
+  return <ForgeStatCard label={label} value={value} caption={copy} accent={accent} featured={featured} />;
 }
 
 function Setting({ label, value }: { label: string; value: string }) {

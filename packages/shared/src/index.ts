@@ -374,6 +374,30 @@ export type TaskEnvelopeModelLane =
   | "premium_api"
   | "defer_until_reset";
 
+export type UiPreset = "agentos-forge" | "default";
+
+export type UiGenerationSurface =
+  | "dashboard"
+  | "mission-control"
+  | "approval-center"
+  | "integration-settings"
+  | "generated-app-preview";
+
+export type UiGenerationSpec = {
+  uiPreset?: UiPreset;
+  surfaces?: UiGenerationSurface[];
+};
+
+export const DEFAULT_UI_PRESET: UiPreset = "agentos-forge";
+
+export const DEFAULT_UI_SURFACES: UiGenerationSurface[] = [
+  "dashboard",
+  "mission-control",
+  "approval-center",
+  "integration-settings",
+  "generated-app-preview"
+];
+
 export type TaskEnvelope = {
   taskId: string;
   createdAt: string;
@@ -400,6 +424,7 @@ export type TaskEnvelope = {
   requiredGates: TaskEnvelopeGate[];
   mode: TaskEnvelopeMode;
   notes: string[];
+  uiGeneration?: UiGenerationSpec;
 };
 
 export type QuotaProviderId = "anthropic" | "openai_codex" | "cursor";
@@ -886,6 +911,9 @@ export const defaultChatMessages: ChatMessageRecord[] = [
 ];
 
 export const defaultQuickActions: QuickActionRecord[] = [];
+
+export * from "./agent-rich-message";
+export * from "./agent-rich-action";
 
 export const calculateUsageSummary = (events: UsageEvent[], budgets: UsageBudget[]) => {
   const today = new Date().toISOString().slice(0, 10);

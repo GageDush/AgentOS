@@ -17,7 +17,11 @@ export default defineConfig({
       "@agentos/shared": fromRoot("./packages/shared/src/index.ts"),
       "@agentos/token-manager": fromRoot("./packages/token-manager/src/index.ts"),
       "@agentos/tools": fromRoot("./packages/tools/src/index.ts"),
-      "@agentos/ui": fromRoot("./packages/ui/src/index.ts")
+      "@agentos/ui": fromRoot("./packages/ui/src/index.ts"),
+      "@agentos/app-generator": fromRoot("./packages/app-generator/src/index.ts"),
+      "@agentos/app-generator/templates/agentos-forge/sample-data": fromRoot(
+        "./packages/app-generator/templates/agentos-forge/sample-data.ts"
+      )
     }
   }
 });

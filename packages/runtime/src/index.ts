@@ -3,8 +3,12 @@ import { loadInstalledAgentProfiles } from "@agentos/agents";
 import { determineMissionRoute, parseConversationalIntent } from "@agentos/orchestrator";
 import type { AgentOSDatabase, PersistenceAdapter, QuickActionBlueprint } from "@agentos/persistence";
 import { getPersistenceAdapter } from "@agentos/persistence";
+import { evaluateQuotaSteward } from "@agentos/token-manager";
 import {
   nowIso,
+  type AgentRichMessageScope,
+  type AgentRichQuickActionType,
+  type AgentRoutingDecisionRecord,
   type ApprovalRecord,
   type AuditEvent,
   type ChatMessageRecord,
@@ -14,8 +18,83 @@ import {
   type MissionRunLog,
   type QuickActionRecord,
   type QuickActionType,
-  type RouteRiskLevel
+  type RouteRiskLevel,
+  type RoutingGate,
+  validateRichQuickActionScope
 } from "@agentos/shared";
+
+const IMPLEMENTER_AGENT_IDS = new Set(["code-implementer", "frontend-ui-agent", "backend-service-agent"]);
+const COMPLETION_GATES = ["qa", "security", "release"] as const;
+type CompletionGate = (typeof COMPLETION_GATES)[number];
+
+function gatePassEvent(gate: CompletionGate) {
+  return `gate.${gate}_passed`;
+}
+
+function hasGatePassAudit(persistence: PersistenceAdapter, runId: string, gate: CompletionGate) {
+  return persistence.listAuditEvents().some((event) => event.runId === runId && event.event === gatePassEvent(gate));
+}
+
+function getUnsatisfiedCompletionGates(persistence: PersistenceAdapter, requiredGates: RoutingGate[], runId: string) {
+  return COMPLETION_GATES.filter((gate) => requiredGates.includes(gate) && !hasGatePassAudit(persistence, runId, gate));
+}
+
+function applyQuotaStewardToRoute(
+  route: AgentRoutingDecisionRecord,
+  usageEvents: ReturnType<PersistenceAdapter["listUsageEvents"]>,
+  repoRoot: string
+): AgentRoutingDecisionRecord {
+  const quotaEval = evaluateQuotaSteward(usageEvents, repoRoot);
+  const quotaSteward = {
+    allowed: quotaEval.allowed,
+    blocked: quotaEval.blocked,
+    warning: quotaEval.warning,
+    reason: quotaEval.reason
+  };
+  if (quotaEval.blocked && route.providerLane !== "defer") {
+    return {
+      ...route,
+      providerLane: "defer" as const,
+      reason: `${route.reason} Quota steward deferred execution because a subscription bucket is depleted.`,
+      metadata: {
+        ...route.metadata,
+        quotaSteward
+      }
+    };
+  }
+  return {
+    ...route,
+    metadata: {
+      ...route.metadata,
+      quotaSteward
+    }
+  };
+}
+
+function createGateQuickActionBlueprints(missionId: string, runId: string, gates: CompletionGate[]): QuickActionBlueprint[] {
+  const blueprints: QuickActionBlueprint[] = [];
+  if (gates.includes("qa")) {
+    blueprints.push({
+      missionId,
+      runId,
+      label: "Run QA",
+      emoji: "🧪",
+      actionType: "run_qa",
+      riskLevel: "low"
+    });
+  }
+  if (gates.includes("security")) {
+    blueprints.push({
+      missionId,
+      runId,
+      label: "Security Review",
+      emoji: "🔒",
+      actionType: "security_review",
+      riskLevel: "medium"
+    });
+  }
+  return blueprints;
+}
 
 export type RuntimeOptions = {
   persistence?: PersistenceAdapter;
@@ -333,6 +412,167 @@ function createApproval(database: AgentOSDatabase, mission: MissionRecord, run: 
   return approval;
 }
 
+type PendingCompletion = {
+  summary: string;
+  stdout?: string;
+  stderr?: string;
+  durationMs: number;
+  exitCode: number;
+};
+
+function readPendingCompletion(persistence: PersistenceAdapter, runId: string): PendingCompletion | undefined {
+  const blocked = persistence
+    .listAuditEvents()
+    .find((event) => event.runId === runId && event.event === "gate.completion_blocked");
+  const pending = blocked?.metadata?.pendingCompletion;
+  if (!pending || typeof pending !== "object") return undefined;
+  const record = pending as PendingCompletion;
+  if (typeof record.summary !== "string") return undefined;
+  return record;
+}
+
+async function tryFinalizeRunAfterGates(runId: string, operatorId: string, options?: RuntimeOptions): Promise<RuntimeActionResult> {
+  const persistence = adapterFrom(options);
+  const run = persistence.getMissionRunById(runId);
+  if (!run) return { ok: false, summary: "Run not found.", runId };
+  const route = run.routeDecisionId
+    ? persistence.snapshot().routingDecisions.find((entry) => entry.id === run.routeDecisionId)
+    : undefined;
+  if (!route) return { ok: false, summary: "Route decision not found.", runId, missionId: run.missionId };
+  const pendingGates = getUnsatisfiedCompletionGates(persistence, route.requiredGates, runId);
+  if (pendingGates.length > 0) {
+    return {
+      ok: false,
+      summary: `Completion still blocked pending gates: ${pendingGates.join(", ")}.`,
+      runId,
+      missionId: run.missionId
+    };
+  }
+  const pendingCompletion = readPendingCompletion(persistence, runId);
+  if (!pendingCompletion) {
+    return { ok: true, summary: "All required gates passed.", runId, missionId: run.missionId };
+  }
+  const mission = persistence.getMissionById(run.missionId);
+  if (!mission) return { ok: false, summary: "Mission not found.", runId };
+  const completed = persistence.completeRunBundle({
+    runId: run.id,
+    missionId: mission.id,
+    summary: pendingCompletion.summary,
+    stdout: pendingCompletion.stdout,
+    stderr: pendingCompletion.stderr,
+    resultLogMessage: pendingCompletion.summary,
+    auditActor: operatorId,
+    correlationId: run.correlationId ?? route.id,
+    archiveEntry: {
+      id: makeId("archive"),
+      workspaceId: mission.workspaceId,
+      type: "task_memory",
+      title: `Mission result: ${mission.title}`,
+      content: `${pendingCompletion.summary}\n\n${pendingCompletion.stdout || "No stdout output."}`,
+      source: "mission-run",
+      missionId: mission.id,
+      runId: run.id,
+      agentId: run.operatorId,
+      tags: ["mission", "result", mission.command],
+      importance: 7,
+      archived: false,
+      createdAt: nowIso(),
+      updatedAt: nowIso()
+    },
+    usageEvent: {
+      workspaceId: mission.workspaceId,
+      provider: "local-gateway",
+      model: route.providerLane,
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+      estimatedCostUsd: 0,
+      agentId: run.operatorId,
+      runId: run.id
+    },
+    metadata: { durationMs: pendingCompletion.durationMs, exitCode: pendingCompletion.exitCode, finalizedAfterGates: true }
+  });
+  if (!completed) return { ok: false, summary: "Unable to finalize run after gates passed.", runId, missionId: mission.id };
+  for (const action of buildStandardRunQuickActionBlueprints(completed.mission, completed.run)) {
+    persistence.createQuickAction(action);
+  }
+  return {
+    ok: true,
+    summary: completed.run.resultSummary ?? pendingCompletion.summary,
+    runId: completed.run.id,
+    missionId: completed.mission.id
+  };
+}
+
+async function executeDeterministicGateCheck(
+  gate: "qa" | "security",
+  runId: string | undefined,
+  missionId: string | undefined,
+  operatorId: string,
+  options?: RuntimeOptions
+): Promise<RuntimeActionResult> {
+  const persistence = adapterFrom(options);
+  const gatewayBase = gatewayFrom(options);
+  const database = persistence.snapshot();
+  const run = runId ? getRun(database, runId) : database.missionRuns.find((item) => item.status === "paused" || item.status === "running");
+  const mission = missionId ? getMission(database, missionId) : run ? getMission(database, run.missionId) : undefined;
+  if (!run || !mission) {
+    return { ok: false, summary: `No active run available for ${gate} gate checks.` };
+  }
+  const commands = gate === "qa" ? ["pnpm typecheck", "pnpm test"] : ["git diff"];
+  for (const command of commands) {
+    const decision = assessCommandPolicy(command);
+    if (decision.policy === "denied") {
+      persistence.appendAuditEvent({
+        event: `gate.${gate}_failed`,
+        actor: operatorId,
+        summary: `${gate} gate failed: ${command} is denied by sandbox policy.`,
+        missionId: mission.id,
+        runId: run.id,
+        metadata: { command, policy: decision.policy }
+      });
+      return { ok: false, summary: `${gate} gate failed because ${command} is denied.`, missionId: mission.id, runId: run.id };
+    }
+    const gateway = await executeGatewayCommand(command, mission.id, run.id, gatewayBase);
+    if (!gateway.ok || !gateway.result?.ok) {
+      persistence.appendAuditEvent({
+        event: `gate.${gate}_failed`,
+        actor: operatorId,
+        summary: `${gate} gate failed on ${command}.`,
+        missionId: mission.id,
+        runId: run.id,
+        metadata: {
+          command,
+          exitCode: gateway.result?.exitCode,
+          stderr: gateway.result?.stderr
+        }
+      });
+      return {
+        ok: false,
+        summary: `${gate} gate failed on ${command}.`,
+        missionId: mission.id,
+        runId: run.id
+      };
+    }
+    persistence.appendAuditEvent({
+      event: "command.executed",
+      actor: "gateway",
+      summary: `Gate check executed ${command}.`,
+      missionId: mission.id,
+      runId: run.id,
+      metadata: { gate, command }
+    });
+  }
+  persistence.appendAuditEvent({
+    event: gatePassEvent(gate),
+    actor: operatorId,
+    summary: `${gate} gate passed via deterministic checks.`,
+    missionId: mission.id,
+    runId: run.id
+  });
+  return tryFinalizeRunAfterGates(run.id, operatorId, options);
+}
+
 async function executeGatewayCommand(command: string, missionId: string, runId: string, gatewayBase: string) {
   try {
     const response = await fetch(`${gatewayBase}/execute`, {
@@ -443,7 +683,7 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
   if (!claimedMission || !claimedRun) {
     return { ok: false, summary: `Run ${runId} lost its mission context.` };
   }
-  const route = determineMissionRoute(installed, {
+  const baseRoute = determineMissionRoute(installed, {
     id: claimedMission.id,
     workspaceId: claimedMission.workspaceId,
     title: claimedMission.title,
@@ -452,6 +692,7 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
     command: claimedMission.command,
     runId: claimedRun.id
   });
+  const route = applyQuotaStewardToRoute(baseRoute, persistence.listUsageEvents(claimedMission.workspaceId), installed.rootDir);
   const routeInfo = persistence.recordRouteDecisionBundle({
     routeDecision: route,
     missionId: claimedMission.id,
@@ -563,6 +804,36 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
     };
   }
 
+  if (routeInfo.routingDecision.providerLane === "defer") {
+    const deferred = persistence.pauseRunBundle({
+      runId: routeRun.id,
+      actor: workerId,
+      summary: "Deferred by quota steward until a subscription bucket resets.",
+      correlationId: routeRun.correlationId ?? routeInfo.routingDecision.id,
+      metadata: { quotaSteward: routeInfo.routingDecision.metadata?.quotaSteward }
+    });
+    persistence.appendAuditEvent({
+      event: "quota.deferred",
+      actor: "quota-steward",
+      summary: "Run deferred because a subscription provider bucket is depleted.",
+      missionId: routeInfo.mission.id,
+      runId: routeRun.id,
+      correlationId: routeRun.correlationId ?? routeInfo.routingDecision.id,
+      metadata: { quotaSteward: routeInfo.routingDecision.metadata?.quotaSteward }
+    });
+    if (deferred) {
+      for (const action of buildStandardRunQuickActionBlueprints(deferred.mission, deferred.run)) {
+        persistence.createQuickAction(action);
+      }
+    }
+    return {
+      ok: false,
+      summary: "Run deferred by quota steward until subscription capacity resets.",
+      missionId: routeInfo.mission.id,
+      runId: routeRun.id
+    };
+  }
+
   persistence.startRunExecutionBundle({
     runId: routeRun.id,
     actor: workerId,
@@ -637,6 +908,51 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
   }
 
   const resultSummary = `Executed "${routeInfo.mission.command}" in ${gateway.result.durationMs}ms with exit code ${gateway.result.exitCode}.`;
+  const pendingGates = getUnsatisfiedCompletionGates(
+    persistence,
+    routeInfo.routingDecision.requiredGates,
+    routeInfo.run?.id ?? claimedRun.id
+  );
+  if (pendingGates.length > 0) {
+    const pendingCompletion: PendingCompletion = {
+      summary: resultSummary,
+      stdout: gateway.result.stdout,
+      stderr: gateway.result.stderr || undefined,
+      durationMs: gateway.result.durationMs,
+      exitCode: gateway.result.exitCode
+    };
+    const paused = persistence.pauseRunBundle({
+      runId: routeInfo.run?.id ?? claimedRun.id,
+      actor: workerId,
+      summary: `Command finished; waiting on gates: ${pendingGates.join(", ")}.`,
+      correlationId: routeInfo.run?.correlationId ?? routeInfo.routingDecision.id,
+      metadata: { pendingGates, pendingCompletion }
+    });
+    persistence.appendAuditEvent({
+      event: "gate.completion_blocked",
+      actor: workerId,
+      summary: `Completion blocked pending gates: ${pendingGates.join(", ")}.`,
+      missionId: routeInfo.mission.id,
+      runId: routeInfo.run?.id ?? claimedRun.id,
+      correlationId: routeInfo.run?.correlationId ?? routeInfo.routingDecision.id,
+      metadata: { pendingGates, pendingCompletion }
+    });
+    if (paused) {
+      for (const action of createGateQuickActionBlueprints(paused.mission.id, paused.run.id, pendingGates)) {
+        persistence.createQuickAction(action);
+      }
+      for (const action of buildStandardRunQuickActionBlueprints(paused.mission, paused.run)) {
+        persistence.createQuickAction(action);
+      }
+    }
+    return {
+      ok: true,
+      summary: `${resultSummary} Completion blocked pending gates: ${pendingGates.join(", ")}.`,
+      missionId: routeInfo.mission.id,
+      runId: routeInfo.run?.id ?? claimedRun.id
+    };
+  }
+
   const completed = persistence.completeRunBundle({
     runId: routeInfo.run?.id ?? claimedRun.id,
     missionId: routeInfo.mission.id,
@@ -766,9 +1082,9 @@ export async function executeQuickAction(actionId: string, operatorId: string, o
       return { ok: true, summary, missionId: action.missionId, runId: action.runId };
     }
     case "run_qa":
-      return { ok: true, summary: "QA gate request recorded.", missionId: action.missionId, runId: action.runId };
+      return executeDeterministicGateCheck("qa", action.runId, action.missionId, operatorId, options);
     case "security_review":
-      return { ok: true, summary: "Security review request recorded.", missionId: action.missionId, runId: action.runId };
+      return executeDeterministicGateCheck("security", action.runId, action.missionId, operatorId, options);
     case "release":
       return { ok: false, summary: "Release remains gated and is not executed automatically.", missionId: action.missionId, runId: action.runId };
   }
@@ -782,6 +1098,21 @@ export async function resolveApprovalDecision(
   options?: RuntimeOptions
 ) {
   const persistence = adapterFrom(options);
+  if (status === "approved") {
+    const approval = persistence.snapshot().approvals.find((item) => item.id === approvalId);
+    if (approval?.runId) {
+      const run = persistence.getMissionRunById(approval.runId);
+      if (run && IMPLEMENTER_AGENT_IDS.has(run.operatorId) && operatorId === run.operatorId) {
+        return {
+          ok: false,
+          summary: "Implementer agents cannot self-approve their own runs.",
+          approvalRequestId: approvalId,
+          runId: run.id,
+          missionId: run.missionId
+        };
+      }
+    }
+  }
   const approvalBundle = persistence.resolveApprovalDecisionBundle({
     approvalId,
     status,
@@ -907,10 +1238,10 @@ export async function handleChatMessage(
       result = await retryMissionRun(context.intent.targetRunId!, options);
       break;
     case "run_qa":
-      result = createFollowUpGateMission("QA review", "pnpm test", "qa-agent", context.intent.targetMissionId, options);
+      result = await executeDeterministicGateCheck("qa", context.intent.targetRunId, context.intent.targetMissionId, operatorId, options);
       break;
     case "security_review":
-      result = createFollowUpGateMission("Security review", "git diff", "security-auditor", context.intent.targetMissionId, options);
+      result = await executeDeterministicGateCheck("security", context.intent.targetRunId, context.intent.targetMissionId, operatorId, options);
       break;
     case "show_details":
     case "summarize":
@@ -949,33 +1280,111 @@ export async function handleChatMessage(
   return { intent: context.intent, result, message };
 }
 
-function createFollowUpGateMission(label: string, command: string, operatorId: string, parentMissionId: string | undefined, options?: RuntimeOptions): RuntimeActionResult {
+export async function executeRichQuickAction(
+  input: {
+    actionType: AgentRichQuickActionType;
+    operatorId: string;
+    scope: AgentRichMessageScope;
+    threadId?: string;
+  },
+  options?: RuntimeOptions
+): Promise<RuntimeActionResult> {
   const persistence = adapterFrom(options);
-  const parentMission = parentMissionId ? persistence.getMissionById(parentMissionId) : undefined;
-  const created = persistence.createMissionBundle({
-    mission: {
-      title: `${label}${parentMission ? ` for ${parentMission.title}` : ""}`,
-      objective: `${label} requested from conversational control.`,
-      prompt: `${label} was requested from chat. Keep the review deterministic and safe.`,
-      operatorId,
-      sessionId: parentMission?.sessionId,
-      status: "queued",
-      sandboxLevel: command === "pnpm test" ? "safe_execute" : "observe",
-      command,
-      commandPolicy: "approval_required",
-      provider: "mock",
-      model: "mock-agentos-local"
-    },
-    initialRun: {
-      status: "queued",
-      commandPolicy: "approval_required",
-      requestedCommand: command
-    },
-    audit: {
-      actor: operatorId,
-      summary: `Created follow-up ${label.toLowerCase()} mission.`
+  const database = persistence.snapshot();
+  const pendingApprovals = database.approvals.filter((approval) => approval.status === "pending");
+  const validated = validateRichQuickActionScope(input.actionType, input.scope, { pendingApprovals });
+  if (!validated.ok) {
+    return { ok: false, summary: validated.reason };
+  }
+  const scope = validated.scope;
+
+  switch (input.actionType) {
+    case "approve":
+      return resolveApprovalDecision(scope.approvalRequestId!, "approved", "once", input.operatorId, options);
+    case "deny":
+      return resolveApprovalDecision(scope.approvalRequestId!, "denied", undefined, input.operatorId, options);
+    case "request_more_information": {
+      persistence.appendAuditEvent({
+        event: "rich_action.request_more_information",
+        actor: input.operatorId,
+        summary: "Operator asked for more information via rich card.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        correlationId: scope.correlationId
+      });
+      if (input.threadId) {
+        persistence.appendChatExchangeBundle({
+          threadId: input.threadId,
+          assistantMessage: {
+            threadId: input.threadId,
+            role: "assistant",
+            content: "Ash needs more information before proceeding. What should change?",
+            operatorId: input.operatorId,
+            missionId: scope.missionId,
+            runId: scope.runId,
+            intentType: "clarify",
+            askHuman: true
+          }
+        });
+      }
+      return {
+        ok: true,
+        summary: "Ash requested more information from the operator.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        approvalRequestId: scope.approvalRequestId
+      };
     }
-  });
-  void processRun(created.run.id, options);
-  return { ok: true, summary: `${label} mission queued.`, missionId: created.mission.id, runId: created.run.id };
+    case "agent_received_response":
+      persistence.appendAuditEvent({
+        event: "rich_action.agent_received_response",
+        actor: input.operatorId,
+        summary: "Operator marked the agent response as received.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        correlationId: scope.correlationId
+      });
+      return {
+        ok: true,
+        summary: "Marked agent response as received.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        approvalRequestId: scope.approvalRequestId
+      };
+    case "agent_responding":
+      persistence.appendAuditEvent({
+        event: "rich_action.agent_responding",
+        actor: input.operatorId,
+        summary: "Agent is responding to operator input.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        correlationId: scope.correlationId
+      });
+      return {
+        ok: true,
+        summary: "Ash is responding to the latest operator message.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        approvalRequestId: scope.approvalRequestId
+      };
+    case "agent_completed_task":
+      persistence.appendAuditEvent({
+        event: "rich_action.agent_completed_task",
+        actor: input.operatorId,
+        summary: "Agent marked the scoped task as complete.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        correlationId: scope.correlationId
+      });
+      return {
+        ok: true,
+        summary: "Ash marked the scoped task complete.",
+        missionId: scope.missionId,
+        runId: scope.runId,
+        approvalRequestId: scope.approvalRequestId
+      };
+    default:
+      return { ok: false, summary: "Unsupported rich quick action." };
+  }
 }
+
