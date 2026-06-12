@@ -55,6 +55,9 @@ function extractSections(body: string) {
   return [...body.matchAll(/^#\s+(.+)$/gm)].map((match) => match[1].trim());
 }
 
+export { executeAgentPipelineStep, executeAgentStep } from "./executor";
+export type { AgentReport } from "@agentos/shared";
+
 export function loadInstalledAgentProfiles(rootDir = findRepoRoot()) {
   const registryPath = join(rootDir, ".agentos", "agent-registry.json");
   const agentsDir = join(rootDir, ".agentos", "agents");
