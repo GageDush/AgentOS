@@ -13,6 +13,16 @@ import {
 
 const monorepoRoot = join(fileURLToPath(new URL(".", import.meta.url)), "..", "..", "..", "..");
 
+function isShallowGitCheckout(repoRoot: string) {
+  try {
+    return (
+      execSync("git rev-parse --is-shallow-repository", { cwd: repoRoot, encoding: "utf8" }).trim() === "true"
+    );
+  } catch {
+    return true;
+  }
+}
+
 describe("chatgpt planning wiki", () => {
   it("collects bundle markdown from git when available", () => {
     const repoRoot = monorepoRoot;
@@ -21,6 +31,7 @@ describe("chatgpt planning wiki", () => {
     } catch {
       return;
     }
+    if (isShallowGitCheckout(repoRoot)) return;
 
     const docs = collectChatGptPlanningDocs(repoRoot);
     expect(docs.some((doc) => doc.sourcePath.includes("AGENTOS_MASTER_CODEX_PROMPT"))).toBe(true);
