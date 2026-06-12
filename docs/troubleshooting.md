@@ -34,11 +34,34 @@ Check that `apps/command-center/public/assets/office-master.png` exists.
 | `https://agentos.flous.dev` | Command center (alternate) |
 | `https://api.flous.dev/health` | API health |
 
-**530** — Tunnel DNS exists but cloudflared cannot reach local services. Start AgentOS locally, then restart the tunnel in **Admin** PowerShell:
+**525** — Cloudflare cannot complete SSL to the tunnel (no active connector or DNS not proxied). Fix DNS and restart the tunnel:
 
 ```powershell
 Restart-Service cloudflared
 ```
+
+If the service is stuck, use the **530** quick fix or **Full repair** below.
+
+**530** — Tunnel has no active connector. Common causes:
+
+1. **Windows service stuck** (`StopPending`) — process exists but tunnel is dead
+2. Local API (`8787`) or command center (`3000`) not running
+
+**Quick fix** (from repo root, no admin):
+
+```powershell
+& "${env:ProgramFiles(x86)}\cloudflared\cloudflared.exe" tunnel run agentos
+```
+
+Or use AgentOS Control → **Start + tunnel**.
+
+**Full repair** (Admin PowerShell):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\repair-cloudflare-tunnel.ps1
+```
+
+This kills stuck processes, restarts the cloudflared service, and falls back to `tunnel run` if needed.
 
 **DNS records** (all CNAME → `agentos` tunnel, Proxied):
 

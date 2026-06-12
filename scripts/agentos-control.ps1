@@ -114,6 +114,51 @@ function Get-CloudflaredPath() {
   return $null
 }
 
+function Test-TunnelConnection() {
+  $cf = Get-CloudflaredPath
+  if (-not $cf) { return $false }
+  $output = & $cf tunnel info agentos 2>&1 | Out-String
+  return $output -match "CONNECTOR ID" -and $output -notmatch "does not have any active connection"
+}
+
+function Start-CloudflaredTunnel() {
+  $cf = Get-CloudflaredPath
+  if (-not $cf) {
+    Write-Warn "cloudflared not found - install with: winget install Cloudflare.cloudflared"
+    return $false
+  }
+
+  if (Test-TunnelConnection) {
+    Write-Ok "cloudflared tunnel 'agentos' has an active connection."
+    return $true
+  }
+
+  $svc = Get-Service cloudflared -ErrorAction SilentlyContinue
+  if ($svc -and $svc.Status -eq "StopPending") {
+    Write-Warn "cloudflared Windows service is stuck (StopPending). Run scripts\repair-cloudflare-tunnel.ps1 as Administrator."
+  } elseif ($svc -and $svc.Status -eq "Running") {
+    Write-Warn "cloudflared service is running but tunnel has no connection."
+  }
+
+  $existing = Get-Process cloudflared -ErrorAction SilentlyContinue
+  if (-not $existing) {
+    Start-Process -FilePath $cf -ArgumentList "tunnel", "run", "agentos" -WindowStyle Minimized
+    Write-Ok "Started cloudflared tunnel 'agentos'."
+  } else {
+    Start-Process -FilePath $cf -ArgumentList "tunnel", "run", "agentos" -WindowStyle Minimized
+    Write-Ok "Started additional cloudflared tunnel run (existing process had no connection)."
+  }
+
+  Start-Sleep -Seconds 6
+  if (Test-TunnelConnection) {
+    Write-Ok "Tunnel connection established."
+    return $true
+  }
+
+  Write-Bad "Tunnel still has no active connection. Run repair-cloudflare-tunnel.ps1 as Administrator."
+  return $false
+}
+
 function Invoke-Repo([string]$Label, [string[]]$Command) {
   Write-Info $Label
   Push-Location $RepoRoot
@@ -165,11 +210,26 @@ function Show-Health {
 
   $cf = Get-CloudflaredPath
   if ($cf) {
-    $cfProcs = Get-Process cloudflared -ErrorAction SilentlyContinue
-    if ($cfProcs) { Write-Ok "cloudflared running ($($cfProcs.Count) process(es))" } else { Write-Warn "cloudflared installed but not running" }
+    if (Test-TunnelConnection) {
+      Write-Ok "cloudflared tunnel 'agentos' connected"
+    } else {
+      $cfProcs = Get-Process cloudflared -ErrorAction SilentlyContinue
+      if ($cfProcs) {
+        Write-Bad "cloudflared process running but tunnel NOT connected (530 errors). Run repair-cloudflare-tunnel.ps1 as Admin."
+      } else {
+        Write-Warn "cloudflared installed but tunnel not running"
+      }
+    }
+    $svc = Get-Service cloudflared -ErrorAction SilentlyContinue
+    if ($svc -and $svc.Status -eq "StopPending") {
+      Write-Bad "cloudflared Windows service stuck in StopPending"
+    }
   } else {
     Write-Warn "cloudflared not installed"
   }
+
+  $tunnelDash = Test-HttpOk "https://flous.dev"
+  if ($tunnelDash.Ok) { Write-Ok "https://flous.dev -> $($tunnelDash.Status)" } else { Write-Warn "https://flous.dev not reachable: $($tunnelDash.Error)" }
 
   $health = Test-HttpOk "http://127.0.0.1:$ApiPort/health"
   if ($health.Ok) { Write-Ok "GET /health -> $($health.Status)" } else { Write-Bad "GET /health failed: $($health.Error)" }
@@ -220,18 +280,7 @@ function Start-Stack {
   }
 
   if ($IncludeTunnel) {
-    $cf = Get-CloudflaredPath
-    if (-not $cf) {
-      Write-Warn "cloudflared not found - starting dev without tunnel."
-    } else {
-      $existing = Get-Process cloudflared -ErrorAction SilentlyContinue
-      if (-not $existing) {
-        Start-Process -FilePath $cf -ArgumentList "tunnel", "run", "agentos" -WindowStyle Minimized
-        Write-Ok "Started cloudflared tunnel 'agentos'."
-      } else {
-        Write-Info "cloudflared already running."
-      }
-    }
+    Start-CloudflaredTunnel | Out-Null
   }
 
   $devCmd = "Set-Location -LiteralPath '$RepoRoot'; Write-Host 'AgentOS dev stack' -ForegroundColor Cyan; pnpm dev"
@@ -368,14 +417,7 @@ function Restart-Stack {
   Start-Sleep -Seconds 2
 
   if ($IncludeTunnel) {
-    $cf = Get-CloudflaredPath
-    if (-not $cf) {
-      Write-Warn "cloudflared not found - continuing without tunnel."
-    } else {
-      Start-Process -FilePath $cf -ArgumentList "tunnel", "run", "agentos" -WindowStyle Minimized
-      Write-Ok "Started cloudflared tunnel 'agentos'."
-      Start-Sleep -Seconds 3
-    }
+    Start-CloudflaredTunnel | Out-Null
   }
 
   $devCmd = "Set-Location -LiteralPath '$RepoRoot'; Write-Host 'AgentOS dev stack' -ForegroundColor Cyan; pnpm dev"
@@ -398,7 +440,7 @@ function Get-StackStatusSnapshot {
   $apiUp = [bool](Get-ListenPid $ApiPort)
   $uiUp = [bool](Get-ListenPid $UiPort)
   $gwUp = [bool](Get-ListenPid $GatewayPort)
-  $cfUp = [bool](Get-Process cloudflared -ErrorAction SilentlyContinue)
+  $cfUp = Test-TunnelConnection
   return [pscustomobject]@{
     Api = if ($apiUp) { "UP" } else { "DOWN" }
     Ui = if ($uiUp) { "UP" } else { "DOWN" }
@@ -654,6 +696,15 @@ function Show-ControlGui {
   New-ActionButton "Start + tunnel" { Invoke-GuiAction "Starting stack with tunnel" { Start-Stack -IncludeTunnel } } | Out-Null
   New-ActionButton "Restart all" { Invoke-GuiAction "Restarting stack" { Restart-Stack | Out-Null } } | Out-Null
   New-ActionButton "Restart + tunnel" { Invoke-GuiAction "Restarting stack with tunnel" { Restart-Stack -IncludeTunnel | Out-Null } } | Out-Null
+  New-ActionButton "Repair tunnel" {
+    Invoke-GuiAction "Repairing Cloudflare tunnel" {
+      $repair = Join-Path $RepoRoot "scripts\repair-cloudflare-tunnel.ps1"
+      Start-Process powershell -Verb RunAs -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $repair
+      Write-Info "Launched repair script (Administrator). Retrying user-mode tunnel..."
+      Start-CloudflaredTunnel | Out-Null
+      Update-StatusLabels
+    }
+  } | Out-Null
   New-ActionButton "Stop all" { Invoke-GuiAction "Stopping stack" { Stop-Stack } } | Out-Null
   New-ActionButton "Backup data" { Invoke-GuiAction "Backing up AgentOS" { Backup-AgentOS -StopServicesFirst -OpenFolder | Out-Null } } | Out-Null
   New-ActionButton "Health report" { Invoke-GuiAction "Health and status" { Show-Health } } | Out-Null
