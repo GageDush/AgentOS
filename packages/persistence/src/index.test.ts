@@ -1,11 +1,69 @@
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { describe, expect, it } from "vitest";
-import { JsonFilePersistenceAdapter, SqlitePersistenceAdapter, buildSeedDatabase } from "./index";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  JsonFilePersistenceAdapter,
+  SqlitePersistenceAdapter,
+  buildSeedDatabase,
+  onApprovalCreated,
+  resetApprovalCreatedListenersForTests
+} from "./index";
 import { PostgresPersistenceAdapter } from "./adapters/postgres";
 
+afterEach(() => {
+  resetApprovalCreatedListenersForTests();
+});
+
 describe("sql repository adapter", () => {
+  it("emits approval-created listeners for bundle and direct creates", () => {
+    const dir = mkdtempSync(join(tmpdir(), "agentos-persist-"));
+    const adapter = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    const listener = vi.fn();
+    onApprovalCreated(listener);
+    const direct = adapter.createApprovalRequest({
+      workspaceId: adapter.getOrCreateDefaultWorkspace().id,
+      requestedByOperatorId: adapter.getOrCreateDefaultOperator().id,
+      agentId: "admin-agent",
+      tool: "command.execute",
+      permissionLevel: "observe",
+      inputSummary: "Direct approval",
+      scope: "once"
+    });
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ id: direct.id, status: "pending" }));
+    listener.mockClear();
+    const mission = adapter.createMission({ title: "Hook bundle", command: "pnpm install", status: "queued" });
+    const run = adapter.createMissionRun({
+      workspaceId: mission.workspaceId,
+      missionId: mission.id,
+      sessionId: mission.sessionId,
+      requestedByOperatorId: mission.requestedByOperatorId,
+      operatorId: mission.operatorId,
+      provider: mission.provider,
+      model: mission.model,
+      status: "running",
+      commandPolicy: "approval_required",
+      requestedCommand: mission.command
+    });
+    const bundle = adapter.createApprovalRequestBundle({
+      approval: {
+        workspaceId: mission.workspaceId,
+        requestedByOperatorId: mission.requestedByOperatorId,
+        agentId: run.operatorId,
+        missionId: mission.id,
+        sessionId: mission.sessionId,
+        runId: run.id,
+        tool: "command.execute",
+        permissionLevel: "dependency_install",
+        inputSummary: "Bundle approval",
+        scope: "once",
+        command: mission.command
+      }
+    });
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledWith(expect.objectContaining({ id: bundle?.approval.id }));
+  });
+
   it("initializes default workspace and operator", () => {
     const dir = mkdtempSync(join(tmpdir(), "agentos-persist-"));
     const adapter = new SqlitePersistenceAdapter(join(dir, "agentos.db"));

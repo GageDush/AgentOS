@@ -161,13 +161,8 @@ export const addBudget = (budget: Omit<UsageBudget, "id">) =>
 export const resolveApproval = (id: string, status: ApprovalRecord["status"], scope?: ApprovalRecord["scope"]) =>
   persistence.resolveApprovalRequest(id, status, scope);
 
-export const createApproval = (input: Omit<ApprovalRecord, "id" | "createdAt" | "status">) => {
-  const approval = persistence.createApprovalRequest(input);
-  void import("./discord/notify")
-    .then(({ queueDiscordApproval }) => queueDiscordApproval(approval))
-    .catch(() => undefined);
-  return approval;
-};
+export const createApproval = (input: Omit<ApprovalRecord, "id" | "createdAt" | "status">) =>
+  persistence.createApprovalRequest(input);
 
 export const addAudit = (event: string, actor: string, summary: string, missionId?: string, runId?: string) =>
   mutate((database) => addAuditInternal(database, event, actor, summary, missionId, runId));

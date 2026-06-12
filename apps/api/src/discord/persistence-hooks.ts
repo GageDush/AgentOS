@@ -1,5 +1,6 @@
-import { getPersistenceAdapter } from "@agentos/persistence";
+import { getPersistenceAdapter, onApprovalCreated } from "@agentos/persistence";
 import type { UsageEvent } from "@agentos/shared";
+import { queueDiscordApproval } from "./notify";
 import { queueDiscordUsage } from "./outbox";
 
 export function installDiscordPersistenceHooks() {
@@ -10,6 +11,9 @@ export function installDiscordPersistenceHooks() {
     queueDiscordUsage(event);
     return event;
   };
+  onApprovalCreated((approval) => {
+    queueDiscordApproval(approval);
+  });
 }
 
 export type { UsageEvent };

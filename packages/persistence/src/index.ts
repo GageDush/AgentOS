@@ -36,6 +36,7 @@ import type {
   ResolveApprovalDecisionBundleInput,
   ResolveApprovalDecisionBundleResult
 } from "./repository";
+import { emitApprovalCreated } from "./approval-hooks";
 import {
   defaultAgents,
   defaultApprovals,
@@ -907,11 +908,13 @@ export class JsonFilePersistenceAdapter implements PersistenceAdapter {
   }
 
   createApprovalRequest(input: CreateApprovalInput) {
-    return this.mutate((database) => {
-      const approval: ApprovalRecord = { ...input, id: makeId("approval"), status: "pending", createdAt: nowIso() };
-      database.approvals.unshift(approval);
-      return approval;
+    const approval = this.mutate((database) => {
+      const record: ApprovalRecord = { ...input, id: makeId("approval"), status: "pending", createdAt: nowIso() };
+      database.approvals.unshift(record);
+      return record;
     });
+    emitApprovalCreated(approval);
+    return approval;
   }
 
   resolveApprovalRequest(id: string, status: ApprovalRecord["status"], scope?: ApprovalRecord["scope"]) {
@@ -1355,7 +1358,7 @@ export class JsonFilePersistenceAdapter implements PersistenceAdapter {
   }
 
   createApprovalRequestBundle(input: CreateApprovalRequestBundleInput) {
-    return this.mutate((database) => {
+    const bundle = this.mutate((database) => {
       const approval: ApprovalRecord = {
         ...input.approval,
         id: makeId("approval"),
@@ -1413,6 +1416,8 @@ export class JsonFilePersistenceAdapter implements PersistenceAdapter {
         missionLog
       } satisfies CreateApprovalRequestBundleResult;
     });
+    if (bundle) emitApprovalCreated(bundle.approval);
+    return bundle;
   }
 
   resolveApprovalDecisionBundle(input: ResolveApprovalDecisionBundleInput) {
@@ -2408,30 +2413,32 @@ export class SqlitePersistenceAdapter implements PersistenceAdapter {
   }
 
   createApprovalRequest(input: CreateApprovalInput) {
-    return this.transaction(() => {
-      const approval: ApprovalRecord = { ...input, id: makeId("approval"), status: "pending", createdAt: nowIso() };
+    const approval = this.transaction(() => {
+      const record: ApprovalRecord = { ...input, id: makeId("approval"), status: "pending", createdAt: nowIso() };
       this.insertPayloadRow(
         "approval_requests",
         {
-          id: approval.id,
-          workspace_id: approval.workspaceId,
-          requested_by_operator_id: approval.requestedByOperatorId,
-          agent_id: approval.agentId,
-          mission_id: approval.missionId,
-          session_id: approval.sessionId,
-          run_id: approval.runId,
-          tool: approval.tool,
-          permission_level: approval.permissionLevel,
-          status: approval.status,
-          scope: approval.scope,
-          created_at: approval.createdAt,
-          resolved_at: approval.resolvedAt,
-          correlation_id: approval.correlationId
+          id: record.id,
+          workspace_id: record.workspaceId,
+          requested_by_operator_id: record.requestedByOperatorId,
+          agent_id: record.agentId,
+          mission_id: record.missionId,
+          session_id: record.sessionId,
+          run_id: record.runId,
+          tool: record.tool,
+          permission_level: record.permissionLevel,
+          status: record.status,
+          scope: record.scope,
+          created_at: record.createdAt,
+          resolved_at: record.resolvedAt,
+          correlation_id: record.correlationId
         },
-        approval
+        record
       );
-      return approval;
+      return record;
     });
+    emitApprovalCreated(approval);
+    return approval;
   }
 
   resolveApprovalRequest(id: string, status: ApprovalRecord["status"], scope?: ApprovalRecord["scope"]) {
@@ -4018,3 +4025,4 @@ export function resetSqliteDatabaseFile(path = resolveAgentOSDataPath()) {
 }
 
 export type * from "./repository";
+export { emitApprovalCreated, onApprovalCreated, resetApprovalCreatedListenersForTests } from "./approval-hooks";
