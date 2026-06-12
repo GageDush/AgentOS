@@ -27,6 +27,20 @@ const IMPLEMENTER_AGENT_IDS = new Set(["code-implementer", "frontend-ui-agent", 
 const COMPLETION_GATES = ["qa", "security", "release"] as const;
 type CompletionGate = (typeof COMPLETION_GATES)[number];
 
+function isHumanApprovalRequired() {
+  const raw = process.env.AGENTOS_REQUIRE_HUMAN_APPROVAL;
+  if (raw === undefined || raw === "") return true;
+  return !["false", "0", "no", "off"].includes(raw.toLowerCase());
+}
+
+function isPermissiveSandboxLevel(level: MissionRecord["sandboxLevel"]) {
+  return level === "observe" || level === "safe_execute";
+}
+
+function loadAgentProfileIds(repoRoot?: string) {
+  return new Set(loadInstalledAgentProfiles(repoRoot).profiles.map((profile) => profile.id));
+}
+
 function gatePassEvent(gate: CompletionGate) {
   return `gate.${gate}_passed`;
 }
@@ -725,10 +739,16 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
   });
   persistence.appendMissionLog(routeRun.id, "system", commandDecision.reason);
 
+  const permissiveSandbox = isPermissiveSandboxLevel(routeInfo.mission.sandboxLevel);
+  const hasPreExecutionRisk =
+    routeInfo.routingDecision.requiredGates.length > 0 ||
+    routeInfo.routingDecision.riskLevel === "high" ||
+    routeInfo.routingDecision.riskLevel === "critical";
   const needsApproval =
     commandDecision.policy === "approval_required" ||
     routeInfo.routingDecision.requiredGates.includes("approval") ||
-    routeInfo.mission.sandboxLevel !== "observe" && routeInfo.mission.sandboxLevel !== "safe_execute";
+    !permissiveSandbox ||
+    (isHumanApprovalRequired() && permissiveSandbox && hasPreExecutionRisk);
 
   if (commandDecision.policy === "denied") {
     const failed = persistence.failRunBundle({
@@ -1100,15 +1120,25 @@ export async function resolveApprovalDecision(
   const persistence = adapterFrom(options);
   if (status === "approved") {
     const approval = persistence.snapshot().approvals.find((item) => item.id === approvalId);
-    if (approval?.runId) {
-      const run = persistence.getMissionRunById(approval.runId);
-      if (run && IMPLEMENTER_AGENT_IDS.has(run.operatorId) && operatorId === run.operatorId) {
+    if (approval) {
+      const implementerAgentId = approval.agentId;
+      if (IMPLEMENTER_AGENT_IDS.has(implementerAgentId) && operatorId === implementerAgentId) {
         return {
           ok: false,
           summary: "Implementer agents cannot self-approve their own runs.",
           approvalRequestId: approvalId,
-          runId: run.id,
-          missionId: run.missionId
+          runId: approval.runId,
+          missionId: approval.missionId
+        };
+      }
+      const agentProfileIds = loadAgentProfileIds();
+      if (agentProfileIds.has(operatorId)) {
+        return {
+          ok: false,
+          summary: "Agent profiles cannot approve missions; a human operator is required.",
+          approvalRequestId: approvalId,
+          runId: approval.runId,
+          missionId: approval.missionId
         };
       }
     }

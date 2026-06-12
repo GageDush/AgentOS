@@ -97,6 +97,7 @@ describe("runtime spine", () => {
   });
 
   it("blocks completion when QA gate is required and not yet passed", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
     mockGatewaySuccess();
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
@@ -136,6 +137,7 @@ describe("runtime spine", () => {
   });
 
   it("defers execution when quota steward reports depleted buckets", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
     persistence.mutate((database) => {
@@ -197,6 +199,97 @@ describe("runtime spine", () => {
     });
     expect(result.ok).toBe(false);
     expect(result.summary).toContain("cannot self-approve");
+  });
+
+  it("rejects approval from agent profile operator ids", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    const result = await resolveApprovalDecision("approval-terminal-run", "approved", "once", "qa-agent", {
+      persistence
+    });
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("human operator");
+  });
+
+  it("blocks completion when release gate is required and not yet passed", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
+    mockGatewaySuccess();
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    persistence.mutate((database) => {
+      const mission = database.missions[0]!;
+      mission.title = "Ship release";
+      mission.objective = "Prepare the release checklist.";
+      mission.prompt = "Prepare release readiness.";
+      mission.command = "git status";
+      mission.status = "queued";
+      mission.sandboxLevel = "observe";
+      mission.commandPolicy = "approval_required";
+      database.missionRuns.unshift({
+        id: "run-release-gate",
+        workspaceId: database.workspaces[0].id,
+        missionId: mission.id,
+        sessionId: database.sessions[0].id,
+        requestedByOperatorId: database.operators[0].id,
+        operatorId: "release-manager",
+        provider: "mock",
+        model: "mock-agentos-local",
+        status: "queued",
+        commandPolicy: "auto_allowed",
+        requestedCommand: "git status",
+        attemptCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      mission.latestRunId = "run-release-gate";
+    });
+    await processPendingMissionRuns({ persistence, gatewayBase: "http://127.0.0.1:8790", workerId: "worker-test" });
+    const snapshot = persistence.snapshot();
+    const run = snapshot.missionRuns.find((item) => item.id === "run-release-gate");
+    const route = snapshot.routingDecisions.find((entry) => entry.runId === "run-release-gate");
+    expect(route?.requiredGates).toContain("release");
+    expect(run?.status).toBe("paused");
+    expect(snapshot.auditEvents.some((event) => event.event === "gate.completion_blocked" && event.runId === "run-release-gate")).toBe(true);
+    expect(snapshot.auditEvents.some((event) => event.event === "gate.release_passed" && event.runId === "run-release-gate")).toBe(false);
+    expect(run?.status).not.toBe("completed");
+  });
+
+  it("requires human approval for gated missions even with permissive sandbox", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "true");
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    persistence.mutate((database) => {
+      const mission = database.missions[0]!;
+      mission.title = "Fix auth bug";
+      mission.objective = "Repair the login regression in API code.";
+      mission.prompt = "Investigate and fix the auth bug.";
+      mission.command = "git status";
+      mission.status = "queued";
+      mission.sandboxLevel = "observe";
+      mission.commandPolicy = "auto_allowed";
+      database.missionRuns.unshift({
+        id: "run-human-approval",
+        workspaceId: database.workspaces[0].id,
+        missionId: mission.id,
+        sessionId: database.sessions[0].id,
+        requestedByOperatorId: database.operators[0].id,
+        operatorId: "builder-agent",
+        provider: "mock",
+        model: "mock-agentos-local",
+        status: "queued",
+        commandPolicy: "auto_allowed",
+        requestedCommand: "git status",
+        attemptCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      mission.latestRunId = "run-human-approval";
+    });
+    await processPendingMissionRuns({ persistence, gatewayBase: "http://127.0.0.1:8790", workerId: "worker-test" });
+    const snapshot = persistence.snapshot();
+    const run = snapshot.missionRuns.find((item) => item.id === "run-human-approval");
+    expect(run?.status).toBe("awaiting_approval");
+    expect(snapshot.approvals.some((approval) => approval.runId === "run-human-approval" && approval.status === "pending")).toBe(true);
   });
 
   it("deduplicates active quick actions for the same run action type", async () => {
