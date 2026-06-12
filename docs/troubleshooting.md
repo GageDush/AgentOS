@@ -29,7 +29,8 @@ Check that `apps/command-center/public/assets/office-master.png` exists.
 
 | URL | Purpose |
 |-----|---------|
-| `https://app.flous.dev` | Command center |
+| `https://flous.dev` | Command center (canonical) |
+| `https://app.flous.dev` | Command center (alternate) |
 | `https://agentos.flous.dev` | Command center (alternate) |
 | `https://api.flous.dev/health` | API health |
 
@@ -41,16 +42,19 @@ Restart-Service cloudflared
 
 **DNS records** (all CNAME → `agentos` tunnel, Proxied):
 
-- `api.flous.dev`
-- `app.flous.dev`
-- `agentos.flous.dev`
+- `flous.dev` → dashboard (`:3000`)
+- `api.flous.dev` → API (`:8787`)
+- `app.flous.dev` → dashboard (`:3000`)
+- `agentos.flous.dev` → dashboard (`:3000`)
 
-No apex `flous.dev` record is required if you use the subdomains above.
-
-**Optional apex** — To add bare `https://flous.dev` back:
+If the apex record is missing, create it:
 
 ```powershell
 & "${env:ProgramFiles(x86)}\cloudflared\cloudflared.exe" tunnel route dns agentos flous.dev
 ```
 
-Add `flous.dev` → `http://127.0.0.1:3000` to tunnel ingress and restart cloudflared.
+Ensure tunnel ingress includes `flous.dev` → `http://127.0.0.1:3000`, then restart cloudflared (Admin PowerShell):
+
+```powershell
+Restart-Service cloudflared
+```
