@@ -9,7 +9,7 @@ Linked articles live under **`wiki/`** — start at [[wiki/index.md]].
 
 ## Legacy flat files (deprecated)
 
-These dated-append files remain for backward compatibility until PR2 moves all writes to the wiki:
+These dated-append files remain for backward compatibility when `FEATURE_MEMORY_WIKI=false`:
 
 | File | Wiki successor |
 | --- | --- |

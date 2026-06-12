@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-06-12T13:56:43.905Z",
+  "generatedAt": "2026-06-12T14:40:53.910Z",
   "articles": [
     {
       "slug": "agents/admin-agent",
@@ -6079,7 +6079,7 @@
         "sessions/cursor/index",
         "flows/memory-curator"
       ],
-      "updatedAt": "2026-06-12T13:56:43.867Z",
+      "updatedAt": "2026-06-12T14:40:53.870Z",
       "sections": [
         {
           "heading": "Overview",
@@ -6120,35 +6120,106 @@
         "memory",
         "curation"
       ],
-      "summary": "After specialist agents complete:",
+      "summary": "Runs at the **end** of `executeAgentPipelineStep` when runtime passes `memoryUpdates: true`. See flows/pipeline for how read and write connect.",
       "entities": [
+        "executeAgentPipelineStep",
+        "memoryUpdates: true",
+        "AgentReport",
+        "systems-synthesizer",
         "MemoryUpdateEnvelope",
+        "buildMemoryUpdateFromReport",
+        "processMemoryUpdate",
+        "FEATURE_MEMORY_WIKI=true",
+        "proposeWikiMerges",
+        "areasTouched",
+        ".agentos/memory/*.md",
+        "AGENTOS_MEMORY_WIKI_WRITE",
+        "applyWikiEdits",
+        "memory-queue.json",
+        "GET /memory/queue",
+        "POST /memory/queue/:id/approve",
         "[[wikilinks]]",
-        "packages/agents"
+        "_meta/index.json",
+        "test-commands",
+        "risk-areas",
+        "code-ownership-map",
+        "dependency-graph",
+        "repo-map",
+        "packages/*"
       ],
       "outLinks": [
+        "flows/pipeline",
         "index",
         "wikilinks",
+        "flows/test-commands",
+        "areas/risk-areas",
+        "areas/code-ownership",
+        "areas/dependency-graph",
+        "areas/repo-layout",
+        "agents/admin-agent",
         "packages/agents",
-        "areas/repo-layout"
+        "packages/memory"
       ],
-      "updatedAt": "2026-06-12T12:22:01.317Z",
+      "updatedAt": "2026-06-12T14:16:37.567Z",
       "sections": [
         {
           "heading": "Overview",
           "anchor": "overview",
-          "summary": "After specialist agents complete:",
+          "summary": "Runs at the **end** of `executeAgentPipelineStep` when runtime passes `memoryUpdates: true`. See flows/pipeline for how read and write connect.",
+          "entities": [
+            "executeAgentPipelineStep",
+            "memoryUpdates: true"
+          ]
+        },
+        {
+          "heading": "Write sequence",
+          "anchor": "write-sequence",
+          "summary": "1. Each specialist `AgentReport` (except `systems-synthesizer`) → `MemoryUpdateEnvelope` via `buildMemoryUpdateFromReport`",
+          "entities": [
+            "AgentReport",
+            "systems-synthesizer",
+            "MemoryUpdateEnvelope",
+            "buildMemoryUpdateFromReport",
+            "processMemoryUpdate",
+            "FEATURE_MEMORY_WIKI=true",
+            "proposeWikiMerges",
+            "areasTouched",
+            ".agentos/memory/*.md",
+            "AGENTOS_MEMORY_WIKI_WRITE",
+            "applyWikiEdits",
+            "memory-queue.json"
+          ]
+        },
+        {
+          "heading": "Key mappings",
+          "anchor": "key-mappings",
+          "summary": "| Memory key | Wiki slug |",
+          "entities": [
+            "test-commands",
+            "risk-areas",
+            "code-ownership-map",
+            "dependency-graph",
+            "repo-map",
+            "areasTouched",
+            "packages/*"
+          ]
+        },
+        {
+          "heading": "Rules",
+          "anchor": "rules",
+          "summary": "- `MemoryUpdateEnvelope` only — never full transcripts",
           "entities": [
             "MemoryUpdateEnvelope",
-            "[[wikilinks]]"
+            "memory-curator"
           ]
         },
         {
           "heading": "Related",
           "anchor": "related",
-          "summary": "- packages/agents",
+          "summary": "- flows/pipeline",
           "entities": [
-            "packages/agents"
+            "packages/agents",
+            "packages/memory"
           ]
         }
       ]
@@ -6174,8 +6245,19 @@
         "security-auditor?",
         "code-reviewer?",
         "release-manager?",
+        "FEATURE_MEMORY_WIKI=true",
+        "context-minimizer",
+        "requiresRepoContext",
         "packages/runtime",
-        "packages/orchestrator"
+        "shouldRunContextMinimizer()",
+        "buildContextPacket",
+        "_meta/index.json",
+        "[[wikilinks]]",
+        "ContextPacket",
+        "memoryIncluded",
+        "riskAreas",
+        "suggestedCommands",
+        ".agentos/memory/*.md"
       ],
       "outLinks": [
         "agents/admin-agent",
@@ -6199,11 +6281,17 @@
         "agents/integration-broker",
         "agents/docs-agent",
         "agents/issue-intake-researcher",
+        "flows/memory-curator",
+        "packages/memory",
+        "wikilinks",
+        "flows/test-commands",
+        "areas/risk-areas",
+        "packages/agents",
         "packages/runtime",
         "packages/orchestrator",
         "index"
       ],
-      "updatedAt": "2026-06-12T13:38:52.152Z",
+      "updatedAt": "2026-06-12T14:16:31.855Z",
       "sections": [
         {
           "heading": "Overview",
@@ -6249,12 +6337,94 @@
           "entities": []
         },
         {
+          "heading": "Memory loop",
+          "anchor": "memory-loop",
+          "summary": "Wiki memory is not a separate subsystem — it is the **read/write loop** around every mission when `FEATURE_MEMORY_WIKI=true`. See flows/memory-curator for write-path detail and packages/memory for the",
+          "entities": [
+            "FEATURE_MEMORY_WIKI=true",
+            "packages/memory"
+          ]
+        },
+        {
+          "heading": "Read path (before specialists)",
+          "anchor": "read-path-before-specialists",
+          "summary": "1. **Orchestrator** adds `context-minimizer` to the supporting roster when `requiresRepoContext` is true.",
+          "entities": [
+            "context-minimizer",
+            "requiresRepoContext",
+            "packages/runtime",
+            "shouldRunContextMinimizer()",
+            "buildContextPacket",
+            "_meta/index.json",
+            "[[wikilinks]]",
+            "ContextPacket",
+            "memoryIncluded",
+            "riskAreas",
+            "suggestedCommands",
+            ".agentos/memory/*.md"
+          ]
+        },
+        {
+          "heading": "Write path (after specialists)",
+          "anchor": "write-path-after-specialists",
+          "summary": "1. **Runtime** runs `executeAgentPipelineStep` with `memoryUpdates: true` after primary, planner, gates, and `systems-synthesizer`.",
+          "entities": [
+            "executeAgentPipelineStep",
+            "memoryUpdates: true",
+            "systems-synthesizer",
+            "AgentReport",
+            "MemoryUpdateEnvelope",
+            "buildMemoryUpdateFromReport",
+            "processMemoryUpdate",
+            "test-commands",
+            "AGENTOS_MEMORY_WIKI_WRITE",
+            "proposeWikiMerges",
+            "applyWikiEdits",
+            "memory-queue.json"
+          ]
+        },
+        {
+          "heading": "Background ingest (feeds future reads)",
+          "anchor": "background-ingest-feeds-future-reads",
+          "summary": "| Source | Command / API | Wiki destination |",
+          "entities": [
+            "pnpm wiki:index-repo",
+            "packages/*",
+            "apps/*",
+            "agents/*",
+            "areas/*",
+            "POST /memory/wiki/sync-cursor",
+            "sessions/cursor/*",
+            "POST /memory/wiki/sync-chatgpt",
+            "planning/chatgpt/*",
+            "memory-curator"
+          ]
+        },
+        {
+          "heading": "Feature flags",
+          "anchor": "feature-flags",
+          "summary": "| Variable | Effect |",
+          "entities": [
+            "FEATURE_MEMORY_WIKI=true",
+            "AGENTOS_MEMORY_WIKI_WRITE=true",
+            "AGENTOS_CURSOR_WIKI_SYNC=true",
+            ".agentos/memory/*.md"
+          ]
+        },
+        {
+          "heading": "Closed loop (one line)",
+          "anchor": "closed-loop-one-line",
+          "summary": "**Route** → **context-minimizer reads wiki** → **specialists + gates act on packet** → **memory-curator writes learnings back** → **next mission manifest retrieval picks them up**.",
+          "entities": []
+        },
+        {
           "heading": "Related",
           "anchor": "related",
           "summary": "- packages/runtime",
           "entities": [
             "packages/runtime",
-            "packages/orchestrator"
+            "packages/orchestrator",
+            "packages/memory"
           ]
         }
       ]
@@ -7040,6 +7210,7 @@
         "determineMissionRoute()",
         "buildTaskEnvelope()",
         "buildContextPacket()",
+        "FEATURE_MEMORY_WIKI",
         "packages/orchestrator",
         "apps/command-center",
         ".agentos/",
@@ -7059,8 +7230,7 @@
         "packages/shared/src/index.ts",
         "apps/api/src/store.ts",
         "apps/api/src/discord/notify.ts",
-        "packages/persistence/src/index.test.ts",
-        "apps/api/src/discord/"
+        "packages/persistence/src/index.test.ts"
       ],
       "outLinks": [
         "packages/runtime",
@@ -7074,7 +7244,7 @@
         "packages/persistence",
         "areas/apps-command-center"
       ],
-      "updatedAt": "2026-06-12T13:43:42.760Z",
+      "updatedAt": "2026-06-12T14:40:36.106Z",
       "sections": [
         {
           "heading": "Overview",
@@ -7089,7 +7259,8 @@
           "entities": [
             "determineMissionRoute()",
             "buildTaskEnvelope()",
-            "buildContextPacket()"
+            "buildContextPacket()",
+            "FEATURE_MEMORY_WIKI"
           ]
         },
         {
@@ -9799,39 +9970,33 @@
       "entities": [
         "3d0d698f-760f-43dc-bac9-8e461a184961",
         "3d0d698f-760f-43dc-bac9-8e461a184961/3d0d698f-760f-43dc-bac9-8e461a184961.jsonl",
-        "packages/orchestrator/src/index.ts",
-        "ui",
-        "guide",
-        "fix",
-        "typo",
-        "code-implementer",
-        "typecheck",
-        "security-auditor",
-        "bash\npnpm agentos:bench-report",
-        "Commit the generated",
-        ",",
+        "flows/pipeline",
+        "to",
         "-",
-        "|\n| 2 | Routing/product quirks | 2 new pipeline missions, prune policy, orchestrator tests |\n| 3 | CI wiring |",
-        "+",
-        "in",
+        ",",
         "packages/orchestrator",
         "packages/agents",
         "packages/runtime",
         "packages/ui",
         "packages/shared",
+        "packages/foo",
+        "packages/memory",
         "apps/api"
       ],
       "outLinks": [
+        "flows/pipeline",
         "packages/orchestrator",
         "packages/agents",
         "packages/runtime",
         "packages/ui",
         "packages/shared",
+        "packages/foo",
+        "packages/memory",
         "sessions/cursor/index",
         "flows/cursor-memory",
         "index"
       ],
-      "updatedAt": "2026-06-12T13:55:43.788Z",
+      "updatedAt": "2026-06-12T14:39:53.810Z",
       "sections": [
         {
           "heading": "Overview",
@@ -9845,7 +10010,7 @@
         {
           "heading": "Metadata",
           "anchor": "metadata",
-          "summary": "- Messages: 56",
+          "summary": "- Messages: 71",
           "entities": []
         },
         {
@@ -9857,31 +10022,16 @@
         {
           "heading": "Outcomes",
           "anchor": "outcomes",
-          "summary": "- All three items are done. Here’s what changed:",
+          "summary": "- Here’s how the wiki memory system is wired into the **actual agent workflow** — not as a sidecar, but as the read/write loop around every mission.",
           "entities": []
         },
         {
-          "heading": "1. Routing fixes (`packages/orchestrator/src/index.ts`)",
-          "anchor": "1-routing-fixes-packages-orchestrator-src-index-ts",
-          "summary": "- **Word-boundary keywords** — `ui` no longer matches inside `guide`.",
+          "heading": "1. Ship what you have",
+          "anchor": "1-ship-what-you-have",
+          "summary": "- **Push** `1e400a36` to `origin/main` and confirm CI (bench baseline + mis",
           "entities": [
-            "ui",
-            "guide",
-            "fix",
-            "typo",
-            "code-implementer",
-            "typecheck",
-            "security-auditor"
-          ]
-        },
-        {
-          "heading": "Immediate (this week)",
-          "anchor": "immediate-this-week",
-          "summary": "**1. Run the full bench loop once and save a baseline**",
-          "entities": [
-            "bash\npnpm agentos:bench-report",
-            "Commit the generated",
-            ","
+            "1e400a36",
+            "origin/main"
           ]
         },
         {
@@ -9895,23 +10045,40 @@
             "packages/agents",
             "packages/runtime",
             "packages/ui",
-            "packages/shared"
+            "packages/shared",
+            "packages/foo",
+            "packages/memory"
           ]
         },
         {
           "heading": "Recent excerpt",
           "anchor": "recent-excerpt",
-          "summary": "**Assistant:** Implementing items 1–3: checking the bench report and CI, then applying fixes.",
+          "summary": "**Assistant:** Adding a Memory loop section to the pipeline flow doc and updating the memory-curator flow to match current behavior.",
           "entities": []
         },
         {
-          "heading": "What shipped (items 1–3)",
-          "anchor": "what-shipped-items-1-3",
-          "summary": "| # | Item | Status |",
+          "heading": "[[flows/pipeline]] — new **Memory loop** section",
+          "anchor": "flows-pipeline-new-memory-loop-section",
+          "summary": "- Read path: orchestrator → runtime triggers → context-minimizer → manifest/section retrieval → who consumes the packet",
           "entities": [
-            "pnpm agentos:bench-baseline",
-            ".agentos/benchmarks/baseline-snapshot.json",
-            "pnpm mission:smoke"
+            "packages/memory",
+            "flows/memory-curator",
+            "flows/test-commands"
+          ]
+        },
+        {
+          "heading": "[[flows/me",
+          "anchor": "flows-me",
+          "summary": "**User:** <user_query>",
+          "entities": []
+        },
+        {
+          "heading": "1. Ship what you have",
+          "anchor": "1-ship-what-you-have",
+          "summary": "- **Push** `1e400a36` to `origin/main` and confirm CI (bench baseline + mission smoke + tests).",
+          "entities": [
+            "1e400a36",
+            "origin/main"
           ]
         },
         {
@@ -11262,7 +11429,7 @@
         "flows/cursor-memory",
         "index"
       ],
-      "updatedAt": "2026-06-12T13:56:43.866Z",
+      "updatedAt": "2026-06-12T14:40:53.870Z",
       "sections": [
         {
           "heading": "Overview",

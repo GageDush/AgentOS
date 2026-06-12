@@ -12,7 +12,7 @@ Deterministic routing: task classifier, context minimizer, quota hints, planner 
 
 - `determineMissionRoute()` — primary agent + required gates
 - `buildTaskEnvelope()` — compact mission contract for agents
-- `buildContextPacket()` — scoped files + memory (wiki in PR2)
+- `buildContextPacket()` — scoped files + wiki memory (`FEATURE_MEMORY_WIKI`)
 
 ## Related
 

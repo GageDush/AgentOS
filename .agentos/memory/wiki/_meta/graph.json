@@ -891,7 +891,7 @@
         "flow"
       ],
       "path": "flows/cursor-memory.md",
-      "updatedAt": "2026-06-12T13:56:43.867Z",
+      "updatedAt": "2026-06-12T14:40:53.870Z",
       "archived": false
     },
     "flows/memory-curator": {
@@ -902,7 +902,7 @@
         "curation"
       ],
       "path": "flows/memory-curator.md",
-      "updatedAt": "2026-06-12T12:22:01.317Z",
+      "updatedAt": "2026-06-12T14:16:37.567Z",
       "archived": false
     },
     "flows/pipeline": {
@@ -914,7 +914,7 @@
         "auto-indexed"
       ],
       "path": "flows/pipeline.md",
-      "updatedAt": "2026-06-12T13:38:52.152Z",
+      "updatedAt": "2026-06-12T14:16:31.855Z",
       "archived": false
     },
     "flows/root-scripts": {
@@ -1015,7 +1015,7 @@
         "classifier"
       ],
       "path": "packages/orchestrator.md",
-      "updatedAt": "2026-06-12T13:43:42.760Z",
+      "updatedAt": "2026-06-12T14:40:36.106Z",
       "archived": false
     },
     "packages/persistence": {
@@ -1284,7 +1284,7 @@
         "chat"
       ],
       "path": "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961.md",
-      "updatedAt": "2026-06-12T13:55:43.788Z",
+      "updatedAt": "2026-06-12T14:39:53.810Z",
       "archived": false
     },
     "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": {
@@ -1428,7 +1428,7 @@
         "index"
       ],
       "path": "sessions/cursor/index.md",
-      "updatedAt": "2026-06-12T13:56:43.866Z",
+      "updatedAt": "2026-06-12T14:40:53.870Z",
       "archived": false
     },
     "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319": {
@@ -2298,10 +2298,17 @@
       "flows/memory-curator"
     ],
     "flows/memory-curator": [
+      "flows/pipeline",
       "index",
       "wikilinks",
+      "flows/test-commands",
+      "areas/risk-areas",
+      "areas/code-ownership",
+      "areas/dependency-graph",
+      "areas/repo-layout",
+      "agents/admin-agent",
       "packages/agents",
-      "areas/repo-layout"
+      "packages/memory"
     ],
     "flows/pipeline": [
       "agents/admin-agent",
@@ -2325,6 +2332,12 @@
       "agents/integration-broker",
       "agents/docs-agent",
       "agents/issue-intake-researcher",
+      "flows/memory-curator",
+      "packages/memory",
+      "wikilinks",
+      "flows/test-commands",
+      "areas/risk-areas",
+      "packages/agents",
       "packages/runtime",
       "packages/orchestrator",
       "index"
@@ -2614,11 +2627,14 @@
       "index"
     ],
     "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": [
+      "flows/pipeline",
       "packages/orchestrator",
       "packages/agents",
       "packages/runtime",
       "packages/ui",
       "packages/shared",
+      "packages/foo",
+      "packages/memory",
       "sessions/cursor/index",
       "flows/cursor-memory",
       "index"
@@ -3212,7 +3228,9 @@
       "agents/security-auditor",
       "agents/systems-synthesizer",
       "agents/task-classifier",
-      "index"
+      "flows/memory-curator",
+      "index",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961"
     ],
     "packages/agents": [
       "agents/admin-agent",
@@ -3242,6 +3260,7 @@
       "areas/code-ownership",
       "areas/repo-layout",
       "flows/memory-curator",
+      "flows/pipeline",
       "index",
       "packages/orchestrator",
       "packages/persistence",
@@ -3345,6 +3364,7 @@
       "apps/scheduler",
       "apps/worker",
       "areas/repo-layout",
+      "flows/memory-curator",
       "packages/app-generator",
       "packages/game-schema",
       "packages/memory",
@@ -3714,12 +3734,16 @@
     "areas/risk-areas": [
       "areas/code-ownership",
       "areas/config",
+      "flows/memory-curator",
+      "flows/pipeline",
       "flows/test-commands",
       "packages/runtime"
     ],
     "flows/test-commands": [
       "areas/config",
       "areas/risk-areas",
+      "flows/memory-curator",
+      "flows/pipeline",
       "flows/root-scripts",
       "index",
       "packages/agents",
@@ -3752,7 +3776,10 @@
     ],
     "packages/memory": [
       "areas/repo-layout",
+      "flows/memory-curator",
+      "flows/pipeline",
       "index",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
       "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
@@ -3769,6 +3796,7 @@
     ],
     "agents/admin-agent": [
       "areas/repo-layout",
+      "flows/memory-curator",
       "flows/pipeline",
       "index"
     ],
@@ -3929,12 +3957,18 @@
     ],
     "flows/memory-curator": [
       "flows/cursor-memory",
+      "flows/pipeline",
       "index",
       "packages/agents"
     ],
     "wikilinks": [
       "flows/memory-curator",
+      "flows/pipeline",
       "index"
+    ],
+    "areas/code-ownership": [
+      "flows/memory-curator",
+      "packages/orchestrator"
     ],
     "agents/database-migration-agent": [
       "flows/pipeline"
@@ -4027,9 +4061,6 @@
     "docs/gates": [
       "index"
     ],
-    "areas/code-ownership": [
-      "packages/orchestrator"
-    ],
     "planning/chatgpt/agentos-project": [
       "planning/chatgpt/agentos-master-codex-prompt",
       "planning/chatgpt/asset-manifest-and-needs",
@@ -4071,6 +4102,9 @@
     ],
     "planning/chatgpt/simple-codex-steps": [
       "planning/chatgpt/index"
+    ],
+    "packages/foo": [
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961"
     ],
     "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a": [
       "sessions/cursor/index"
