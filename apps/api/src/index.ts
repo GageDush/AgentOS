@@ -1,28 +1,64 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { loadRepoEnv } from "./load-env";
 
 import cors from "@fastify/cors";
 import websocket from "@fastify/websocket";
 import Fastify from "fastify";
-import { chooseAgentForMission } from "@agentos/orchestrator";
 import {
+  applyMemoryKeys,
+  applyWikiMemoryEdits,
+  listQueuedMemoryUpdates,
+  resolveQueuedMemoryUpdate
+} from "@agentos/agents";
+import { chooseAgentForMission, parseBuildIntent } from "@agentos/orchestrator";
+import { enqueueMissionRun } from "@agentos/queue";
+import {
+  approveRunReleaseGate,
   continueMissionRunAfterApproval,
   executeQuickAction,
   executeRichQuickAction,
+  getRunGateStatus,
   handleChatMessage,
   pauseMissionRun,
+  prepareRunReleaseGate,
   processPendingMissionRuns,
   processRun,
+  bulkApprovePendingApprovals,
   resolveApprovalDecision,
   resumeMissionRun,
   retryMissionRun
 } from "@agentos/runtime";
 import { assessCommandPolicy } from "@agentos/sandbox";
-import type { AgentRichQuickActionType, GatewayExecutionResult, LlmChatRequest, MissionRecord, MissionRun, SandboxPermissionLevel } from "@agentos/shared";
-import { searchMemories } from "@agentos/memory";
+import {
+  buildForgeAgentRoster,
+  type AgentRichQuickActionType,
+  type LlmChatRequest,
+  type MissionRecord,
+  type MissionRun,
+  type SandboxPermissionLevel
+} from "@agentos/shared";
+import {
+  cursorWikiSyncIntervalMs,
+  expandWikiContext,
+  getWikiBacklinks,
+  isCursorWikiSyncEnabled,
+  isMemoryWikiWriteEnabled,
+  listWikiArticles,
+  loadWikiArticle,
+  loadWikiManifest,
+  normalizeWikiSlug,
+  rebuildWikiManifest,
+  searchMemories,
+  searchWikiArticles,
+  syncChatGptPlanningToWiki,
+  syncCursorSessionsToWiki
+} from "@agentos/memory";
 import { findRepoRoot } from "@agentos/persistence";
 import { evaluateBudget, evaluateQuotaSteward } from "@agentos/token-manager";
+import { buildApiRuntimeOptions } from "./runtime-options";
 import { getProviderId, providers } from "./providers";
-import { createGitHubMissionIssue } from "./github";
+import { buildPullRequestBody, createGitHubMissionIssue, createGitHubPullRequest } from "./github";
 import { renderAuthLoginRequiredPage, renderAuthMePage, renderAuthSuccessPage } from "./auth-pages";
 import {
   buildDiscordAuthorizeUrl,
@@ -33,6 +69,7 @@ import {
 import { bootstrapDiscordGuild, loadDiscordGuildState, postChannelGuides, restructureDiscordGuild, syncDiscordCommands, syncDiscordRoles } from "./discord/bootstrap";
 import { isDiscordBotEnabled } from "./discord/client";
 import { startDiscordGateway } from "./discord/gateway";
+import { ensureOperatorLaneIndicator } from "./discord/operator-lane-status";
 import { dispatchDiscordInteraction, interactionPublicKeyConfigured, verifyInteractionRequest, type DiscordInteraction } from "./discord/interactions";
 import { installDiscordPersistenceHooks } from "./discord/persistence-hooks";
 import { postSystemPulse, syncPendingApprovalsToDiscord } from "./discord/notify";
@@ -43,7 +80,8 @@ import {
   createSessionToken,
   readCookieValue,
   readSessionToken,
-  sessionCookieName
+  sessionCookieName,
+  touchSessionCookie
 } from "./session";
 import {
   addAudit,
@@ -125,6 +163,24 @@ app.get("/health", async () => ({
   timestamp: new Date().toISOString()
 }));
 
+const agentPortraitDirs = [
+  join(findRepoRoot(process.cwd()), "apps/api/public/agents"),
+  join(findRepoRoot(process.cwd()), "apps/command-center/public/agents")
+];
+
+app.get("/media/agents/:file", async (request, reply) => {
+  const file = (request.params as { file: string }).file;
+  if (!/^[\w-]+\.png$/.test(file)) {
+    return reply.code(400).send({ error: "Invalid agent portrait filename." });
+  }
+  const path = agentPortraitDirs.map((dir) => join(dir, file)).find((candidate) => existsSync(candidate));
+  if (!path) {
+    return reply.code(404).send({ error: "Agent portrait not found." });
+  }
+  reply.header("Cache-Control", "public, max-age=86400");
+  return reply.type("image/png").send(readFileSync(path));
+});
+
 app.get("/dashboard", async () => {
   const database = getDatabaseSnapshot();
   return {
@@ -197,7 +253,8 @@ app.get("/auth/discord", async (request, reply) => {
   }
   const state = createOAuthState();
   reply.header("Set-Cookie", `agentos_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600`);
-  return reply.redirect(buildDiscordAuthorizeUrl(state));
+  const host = String(request.headers.host ?? "");
+  return reply.redirect(buildDiscordAuthorizeUrl(state, host));
 });
 
 app.get("/auth/discord/callback", async (request, reply) => {
@@ -213,7 +270,7 @@ app.get("/auth/discord/callback", async (request, reply) => {
     return reply.code(400).send({ error: "Invalid OAuth state." });
   }
   try {
-    const session = await createDiscordOperatorSession(query.code);
+    const session = await createDiscordOperatorSession(query.code, String(request.headers.host ?? ""));
     const token = createSessionToken(session);
     reply.header("Set-Cookie", [
       buildSessionCookie(token),
@@ -245,6 +302,9 @@ app.get("/auth/success", async (request, reply) => {
   if (!session) {
     return renderAuthLoginRequiredPage(publicApiBaseUrl());
   }
+  if (token) {
+    reply.header("Set-Cookie", touchSessionCookie(token));
+  }
   return renderAuthSuccessPage(session, appUrl);
 });
 
@@ -258,6 +318,9 @@ app.get("/auth/me", async (request, reply) => {
       return reply.code(401).send(renderAuthLoginRequiredPage(publicApiBaseUrl()));
     }
     return reply.code(401).send({ authenticated: false });
+  }
+  if (token) {
+    reply.header("Set-Cookie", touchSessionCookie(token));
   }
   if (prefersHtmlResponse(request.headers.accept)) {
     reply.type("text/html; charset=utf-8");
@@ -328,6 +391,134 @@ app.get("/missions/:id", async (request, reply) => {
   if (!mission) return reply.code(404).send({ error: "Mission not found" });
   return mission;
 });
+
+app.post("/missions/:id/questionnaire/generate", async (request, reply) => {
+  const mission = getMission((request.params as { id: string }).id);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const body = (request.body ?? {}) as { description?: string };
+  const description = body.description ?? mission.prompt ?? mission.objective ?? mission.title;
+  const buildIntent = parseBuildIntent(description);
+  const updated =
+    updateMission(mission.id, {
+      metadata: {
+        ...(mission.metadata ?? {}),
+        buildIntent,
+        questionnaireStatus: "pending"
+      }
+    }) ?? mission;
+  return { mission: updated, buildIntent };
+});
+
+app.get("/missions/:id/generated-app", async (request, reply) => {
+  const mission = getMission((request.params as { id: string }).id);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const metadata = mission.metadata as { outputDir?: string; files?: string[] } | undefined;
+  if (!metadata?.outputDir) return reply.code(404).send({ error: "No generated app for this mission." });
+  return {
+    missionId: mission.id,
+    outputDir: metadata.outputDir,
+    files: metadata.files ?? [],
+    previewPath: metadata.outputDir
+  };
+});
+
+app.post("/missions/:id/feedback", async (request, reply) => {
+  const mission = getMission((request.params as { id: string }).id);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const body = (request.body ?? {}) as { text?: string; kind?: string };
+  const metadata = mission.metadata as {
+    buildIntent?: ReturnType<typeof parseBuildIntent>;
+    lastFeedback?: { text: string; kind: string; at: string };
+  };
+  const feedbackText = body.text ?? "";
+  const updated =
+    updateMission(mission.id, {
+      metadata: {
+        ...(mission.metadata ?? {}),
+        lastFeedback: { text: feedbackText, kind: body.kind ?? "functional", at: new Date().toISOString() },
+        buildIntent: metadata?.buildIntent
+          ? {
+              ...metadata.buildIntent,
+              answers: { ...(metadata.buildIntent.answers ?? {}), feedback: feedbackText }
+            }
+          : undefined
+      }
+    }) ?? mission;
+  return { mission: updated };
+});
+
+app.get("/missions/:id/generated-app/preview", async (request, reply) => {
+  const mission = getMission((request.params as { id: string }).id);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const metadata = mission.metadata as { outputDir?: string; files?: string[] } | undefined;
+  if (!metadata?.outputDir) return reply.code(404).send({ error: "No generated app for this mission." });
+  const outputDir = metadata.outputDir;
+  const readmePath = join(outputDir, "README.md");
+  const pagePath = join(outputDir, "app", "page.tsx");
+  return {
+    missionId: mission.id,
+    outputDir,
+    files: metadata.files ?? [],
+    readme: existsSync(readmePath) ? readFileSync(readmePath, "utf8") : "",
+    pageSource: existsSync(pagePath) ? readFileSync(pagePath, "utf8") : ""
+  };
+});
+
+app.post("/missions/:id/regen", async (request, reply) => {
+  const mission = getMission((request.params as { id: string }).id);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const body = (request.body ?? {}) as { feedback?: string; scope?: string };
+  if (body.feedback?.trim()) {
+    const metadata = mission.metadata as { buildIntent?: ReturnType<typeof parseBuildIntent> };
+    updateMission(mission.id, {
+      metadata: {
+        ...(mission.metadata ?? {}),
+        regenScope: body.scope ?? "full",
+        lastFeedback: { text: body.feedback, kind: "regen", at: new Date().toISOString() },
+        buildIntent: metadata?.buildIntent
+          ? {
+              ...metadata.buildIntent,
+              answers: { ...(metadata.buildIntent.answers ?? {}), feedback: body.feedback }
+            }
+          : undefined
+      }
+    });
+  }
+  const refreshed = getMission(mission.id)!;
+  const session = ensureSessionForMission(refreshed);
+  const run = createMissionRun({
+    workspaceId: refreshed.workspaceId,
+    missionId: refreshed.id,
+    sessionId: session.id,
+    requestedByOperatorId: refreshed.requestedByOperatorId,
+    operatorId: refreshed.operatorId,
+    provider: refreshed.provider,
+    model: refreshed.model,
+    status: "queued",
+    commandPolicy: refreshed.commandPolicy,
+    requestedCommand: refreshed.command
+  });
+  const result = await processRun(run.id, buildApiRuntimeOptions({ sessionKey: run.id }));
+  return { mission: getMission(refreshed.id), run: getMissionRun(run.id), result };
+});
+
+app.post("/missions/:id/questionnaire/submit", async (request, reply) => {
+  const mission = getMission((request.params as { id: string }).id);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const body = (request.body ?? {}) as { answers?: Record<string, string> };
+  const answers = body.answers ?? {};
+  const buildIntent = (mission.metadata as { buildIntent?: ReturnType<typeof parseBuildIntent> } | undefined)?.buildIntent;
+  const updated =
+    updateMission(mission.id, {
+      metadata: {
+        ...(mission.metadata ?? {}),
+        buildIntent: buildIntent ? { ...buildIntent, answers } : undefined,
+        questionnaireStatus: "submitted",
+        questionnaireAnswers: answers
+      }
+    }) ?? mission;
+  return { mission: updated, answers };
+});
 app.post("/missions/:id/run", async (request, reply) => {
   const mission = getMission((request.params as { id: string }).id);
   if (!mission) return reply.code(404).send({ error: "Mission not found" });
@@ -344,7 +535,8 @@ app.post("/missions/:id/run", async (request, reply) => {
     commandPolicy: mission.commandPolicy,
     requestedCommand: mission.command
   });
-  const result = await processRun(run.id);
+  await enqueueMissionRun(run.id);
+  const result = await processRun(run.id, buildApiRuntimeOptions({ sessionKey: run.id }));
   return { mission: getMission(mission.id), run: getMissionRun(run.id), result };
 });
 
@@ -430,7 +622,7 @@ app.post("/routines/:id/run", async (request, reply) => {
     lastRunAt: new Date().toISOString(),
     status: "running"
   });
-  const result = await processRun(run.id);
+  const result = await processRun(run.id, buildApiRuntimeOptions({ sessionKey: run.id }));
   return { mission, run: getMissionRun(run.id), routine: getRoutine(routine.id), result };
 });
 
@@ -525,6 +717,157 @@ app.post("/memory/:id/archive", async (request, reply) => {
   return memory;
 });
 
+app.get("/agents/roster", async () => ({ agents: buildForgeAgentRoster() }));
+
+app.get("/memory/wiki", async () => {
+  const articles = listWikiArticles(repoRoot).filter((article) => !article.archived);
+  return { articles, count: articles.length };
+});
+
+app.get("/memory/wiki/manifest", async () => {
+  const manifest = loadWikiManifest(repoRoot) ?? rebuildWikiManifest(repoRoot);
+  return manifest;
+});
+
+app.post("/memory/wiki/rebuild", async () => {
+  const manifest = rebuildWikiManifest(repoRoot);
+  addAudit("memory.wiki_rebuilt", "operator-api", `Rebuilt wiki manifest (${manifest.articles.length} articles).`);
+  return { ok: true, count: manifest.articles.length, generatedAt: manifest.generatedAt };
+});
+
+app.get("/memory/wiki/article", async (request, reply) => {
+  const slug = normalizeWikiSlug((request.query as { slug?: string }).slug ?? "");
+  if (!slug) return reply.code(400).send({ error: "Query parameter slug is required." });
+  const article = loadWikiArticle(repoRoot, slug);
+  if (!article) return reply.code(404).send({ error: "Wiki article not found." });
+  const backlinks = getWikiBacklinks(repoRoot, slug).map((item) => ({
+    slug: item.slug,
+    title: item.title
+  }));
+  return { article, backlinks };
+});
+
+app.get("/memory/wiki/backlinks", async (request, reply) => {
+  const slug = normalizeWikiSlug((request.query as { slug?: string }).slug ?? "");
+  if (!slug) return reply.code(400).send({ error: "Query parameter slug is required." });
+  const backlinks = getWikiBacklinks(repoRoot, slug);
+  return {
+    slug,
+    backlinks: backlinks.map((item) => ({ slug: item.slug, title: item.title, path: item.path }))
+  };
+});
+
+app.post("/memory/wiki/search", async (request) => {
+  const body = (request.body ?? {}) as { query?: string; limit?: number };
+  const matches = searchWikiArticles(repoRoot, body.query ?? "", body.limit ?? 12);
+  return { query: body.query ?? "", matches };
+});
+
+app.post("/memory/wiki/expand", async (request) => {
+  const body = (request.body ?? {}) as {
+    query?: string;
+    maxHops?: number;
+    maxChars?: number;
+    maxArticles?: number;
+    maxSections?: number;
+    sectionLevel?: boolean;
+    seedSlugs?: string[];
+    repoPaths?: string[];
+    taskType?: string;
+  };
+  const result = expandWikiContext(repoRoot, body.query ?? "", {
+    maxHops: body.maxHops,
+    maxChars: body.maxChars,
+    maxArticles: body.maxArticles,
+    maxSections: body.maxSections,
+    sectionLevel: body.sectionLevel,
+    seedSlugs: body.seedSlugs,
+    signals: {
+      repoPaths: body.repoPaths,
+      taskType: body.taskType
+    }
+  });
+  return result;
+});
+
+app.post("/memory/wiki/sync-chatgpt", async (request, reply) => {
+  if (!isMemoryWikiWriteEnabled()) {
+    return reply.code(400).send({
+      error: "Memory wiki write is disabled. Set FEATURE_MEMORY_WIKI=true and AGENTOS_MEMORY_WIKI_WRITE=true."
+    });
+  }
+  const body = (request.body ?? {}) as { full?: boolean };
+  const result = syncChatGptPlanningToWiki(repoRoot, { full: body.full === true });
+  addAudit(
+    "memory.wiki_chatgpt_sync",
+    "operator-api",
+    `ChatGPT planning sync: indexed=${result.indexed} updated=${result.updated} skipped=${result.skipped}`
+  );
+  return { ok: true, ...result };
+});
+
+app.post("/memory/wiki/sync-cursor", async (request, reply) => {
+  if (!isMemoryWikiWriteEnabled()) {
+    return reply.code(400).send({
+      error: "Memory wiki write is disabled. Set FEATURE_MEMORY_WIKI=true and AGENTOS_MEMORY_WIKI_WRITE=true."
+    });
+  }
+  const body = (request.body ?? {}) as { full?: boolean; applyCrossLinks?: boolean };
+  const result = syncCursorSessionsToWiki(repoRoot, {
+    full: body.full === true,
+    applyCrossLinks: body.applyCrossLinks !== false
+  });
+  addAudit(
+    "memory.wiki_cursor_sync",
+    "operator-api",
+    `Cursor wiki sync: indexed=${result.indexed} updated=${result.updated} skipped=${result.skipped}`
+  );
+  return { ok: true, ...result };
+});
+
+app.get("/memory/queue", async (request) => {
+  const runId = (request.query as { runId?: string }).runId;
+  const items = listQueuedMemoryUpdates(findRepoRoot(), runId).map((item) => ({
+    id: item.id,
+    queuedAt: item.queuedAt,
+    memoryKeys: item.memoryKeys,
+    wikiEdits: item.wikiEdits,
+    summary: item.summary,
+    sourceAgent: item.sourceAgent,
+    missionId: item.missionId,
+    runId: item.runId
+  }));
+  return { items };
+});
+
+app.post("/memory/queue/:id/approve", async (request, reply) => {
+  const id = (request.params as { id: string }).id;
+  const item = resolveQueuedMemoryUpdate(id);
+  if (!item) return reply.code(404).send({ error: "Queued memory update not found." });
+  if (item.wikiEdits?.length) {
+    const appliedWikiSlugs = applyWikiMemoryEdits(item, repoRoot);
+    addAudit(
+      "memory.wiki_applied",
+      "operator-api",
+      `Approved wiki edits: ${appliedWikiSlugs.join(", ")}.`,
+      item.missionId,
+      item.runId
+    );
+    return { ok: true, appliedWikiSlugs };
+  }
+  applyMemoryKeys(item, item.memoryKeys, repoRoot);
+  addAudit("memory.update_applied", "operator-api", `Approved memory keys: ${item.memoryKeys.join(", ")}.`, item.missionId, item.runId);
+  return { ok: true, appliedKeys: item.memoryKeys };
+});
+
+app.post("/memory/queue/:id/dismiss", async (request, reply) => {
+  const id = (request.params as { id: string }).id;
+  const item = resolveQueuedMemoryUpdate(id);
+  if (!item) return reply.code(404).send({ error: "Queued memory update not found." });
+  addAudit("memory.update_dismissed", "operator-api", `Dismissed memory keys: ${item.memoryKeys.join(", ")}.`, item.missionId, item.runId);
+  return { ok: true };
+});
+
 app.get("/usage", async () => store.usageEvents);
 app.get("/usage/summary", async () => usageSummary());
 app.get("/quota/status", async () => quotaStatus());
@@ -563,6 +906,9 @@ app.post("/approvals/:id/approve-for-mission", async (request, reply) =>
   resolveApprovalDecision((request.params as { id: string }).id, "approved", "mission", store.operators[0]?.id ?? "operator-local")
 );
 app.post("/approvals/:id/deny", async (request, reply) => resolveApprovalDecision((request.params as { id: string }).id, "denied", undefined, store.operators[0]?.id ?? "operator-local"));
+app.post("/approvals/bulk/approve-once", async () =>
+  bulkApprovePendingApprovals(store.operators[0]?.id ?? "operator-local")
+);
 
 app.get("/quick-actions", async () => listQuickActions());
 app.post("/quick-actions/:id/consume", async (request, reply) => {
@@ -667,10 +1013,91 @@ app.post("/llm/chat", async (request, reply) => {
 
 app.get("/mission/demo", async () => store.demoMission);
 app.post("/mission/demo/run", async () => {
-  const mission = runDemoMission();
-  const summary = "The Office Demo is archival, but its safe playback still works for demos.";
+  const demoPlayback = runDemoMission();
+  const mission = createMission({
+    title: "Platform demo quality gate",
+    objective: "Run the local AgentOS demo mission through worker and gateway typecheck.",
+    prompt: "Execute the platform demo quality gate and summarize results.",
+    command: "pnpm typecheck",
+    sandboxLevel: "workspace_write",
+    provider: "mock",
+    model: "mock-agentos-local",
+    status: "queued"
+  });
+  const session = ensureSessionForMission(mission);
+  const run = createMissionRun({
+    workspaceId: mission.workspaceId,
+    missionId: mission.id,
+    sessionId: session.id,
+    requestedByOperatorId: mission.requestedByOperatorId,
+    operatorId: mission.operatorId,
+    provider: mission.provider,
+    model: mission.model,
+    status: "queued",
+    commandPolicy: mission.commandPolicy,
+    requestedCommand: mission.command
+  });
+  const result = await processRun(run.id, buildApiRuntimeOptions({ sessionKey: run.id }));
+  const summary = result.summary || "Platform demo mission completed.";
   completeDemoMission(summary);
-  return store.demoMission;
+  return {
+    demoMission: store.demoMission,
+    demoPlayback,
+    mission: getMission(mission.id),
+    run: getMissionRun(run.id),
+    result
+  };
+});
+
+app.get("/runs/:id/gates", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  return getRunGateStatus(run.id);
+});
+
+app.post("/runs/:id/gates/release/prepare", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  const body = (request.body ?? {}) as { operatorId?: string };
+  return prepareRunReleaseGate(run.id, body.operatorId ?? "agentos-operator");
+});
+
+app.post("/runs/:id/gates/release/approve", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  const body = (request.body ?? {}) as { operatorId?: string };
+  return approveRunReleaseGate(run.id, body.operatorId ?? "agentos-operator");
+});
+
+app.post("/runs/:id/release/pr", async (request, reply) => {
+  const run = getMissionRun((request.params as { id: string }).id);
+  if (!run) return reply.code(404).send({ error: "Run not found" });
+  const mission = getMission(run.missionId);
+  if (!mission) return reply.code(404).send({ error: "Mission not found" });
+  const gates = getRunGateStatus(run.id);
+  if (gates.pending.includes("release")) {
+    return reply.code(409).send({ error: "Release gate must pass before opening a PR." });
+  }
+  const prepared = store.auditEvents.find((event) => event.runId === run.id && event.event === "release.prepared");
+  const releaseReport = (prepared?.metadata as { releaseReport?: import("@agentos/shared").ReleaseReport } | undefined)?.releaseReport;
+  if (!releaseReport) {
+    return reply.code(409).send({ error: "Run release review before creating a PR." });
+  }
+  try {
+    const prUrl = createGitHubPullRequest({
+      title: `[AgentOS] ${mission.title}`,
+      body: buildPullRequestBody(mission, releaseReport),
+      draft: true
+    });
+    updateMission(mission.id, {
+      metadata: { ...(mission.metadata ?? {}), githubPrUrl: prUrl, releaseReport }
+    });
+    addAudit("release.pr_created", "release-manager", `Draft PR prepared for ${mission.title}.`, mission.id, run.id);
+    return { ok: true, prUrl, mission: getMission(mission.id), run };
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : "PR creation failed.";
+    return reply.code(502).send({ error: message });
+  }
 });
 
 app.post("/worker/process", async () => processPendingMissionRuns());
@@ -831,8 +1258,22 @@ app.get("/events", { websocket: true }, (connection) => {
   connection.on("close", () => clearInterval(timer));
 });
 
+function runCursorWikiSync(reason: string) {
+  if (!isCursorWikiSyncEnabled() || !isMemoryWikiWriteEnabled()) return;
+  try {
+    const result = syncCursorSessionsToWiki(repoRoot, { applyCrossLinks: true });
+    app.log.info({ reason, ...result }, "Cursor wiki sync completed.");
+  } catch (error) {
+    app.log.warn({ err: error, reason }, "Cursor wiki sync failed.");
+  }
+}
+
 try {
   await app.listen({ port, host: "0.0.0.0" });
+  if (isCursorWikiSyncEnabled()) {
+    runCursorWikiSync("startup");
+    setInterval(() => runCursorWikiSync("interval"), cursorWikiSyncIntervalMs());
+  }
   if (isDiscordBotEnabled()) {
     if (!interactionPublicKeyConfigured()) {
       app.log.warn(
@@ -844,6 +1285,9 @@ try {
     });
     void startDiscordGateway().then((result) => {
       app.log.info({ result }, "Discord gateway for #general chat.");
+    });
+    void ensureOperatorLaneIndicator().catch((error) => {
+      app.log.warn({ err: error }, "Discord operator lane status indicator failed on startup.");
     });
   }
 } catch (error) {

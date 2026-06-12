@@ -3,7 +3,6 @@ import type { ApprovalRecord } from "@agentos/shared";
 
 const postPersonaRichMessage = vi.fn(async () => ({ id: "msg-1", channel_id: "ch-approvals" }));
 const markApprovalNotified = vi.fn();
-const registerDiscordMessage = vi.fn();
 
 vi.mock("./webhook-post", () => ({
   postPersonaRichMessage
@@ -19,8 +18,7 @@ vi.mock("./bootstrap", () => ({
 
 vi.mock("./registry", () => ({
   hasNotifiedApproval: () => false,
-  markApprovalNotified,
-  registerDiscordMessage
+  markApprovalNotified
 }));
 
 vi.mock("./messenger", () => ({
@@ -71,14 +69,6 @@ describe("notifyApprovalGate", () => {
           missionId: "mission-seed-local-checks",
           runId: "mission-run-seed"
         }
-      })
-    );
-    expect(registerDiscordMessage).toHaveBeenCalledWith(
-      "msg-1",
-      expect.objectContaining({
-        channelId: "ch-approvals",
-        kind: "approval",
-        entityId: "approval-terminal-run"
       })
     );
     expect(markApprovalNotified).toHaveBeenCalledWith("approval-terminal-run");

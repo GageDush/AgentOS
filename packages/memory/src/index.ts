@@ -27,21 +27,47 @@ export const createMemory = (input: MemoryInput): MemoryRecord => ({
   updatedAt: nowIso()
 });
 
+function memoryHaystack(memory: MemoryRecord) {
+  return [memory.title, memory.content, memory.source, memory.type, ...memory.tags].join(" ").toLowerCase();
+}
+
 export const searchMemories = (memories: MemoryRecord[], query: string) => {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return memories.filter((memory) => !memory.archived);
 
-  return memories.filter((memory) => {
-    if (memory.archived) return false;
-    const haystack = [
-      memory.title,
-      memory.content,
-      memory.source,
-      memory.type,
-      ...memory.tags
-    ]
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(normalized);
-  });
+  return rankMemories(
+    memories.filter((memory) => !memory.archived),
+    normalized
+  );
 };
+
+/** Keyword rank (Phase A). Phase B: swap for pgvector adapter. */
+export function rankMemories(memories: MemoryRecord[], query: string) {
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  return memories
+    .map((memory) => {
+      const haystack = memoryHaystack(memory);
+      let termScore = 0;
+      for (const term of terms) {
+        if (haystack.includes(term)) termScore += 10;
+        if (memory.title.toLowerCase().includes(term)) termScore += 5;
+      }
+      const score = termScore + (termScore > 0 ? (memory.importance ?? 0) : 0);
+      return { memory, score, termScore };
+    })
+    .filter((entry) => terms.length === 0 || entry.termScore > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.memory);
+}
+
+export type VectorMemoryAdapter = {
+  search: (query: string, limit: number) => Promise<MemoryRecord[]>;
+};
+
+export const pgvectorMemoryAdapter: VectorMemoryAdapter = {
+  async search(_query, _limit) {
+    return [];
+  }
+};
+
+export * from "./wiki/index";

@@ -56,6 +56,56 @@ function extractSections(body: string) {
 }
 
 export { executeAgentPipelineStep, executeAgentStep } from "./executor";
+export type { AgentPipelineOptions, AgentPipelineResult } from "./executor";
+export { buildProfileAwareSummary, callAgentLlm, maybeEnhanceSummary } from "./llm";
+export { prepareReleaseReport } from "./release";
+export {
+  applyGovernanceToReleaseReport,
+  buildGateSummaryFromReports,
+  detectImplementerSelfApproval
+} from "./governance";
+export { resolveQaCommands, runQaGate } from "./qa-gate";
+export type { QaCommandResult } from "./qa-gate";
+export { shouldScheduleCodeReview, hashDiffStat, parseDiffStatLineCount } from "./review-schedule";
+export type { ReviewScheduleContext } from "./review-schedule";
+export { synthesizeAgentReports } from "./synthesizer";
+export { buildPlannerReport } from "./planner";
+export type { PlannerMode } from "./planner";
+export {
+  applyMemoryKeys,
+  applyWikiMemoryEdits,
+  buildMemoryUpdateFromReport,
+  decayStaleMemoryNotes,
+  processMemoryUpdate
+} from "./memory-curator";
+export { enqueueMemoryUpdates, listQueuedMemoryUpdates, resolveQueuedMemoryUpdate } from "./memory-queue";
+export type { QueuedMemoryUpdate } from "./memory-queue";
+export {
+  executePlannerSubtasks,
+  extractPlannerSubtasks,
+  shouldSkipPrimaryAfterSubtasks,
+  sortPlannerSubtasks
+} from "./planner-executor";
+export type { PlannerSubtask } from "./planner-executor";
+export {
+  applyUnifiedDiff,
+  extractUnifiedDiffFromText,
+  parseChangedFilesFromDiff,
+  parseChangedFilesFromGitNameOnly
+} from "./patch-apply";
+export type { PatchApplyResult } from "./patch-apply";
+export {
+  dispatchImplementerWork,
+  isImplementerProfile,
+  resolveImplementerDispatchMode
+} from "./implementer-dispatch";
+export { executeTool, isToolExecutionEnabled, probeImplementerContext } from "./tool-broker";
+export { runImplementerToolLoop } from "./implementer-tool-loop";
+export { isLlmToolLoopEnabled, parseToolCallsFromLlm, runLlmToolLoop } from "./llm-tool-loop";
+export { runFixVerifyLoop, resolveFixVerifyConfig } from "./fix-verify";
+export { ToolLoopBudget, resolveToolLoopLimits } from "./tool-loop";
+export type { ImplementerDispatchMode, ImplementerDispatchOptions } from "./implementer-dispatch";
+export { resolveExecutorLlmPolicy } from "./llm";
 export type { AgentReport } from "@agentos/shared";
 
 export function loadInstalledAgentProfiles(rootDir = findRepoRoot()) {

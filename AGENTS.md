@@ -36,7 +36,10 @@ Core policy rules:
 
 - Install: `pnpm install`
 - Copy env on Windows: `Copy-Item .env.example .env`
-- Dev: `pnpm dev`
+- Dev (hot reload): `pnpm stack:background` or AgentOS Control → Start stack (no terminal windows); UI/API auto-reload on save
+- Dev (foreground terminal): `pnpm dev` or `pnpm dev:full`
+- Dev UI only: `pnpm --filter @agentos/command-center dev`
+- Dev API only: `pnpm dev:api`
 - Checks: `pnpm sanitize:check`, `pnpm env:check`, `pnpm typecheck`, `pnpm test`
 
 ## Rules
@@ -48,3 +51,8 @@ Core policy rules:
 - Keep API contracts in `packages/shared`.
 - Agent profiles live in `.agentos/agents/` and contracts live in `.agentos/contracts/`.
 - Validate the installed profile system with `pnpm agentos:validate-profiles`.
+- Benchmark profiles with `pnpm agentos:bench-profiles` and pipeline routing/gates with `pnpm agentos:bench-pipeline`.
+- Merged human-readable summary: `pnpm agentos:bench-report` (writes `.agentos/state/bench-report.json`).
+- Regression baseline: `pnpm agentos:bench-baseline` (compares against `.agentos/benchmarks/baseline-snapshot.json`; refresh with `--write`).
+- Mission pipeline smoke (QA fail / release approval): `pnpm mission:smoke`.
+- Benchmark profile tiers (`min-maxed`, `competitive`, `control-plane`) with `pnpm agentos:bench-profiles`.

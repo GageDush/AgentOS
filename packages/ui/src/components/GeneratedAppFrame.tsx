@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type { GeneratedAppViewport, InspectSelection } from "../adapters/types";
 import { CommandInput } from "./CommandInput";
 import { MagneticButton } from "../motion/MagneticButton";
@@ -28,13 +28,18 @@ export function GeneratedAppFrame({
   const [viewport, setViewport] = useState<GeneratedAppViewport>(initialViewport);
   const [inspectMode, setInspectMode] = useState(false);
   const [selection, setSelection] = useState<InspectSelection | null>(null);
+  const [screenshotStatus, setScreenshotStatus] = useState<string | null>(null);
 
   const viewportWidth =
     viewport === "desktop" ? "100%" : viewport === "tablet" ? "768px" : "390px";
 
+  const showIframe = useMemo(
+    () => Boolean(previewUrl && previewUrl !== "about:blank" && !previewContent),
+    [previewContent, previewUrl]
+  );
+
   const handleMockSelect = () => {
     if (!inspectMode) return;
-    // INTEGRATION TODO: Replace mock selection with real click-to-edit capture.
     const mock: InspectSelection = {
       componentLabel: "HeroCTA",
       domPath: "main > section.hero > button.cta-primary",
@@ -42,6 +47,13 @@ export function GeneratedAppFrame({
       userInstruction: ""
     };
     setSelection(mock);
+  };
+
+  const handleScreenshot = async () => {
+    setScreenshotStatus("Capturing preview…");
+    await new Promise((resolve) => window.setTimeout(resolve, 420));
+    setScreenshotStatus("Screenshot saved to operator clipboard (mock).");
+    window.setTimeout(() => setScreenshotStatus(null), 2400);
   };
 
   return (
@@ -56,7 +68,7 @@ export function GeneratedAppFrame({
             </MagneticButton>
           ))}
           <MagneticButton onClick={() => window.open(previewUrl, "_blank")}>Open in Browser</MagneticButton>
-          <MagneticButton onClick={() => alert("Screenshot capture — INTEGRATION TODO")}>Screenshot</MagneticButton>
+          <MagneticButton onClick={() => void handleScreenshot()}>Screenshot</MagneticButton>
           <MagneticButton variant={inspectMode ? "primary" : "default"} onClick={() => setInspectMode((v) => !v)}>
             Inspect
           </MagneticButton>
@@ -64,44 +76,41 @@ export function GeneratedAppFrame({
       }
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-        <div
-          style={{
-            margin: "0 auto",
-            width: viewportWidth,
-            maxWidth: "100%",
-            border: "1px solid var(--forge-border)",
-            borderRadius: 8,
-            overflow: "hidden",
-            background: "rgba(0,0,0,0.4)",
-            minHeight: 200
-          }}
-        >
-          <div
-            style={{
-              padding: "0.35rem 0.65rem",
-              borderBottom: "1px solid var(--forge-border)",
-              display: "flex",
-              gap: "0.35rem",
-              alignItems: "center"
-            }}
-          >
-            <span className="forge-chip">Preview</span>
-            {inspectMode ? <span className="forge-chip forge-chip-active">Inspect Mode</span> : null}
+        {screenshotStatus ? (
+          <p className="forge-mono" style={{ margin: 0, fontSize: "0.68rem", color: "var(--forge-accent)" }}>
+            {screenshotStatus}
+          </p>
+        ) : null}
+
+        <div className="forge-browser-frame" style={{ width: viewportWidth }}>
+          <div className="forge-browser-chrome">
+            <div className="forge-browser-dots" aria-hidden="true">
+              <span className="forge-browser-dot forge-browser-dot-red" />
+              <span className="forge-browser-dot forge-browser-dot-amber" />
+              <span className="forge-browser-dot forge-browser-dot-green" />
+            </div>
+            <div className="forge-browser-url">{previewUrl}</div>
+            {inspectMode ? <span className="forge-chip forge-chip-active">Inspect</span> : null}
           </div>
           <div
-            role={inspectMode ? "button" : undefined}
-            tabIndex={inspectMode ? 0 : undefined}
-            onClick={handleMockSelect}
+            className="forge-browser-viewport"
+            role={inspectMode && !showIframe ? "button" : undefined}
+            tabIndex={inspectMode && !showIframe ? 0 : undefined}
+            onClick={inspectMode && !showIframe ? handleMockSelect : undefined}
             onKeyDown={(e) => {
-              if (inspectMode && (e.key === "Enter" || e.key === " ")) handleMockSelect();
+              if (inspectMode && !showIframe && (e.key === "Enter" || e.key === " ")) handleMockSelect();
             }}
-            style={{ padding: "1rem", cursor: inspectMode ? "crosshair" : "default", minHeight: 160 }}
+            style={{ cursor: inspectMode && !showIframe ? "crosshair" : "default", minHeight: 200 }}
           >
-            {previewContent ?? (
-              <p style={{ color: "var(--forge-muted)", margin: 0, fontSize: "0.82rem" }}>
+            {previewContent ? (
+              <div style={{ padding: "1rem" }}>{previewContent}</div>
+            ) : showIframe ? (
+              <iframe title="Generated app preview" src={previewUrl} sandbox="allow-scripts allow-same-origin" />
+            ) : (
+              <p style={{ color: "var(--forge-muted)", margin: 0, padding: "1rem", fontSize: "0.82rem" }}>
                 {inspectMode
                   ? "Click an element to select it for agent modification (mock selection)."
-                  : "Generated app preview surface — connect a live preview URL when available."}
+                  : "Connect a live preview URL to render the generated app in-frame."}
               </p>
             )}
           </div>
@@ -118,8 +127,7 @@ export function GeneratedAppFrame({
             <CommandInput
               placeholder="Ask agent to modify selected element…"
               onSubmit={(instruction) => {
-                const payload = { ...selection, userInstruction: instruction };
-                onInspectSubmit?.(payload);
+                onInspectSubmit?.({ ...selection, userInstruction: instruction });
               }}
             />
           </div>

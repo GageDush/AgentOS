@@ -43,40 +43,22 @@ export function ForgeFaqAccordion({ items, allowMultiple = false }: ForgeFaqAcco
           >
             <button
               type="button"
+              className="forge-timeline-toggle"
               aria-expanded={open}
               aria-controls={panelId}
               onClick={() => toggle(item.id)}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "0.75rem",
-                padding: "0.85rem 1rem",
-                border: "none",
-                background: "transparent",
-                color: "var(--forge-text)",
-                cursor: "pointer",
-                textAlign: "left"
-              }}
+              style={{ padding: "0.85rem 1rem" }}
             >
-              <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{item.question}</span>
-              <span className="forge-mono" style={{ color: "var(--forge-accent)", fontSize: "0.7rem" }}>
-                {open ? "−" : "+"}
+              <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", width: "100%" }}>
+                <span style={{ fontWeight: 600, fontSize: "0.9rem" }}>{item.question}</span>
+                <span className="forge-mono" style={{ color: "var(--forge-accent)", fontSize: "0.7rem" }}>
+                  {open ? "−" : "+"}
+                </span>
               </span>
             </button>
             {open ? (
-              <div
-                id={panelId}
-                role="region"
-                style={{
-                  padding: "0 1rem 1rem",
-                  color: "var(--forge-muted)",
-                  fontSize: "0.85rem",
-                  lineHeight: 1.5
-                }}
-              >
-                {item.answer}
+              <div id={panelId} role="region" className="forge-faq-answer" style={{ padding: "0 1rem 1rem" }}>
+                <p style={{ margin: 0, color: "var(--forge-muted)", fontSize: "0.85rem", lineHeight: 1.5 }}>{item.answer}</p>
               </div>
             ) : null}
           </div>

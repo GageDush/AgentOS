@@ -1,0 +1,4193 @@
+{
+  "articles": {
+    "agents/admin-agent": {
+      "slug": "agents/admin-agent",
+      "title": "Admin Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/admin-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.107Z",
+      "archived": false
+    },
+    "agents/architect-agent": {
+      "slug": "agents/architect-agent",
+      "title": "Architect Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/architect-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.108Z",
+      "archived": false
+    },
+    "agents/backend-service-agent": {
+      "slug": "agents/backend-service-agent",
+      "title": "Backend Service Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/backend-service-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.108Z",
+      "archived": false
+    },
+    "agents/code-implementer": {
+      "slug": "agents/code-implementer",
+      "title": "Code Implementer",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/code-implementer.md",
+      "updatedAt": "2026-06-12T13:38:52.109Z",
+      "archived": false
+    },
+    "agents/code-reviewer": {
+      "slug": "agents/code-reviewer",
+      "title": "Code Reviewer",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/code-reviewer.md",
+      "updatedAt": "2026-06-12T13:38:52.110Z",
+      "archived": false
+    },
+    "agents/context-minimizer": {
+      "slug": "agents/context-minimizer",
+      "title": "Context Minimizer",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/context-minimizer.md",
+      "updatedAt": "2026-06-12T13:38:52.110Z",
+      "archived": false
+    },
+    "agents/database-migration-agent": {
+      "slug": "agents/database-migration-agent",
+      "title": "Database Migration Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/database-migration-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.111Z",
+      "archived": false
+    },
+    "agents/docs-agent": {
+      "slug": "agents/docs-agent",
+      "title": "Docs Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/docs-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.112Z",
+      "archived": false
+    },
+    "agents/frontend-ui-agent": {
+      "slug": "agents/frontend-ui-agent",
+      "title": "Frontend Ui Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/frontend-ui-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.112Z",
+      "archived": false
+    },
+    "agents/integration-broker": {
+      "slug": "agents/integration-broker",
+      "title": "Integration Broker",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/integration-broker.md",
+      "updatedAt": "2026-06-12T13:38:52.113Z",
+      "archived": false
+    },
+    "agents/issue-intake-researcher": {
+      "slug": "agents/issue-intake-researcher",
+      "title": "Issue Intake Researcher",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/issue-intake-researcher.md",
+      "updatedAt": "2026-06-12T13:38:52.114Z",
+      "archived": false
+    },
+    "agents/memory-curator": {
+      "slug": "agents/memory-curator",
+      "title": "Memory Curator",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/memory-curator.md",
+      "updatedAt": "2026-06-12T13:38:52.114Z",
+      "archived": false
+    },
+    "agents/planner-partitioner": {
+      "slug": "agents/planner-partitioner",
+      "title": "Planner Partitioner",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/planner-partitioner.md",
+      "updatedAt": "2026-06-12T13:38:52.115Z",
+      "archived": false
+    },
+    "agents/product-agent": {
+      "slug": "agents/product-agent",
+      "title": "Product Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/product-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.115Z",
+      "archived": false
+    },
+    "agents/qa-agent": {
+      "slug": "agents/qa-agent",
+      "title": "Qa Agent",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/qa-agent.md",
+      "updatedAt": "2026-06-12T13:38:52.115Z",
+      "archived": false
+    },
+    "agents/quota-steward": {
+      "slug": "agents/quota-steward",
+      "title": "Quota Steward",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/quota-steward.md",
+      "updatedAt": "2026-06-12T13:38:52.116Z",
+      "archived": false
+    },
+    "agents/release-manager": {
+      "slug": "agents/release-manager",
+      "title": "Release Manager",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/release-manager.md",
+      "updatedAt": "2026-06-12T13:38:52.116Z",
+      "archived": false
+    },
+    "agents/repo-cartographer": {
+      "slug": "agents/repo-cartographer",
+      "title": "Repo Cartographer",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/repo-cartographer.md",
+      "updatedAt": "2026-06-12T13:38:52.117Z",
+      "archived": false
+    },
+    "agents/security-auditor": {
+      "slug": "agents/security-auditor",
+      "title": "Security Auditor",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/security-auditor.md",
+      "updatedAt": "2026-06-12T13:38:52.118Z",
+      "archived": false
+    },
+    "agents/systems-synthesizer": {
+      "slug": "agents/systems-synthesizer",
+      "title": "Systems Synthesizer",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/systems-synthesizer.md",
+      "updatedAt": "2026-06-12T13:38:52.118Z",
+      "archived": false
+    },
+    "agents/task-classifier": {
+      "slug": "agents/task-classifier",
+      "title": "Task Classifier",
+      "tags": [
+        "agent",
+        "profile",
+        "auto-indexed"
+      ],
+      "path": "agents/task-classifier.md",
+      "updatedAt": "2026-06-12T13:38:52.119Z",
+      "archived": false
+    },
+    "apps/api": {
+      "slug": "apps/api",
+      "title": "Api",
+      "tags": [
+        "app",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "apps/api.md",
+      "updatedAt": "2026-06-12T13:38:52.088Z",
+      "archived": false
+    },
+    "apps/command-center": {
+      "slug": "apps/command-center",
+      "title": "Command Center",
+      "tags": [
+        "app",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "apps/command-center.md",
+      "updatedAt": "2026-06-12T13:38:52.090Z",
+      "archived": false
+    },
+    "apps/gateway": {
+      "slug": "apps/gateway",
+      "title": "Gateway",
+      "tags": [
+        "app",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "apps/gateway.md",
+      "updatedAt": "2026-06-12T13:38:52.091Z",
+      "archived": false
+    },
+    "apps/scheduler": {
+      "slug": "apps/scheduler",
+      "title": "Scheduler",
+      "tags": [
+        "app",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "apps/scheduler.md",
+      "updatedAt": "2026-06-12T13:38:52.092Z",
+      "archived": false
+    },
+    "apps/worker": {
+      "slug": "apps/worker",
+      "title": "Worker",
+      "tags": [
+        "app",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "apps/worker.md",
+      "updatedAt": "2026-06-12T13:38:52.092Z",
+      "archived": false
+    },
+    "areas/apps-api": {
+      "slug": "areas/apps-api",
+      "title": "Apps Api",
+      "tags": [],
+      "path": "areas/apps-api.md",
+      "updatedAt": "2026-06-12T13:43:42.555Z",
+      "archived": false
+    },
+    "areas/apps-command-center": {
+      "slug": "areas/apps-command-center",
+      "title": "Apps Command Center",
+      "tags": [],
+      "path": "areas/apps-command-center.md",
+      "updatedAt": "2026-06-12T13:43:42.657Z",
+      "archived": false
+    },
+    "areas/apps-gateway": {
+      "slug": "areas/apps-gateway",
+      "title": "Apps Gateway",
+      "tags": [],
+      "path": "areas/apps-gateway.md",
+      "updatedAt": "2026-06-12T13:43:38.684Z",
+      "archived": false
+    },
+    "areas/apps-packages": {
+      "slug": "areas/apps-packages",
+      "title": "Apps Packages",
+      "tags": [],
+      "path": "areas/apps-packages.md",
+      "updatedAt": "2026-06-12T13:43:35.573Z",
+      "archived": false
+    },
+    "areas/apps-scheduler": {
+      "slug": "areas/apps-scheduler",
+      "title": "Apps Scheduler",
+      "tags": [],
+      "path": "areas/apps-scheduler.md",
+      "updatedAt": "2026-06-12T13:43:35.967Z",
+      "archived": false
+    },
+    "areas/apps-worker": {
+      "slug": "areas/apps-worker",
+      "title": "Apps Worker",
+      "tags": [],
+      "path": "areas/apps-worker.md",
+      "updatedAt": "2026-06-12T13:43:41.484Z",
+      "archived": false
+    },
+    "areas/code-ownership": {
+      "slug": "areas/code-ownership",
+      "title": "Code ownership map",
+      "tags": [
+        "ownership",
+        "navigation",
+        "auto-indexed"
+      ],
+      "path": "areas/code-ownership.md",
+      "updatedAt": "2026-06-12T13:38:52.151Z",
+      "archived": false
+    },
+    "areas/config": {
+      "slug": "areas/config",
+      "title": "Configuration reference",
+      "tags": [
+        "config",
+        "env",
+        "auto-indexed"
+      ],
+      "path": "areas/config.md",
+      "updatedAt": "2026-06-12T13:38:52.155Z",
+      "archived": false
+    },
+    "areas/dependency-graph": {
+      "slug": "areas/dependency-graph",
+      "title": "Dependency graph",
+      "tags": [
+        "monorepo",
+        "packages",
+        "auto-indexed"
+      ],
+      "path": "areas/dependency-graph.md",
+      "updatedAt": "2026-06-12T13:38:52.150Z",
+      "archived": false
+    },
+    "areas/repo-layout": {
+      "slug": "areas/repo-layout",
+      "title": "Repository layout",
+      "tags": [
+        "navigation",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "areas/repo-layout.md",
+      "updatedAt": "2026-06-12T13:43:42.910Z",
+      "archived": false
+    },
+    "areas/risk-areas": {
+      "slug": "areas/risk-areas",
+      "title": "Risk areas",
+      "tags": [
+        "security",
+        "policy",
+        "auto-indexed"
+      ],
+      "path": "areas/risk-areas.md",
+      "updatedAt": "2026-06-12T13:38:52.151Z",
+      "archived": false
+    },
+    "docs/agentos_local_pivot_plan": {
+      "slug": "docs/agentos_local_pivot_plan",
+      "title": "AGENTOS LOCAL PIVOT PLAN",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/agentos_local_pivot_plan.md",
+      "updatedAt": "2026-06-12T13:38:52.121Z",
+      "archived": false
+    },
+    "docs/agentos_session_context": {
+      "slug": "docs/agentos_session_context",
+      "title": "AGENTOS SESSION CONTEXT",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/agentos_session_context.md",
+      "updatedAt": "2026-06-12T13:38:52.122Z",
+      "archived": false
+    },
+    "docs/agentos_token_optimization_spec": {
+      "slug": "docs/agentos_token_optimization_spec",
+      "title": "AGENTOS TOKEN OPTIMIZATION SPEC",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/agentos_token_optimization_spec.md",
+      "updatedAt": "2026-06-12T13:38:52.123Z",
+      "archived": false
+    },
+    "docs/architecture": {
+      "slug": "docs/architecture",
+      "title": "Architecture",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/architecture.md",
+      "updatedAt": "2026-06-12T13:38:52.131Z",
+      "archived": false
+    },
+    "docs/asset_manifest_and_needs": {
+      "slug": "docs/asset_manifest_and_needs",
+      "title": "ASSET MANIFEST AND NEEDS",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/asset_manifest_and_needs.md",
+      "updatedAt": "2026-06-12T13:38:52.124Z",
+      "archived": false
+    },
+    "docs/demo/acceptance_criteria": {
+      "slug": "docs/demo/acceptance_criteria",
+      "title": "ACCEPTANCE CRITERIA",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/acceptance_criteria.md",
+      "updatedAt": "2026-06-12T13:38:52.132Z",
+      "archived": false
+    },
+    "docs/demo/build_progress": {
+      "slug": "docs/demo/build_progress",
+      "title": "BUILD PROGRESS",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/build_progress.md",
+      "updatedAt": "2026-06-12T13:38:52.133Z",
+      "archived": false
+    },
+    "docs/demo/demo_prerequisites": {
+      "slug": "docs/demo/demo_prerequisites",
+      "title": "DEMO PREREQUISITES",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/demo_prerequisites.md",
+      "updatedAt": "2026-06-12T13:38:52.133Z",
+      "archived": false
+    },
+    "docs/demo/implementation_brief": {
+      "slug": "docs/demo/implementation_brief",
+      "title": "IMPLEMENTATION BRIEF",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/implementation_brief.md",
+      "updatedAt": "2026-06-12T13:38:52.134Z",
+      "archived": false
+    },
+    "docs/demo/p1-implementer-gaps": {
+      "slug": "docs/demo/p1-implementer-gaps",
+      "title": "P1 Implementer Gaps",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/p1-implementer-gaps.md",
+      "updatedAt": "2026-06-12T13:38:52.134Z",
+      "archived": false
+    },
+    "docs/demo/product_summary": {
+      "slug": "docs/demo/product_summary",
+      "title": "PRODUCT SUMMARY",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/product_summary.md",
+      "updatedAt": "2026-06-12T13:38:52.135Z",
+      "archived": false
+    },
+    "docs/demo/project_completion": {
+      "slug": "docs/demo/project_completion",
+      "title": "PROJECT COMPLETION",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/project_completion.md",
+      "updatedAt": "2026-06-12T13:38:52.135Z",
+      "archived": false
+    },
+    "docs/demo/project_scoping_form": {
+      "slug": "docs/demo/project_scoping_form",
+      "title": "PROJECT SCOPING FORM",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/project_scoping_form.md",
+      "updatedAt": "2026-06-12T13:38:52.136Z",
+      "archived": false
+    },
+    "docs/demo/project_wave_runner": {
+      "slug": "docs/demo/project_wave_runner",
+      "title": "PROJECT WAVE RUNNER",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/project_wave_runner.md",
+      "updatedAt": "2026-06-12T13:38:52.137Z",
+      "archived": false
+    },
+    "docs/demo/project_worksheets": {
+      "slug": "docs/demo/project_worksheets",
+      "title": "PROJECT WORKSHEETS",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/project_worksheets.md",
+      "updatedAt": "2026-06-12T13:38:52.137Z",
+      "archived": false
+    },
+    "docs/demo/scoping_response": {
+      "slug": "docs/demo/scoping_response",
+      "title": "SCOPING RESPONSE",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/scoping_response.md",
+      "updatedAt": "2026-06-12T13:38:52.138Z",
+      "archived": false
+    },
+    "docs/demo/scoping-form/readme": {
+      "slug": "docs/demo/scoping-form/readme",
+      "title": "README",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/demo/scoping-form/readme.md",
+      "updatedAt": "2026-06-12T13:38:52.139Z",
+      "archived": false
+    },
+    "docs/design/agentos-forge-style-study": {
+      "slug": "docs/design/agentos-forge-style-study",
+      "title": "Agentos Forge Style Study",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/agentos-forge-style-study.md",
+      "updatedAt": "2026-06-12T13:38:52.139Z",
+      "archived": false
+    },
+    "docs/first-run": {
+      "slug": "docs/first-run",
+      "title": "First Run",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/first-run.md",
+      "updatedAt": "2026-06-12T13:38:52.140Z",
+      "archived": false
+    },
+    "docs/gates": {
+      "slug": "docs/gates",
+      "title": "GATES",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/gates.md",
+      "updatedAt": "2026-06-12T13:38:52.125Z",
+      "archived": false
+    },
+    "docs/hosted_execution_notes": {
+      "slug": "docs/hosted_execution_notes",
+      "title": "HOSTED EXECUTION NOTES",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/hosted_execution_notes.md",
+      "updatedAt": "2026-06-12T13:38:52.125Z",
+      "archived": false
+    },
+    "docs/hosting_api_store_audit": {
+      "slug": "docs/hosting_api_store_audit",
+      "title": "HOSTING API STORE AUDIT",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/hosting_api_store_audit.md",
+      "updatedAt": "2026-06-12T13:38:52.126Z",
+      "archived": false
+    },
+    "docs/legal/source_references": {
+      "slug": "docs/legal/source_references",
+      "title": "SOURCE REFERENCES",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/legal/source_references.md",
+      "updatedAt": "2026-06-12T13:38:52.140Z",
+      "archived": false
+    },
+    "docs/legal/third_party_notices": {
+      "slug": "docs/legal/third_party_notices",
+      "title": "THIRD PARTY NOTICES",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/legal/third_party_notices.md",
+      "updatedAt": "2026-06-12T13:38:52.141Z",
+      "archived": false
+    },
+    "docs/local_ai_review": {
+      "slug": "docs/local_ai_review",
+      "title": "LOCAL AI REVIEW",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/local_ai_review.md",
+      "updatedAt": "2026-06-12T13:38:52.127Z",
+      "archived": false
+    },
+    "docs/memory_and_token_systems": {
+      "slug": "docs/memory_and_token_systems",
+      "title": "MEMORY AND TOKEN SYSTEMS",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/memory_and_token_systems.md",
+      "updatedAt": "2026-06-12T13:38:52.127Z",
+      "archived": false
+    },
+    "docs/memory-and-token-systems": {
+      "slug": "docs/memory-and-token-systems",
+      "title": "Memory And Token Systems",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/memory-and-token-systems.md",
+      "updatedAt": "2026-06-12T13:38:52.141Z",
+      "archived": false
+    },
+    "docs/next_steps": {
+      "slug": "docs/next_steps",
+      "title": "NEXT STEPS",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/next_steps.md",
+      "updatedAt": "2026-06-12T13:38:52.128Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-124913-cycle-1": {
+      "slug": "docs/overnight-plans/20260530-124913-cycle-1",
+      "title": "20260530 124913 Cycle 1",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-124913-cycle-1.md",
+      "updatedAt": "2026-06-12T13:38:52.142Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-125204-cycle-1": {
+      "slug": "docs/overnight-plans/20260530-125204-cycle-1",
+      "title": "20260530 125204 Cycle 1",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-125204-cycle-1.md",
+      "updatedAt": "2026-06-12T13:38:52.143Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-132237-cycle-2": {
+      "slug": "docs/overnight-plans/20260530-132237-cycle-2",
+      "title": "20260530 132237 Cycle 2",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-132237-cycle-2.md",
+      "updatedAt": "2026-06-12T13:38:52.143Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-135311-cycle-3": {
+      "slug": "docs/overnight-plans/20260530-135311-cycle-3",
+      "title": "20260530 135311 Cycle 3",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-135311-cycle-3.md",
+      "updatedAt": "2026-06-12T13:38:52.144Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-142346-cycle-4": {
+      "slug": "docs/overnight-plans/20260530-142346-cycle-4",
+      "title": "20260530 142346 Cycle 4",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-142346-cycle-4.md",
+      "updatedAt": "2026-06-12T13:38:52.144Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-145424-cycle-5": {
+      "slug": "docs/overnight-plans/20260530-145424-cycle-5",
+      "title": "20260530 145424 Cycle 5",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-145424-cycle-5.md",
+      "updatedAt": "2026-06-12T13:38:52.145Z",
+      "archived": false
+    },
+    "docs/overnight-plans/20260530-152500-cycle-6": {
+      "slug": "docs/overnight-plans/20260530-152500-cycle-6",
+      "title": "20260530 152500 Cycle 6",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/20260530-152500-cycle-6.md",
+      "updatedAt": "2026-06-12T13:38:52.145Z",
+      "archived": false
+    },
+    "docs/overnight-plans/index": {
+      "slug": "docs/overnight-plans/index",
+      "title": "INDEX",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overnight-plans/index.md",
+      "updatedAt": "2026-06-12T13:38:52.146Z",
+      "archived": false
+    },
+    "docs/overview": {
+      "slug": "docs/overview",
+      "title": "Overview",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/overview.md",
+      "updatedAt": "2026-06-12T13:38:52.146Z",
+      "archived": false
+    },
+    "docs/phaser_office_implementation_plan": {
+      "slug": "docs/phaser_office_implementation_plan",
+      "title": "PHASER OFFICE IMPLEMENTATION PLAN",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/phaser_office_implementation_plan.md",
+      "updatedAt": "2026-06-12T13:38:52.129Z",
+      "archived": false
+    },
+    "docs/phaser-office": {
+      "slug": "docs/phaser-office",
+      "title": "Phaser Office",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/phaser-office.md",
+      "updatedAt": "2026-06-12T13:38:52.147Z",
+      "archived": false
+    },
+    "docs/release_flow": {
+      "slug": "docs/release_flow",
+      "title": "RELEASE FLOW",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/release_flow.md",
+      "updatedAt": "2026-06-12T13:38:52.130Z",
+      "archived": false
+    },
+    "docs/sanitization_policy": {
+      "slug": "docs/sanitization_policy",
+      "title": "SANITIZATION POLICY",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/sanitization_policy.md",
+      "updatedAt": "2026-06-12T13:38:52.130Z",
+      "archived": false
+    },
+    "docs/troubleshooting": {
+      "slug": "docs/troubleshooting",
+      "title": "Troubleshooting",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/troubleshooting.md",
+      "updatedAt": "2026-06-12T13:38:52.147Z",
+      "archived": false
+    },
+    "flows/cursor-memory": {
+      "slug": "flows/cursor-memory",
+      "title": "Cursor memory flow",
+      "tags": [
+        "cursor",
+        "memory",
+        "flow"
+      ],
+      "path": "flows/cursor-memory.md",
+      "updatedAt": "2026-06-12T13:56:43.867Z",
+      "archived": false
+    },
+    "flows/memory-curator": {
+      "slug": "flows/memory-curator",
+      "title": "Memory curator flow",
+      "tags": [
+        "memory",
+        "curation"
+      ],
+      "path": "flows/memory-curator.md",
+      "updatedAt": "2026-06-12T12:22:01.317Z",
+      "archived": false
+    },
+    "flows/pipeline": {
+      "slug": "flows/pipeline",
+      "title": "Agent pipeline",
+      "tags": [
+        "pipeline",
+        "routing",
+        "auto-indexed"
+      ],
+      "path": "flows/pipeline.md",
+      "updatedAt": "2026-06-12T13:38:52.152Z",
+      "archived": false
+    },
+    "flows/root-scripts": {
+      "slug": "flows/root-scripts",
+      "title": "Root scripts",
+      "tags": [
+        "tooling",
+        "pnpm",
+        "auto-indexed"
+      ],
+      "path": "flows/root-scripts.md",
+      "updatedAt": "2026-06-12T13:38:52.153Z",
+      "archived": false
+    },
+    "flows/test-commands": {
+      "slug": "flows/test-commands",
+      "title": "Test commands",
+      "tags": [
+        "qa",
+        "verification"
+      ],
+      "path": "flows/test-commands.md",
+      "updatedAt": "2026-06-12T12:21:51.552Z",
+      "archived": false
+    },
+    "index": {
+      "slug": "index",
+      "title": "AgentOS Memory Wiki",
+      "tags": [
+        "home",
+        "agentos",
+        "auto-indexed"
+      ],
+      "path": "index.md",
+      "updatedAt": "2026-06-12T13:47:40.170Z",
+      "archived": false
+    },
+    "packages/agents": {
+      "slug": "packages/agents",
+      "title": "Agents package",
+      "tags": [
+        "agents",
+        "pipeline"
+      ],
+      "path": "packages/agents.md",
+      "updatedAt": "2026-06-12T13:43:41.388Z",
+      "archived": false
+    },
+    "packages/app-generator": {
+      "slug": "packages/app-generator",
+      "title": "App Generator",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/app-generator.md",
+      "updatedAt": "2026-06-12T13:43:32.227Z",
+      "archived": false
+    },
+    "packages/config": {
+      "slug": "packages/config",
+      "title": "Config",
+      "tags": [],
+      "path": "packages/config.md",
+      "updatedAt": "2026-06-12T13:43:36.766Z",
+      "archived": false
+    },
+    "packages/game-schema": {
+      "slug": "packages/game-schema",
+      "title": "Game Schema",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/game-schema.md",
+      "updatedAt": "2026-06-12T13:43:38.089Z",
+      "archived": false
+    },
+    "packages/memory": {
+      "slug": "packages/memory",
+      "title": "Memory",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/memory.md",
+      "updatedAt": "2026-06-12T13:38:52.096Z",
+      "archived": false
+    },
+    "packages/orchestrator": {
+      "slug": "packages/orchestrator",
+      "title": "Orchestrator package",
+      "tags": [
+        "routing",
+        "classifier"
+      ],
+      "path": "packages/orchestrator.md",
+      "updatedAt": "2026-06-12T13:43:42.760Z",
+      "archived": false
+    },
+    "packages/persistence": {
+      "slug": "packages/persistence",
+      "title": "Persistence",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/persistence.md",
+      "updatedAt": "2026-06-12T13:43:42.815Z",
+      "archived": false
+    },
+    "packages/queue": {
+      "slug": "packages/queue",
+      "title": "Queue",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/queue.md",
+      "updatedAt": "2026-06-12T13:43:36.014Z",
+      "archived": false
+    },
+    "packages/runtime": {
+      "slug": "packages/runtime",
+      "title": "Runtime package",
+      "tags": [
+        "runtime",
+        "missions",
+        "gates"
+      ],
+      "path": "packages/runtime.md",
+      "updatedAt": "2026-06-12T13:43:42.706Z",
+      "archived": false
+    },
+    "packages/sandbox": {
+      "slug": "packages/sandbox",
+      "title": "Sandbox",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/sandbox.md",
+      "updatedAt": "2026-06-12T13:43:41.133Z",
+      "archived": false
+    },
+    "packages/shared": {
+      "slug": "packages/shared",
+      "title": "Shared",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/shared.md",
+      "updatedAt": "2026-06-12T13:43:42.602Z",
+      "archived": false
+    },
+    "packages/token-manager": {
+      "slug": "packages/token-manager",
+      "title": "Token Manager",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/token-manager.md",
+      "updatedAt": "2026-06-12T13:38:52.103Z",
+      "archived": false
+    },
+    "packages/tools": {
+      "slug": "packages/tools",
+      "title": "Tools",
+      "tags": [],
+      "path": "packages/tools.md",
+      "updatedAt": "2026-06-12T13:43:41.085Z",
+      "archived": false
+    },
+    "packages/ui": {
+      "slug": "packages/ui",
+      "title": "Ui",
+      "tags": [
+        "package",
+        "monorepo",
+        "auto-indexed"
+      ],
+      "path": "packages/ui.md",
+      "updatedAt": "2026-06-12T13:43:40.772Z",
+      "archived": false
+    },
+    "planning/chatgpt/agentos-master-codex-prompt": {
+      "slug": "planning/chatgpt/agentos-master-codex-prompt",
+      "title": "AgentOS Master Codex Prompt",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/agentos-master-codex-prompt.md",
+      "updatedAt": "2026-06-12T13:48:23.211Z",
+      "archived": false
+    },
+    "planning/chatgpt/agentos-project": {
+      "slug": "planning/chatgpt/agentos-project",
+      "title": "AgentOS ChatGPT project",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "project"
+      ],
+      "path": "planning/chatgpt/agentos-project.md",
+      "updatedAt": "2026-06-12T13:48:23.223Z",
+      "archived": false
+    },
+    "planning/chatgpt/asset-manifest-and-needs": {
+      "slug": "planning/chatgpt/asset-manifest-and-needs",
+      "title": "AgentOS Asset Manifest and Remaining Needs",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/asset-manifest-and-needs.md",
+      "updatedAt": "2026-06-12T13:48:23.213Z",
+      "archived": false
+    },
+    "planning/chatgpt/codex-repair-prompt": {
+      "slug": "planning/chatgpt/codex-repair-prompt",
+      "title": "Codex Repair Prompt",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/codex-repair-prompt.md",
+      "updatedAt": "2026-06-12T13:48:23.212Z",
+      "archived": false
+    },
+    "planning/chatgpt/generated-asset-prompts": {
+      "slug": "planning/chatgpt/generated-asset-prompts",
+      "title": "Generated Asset Prompt Notes",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/generated-asset-prompts.md",
+      "updatedAt": "2026-06-12T13:48:23.212Z",
+      "archived": false
+    },
+    "planning/chatgpt/index": {
+      "slug": "planning/chatgpt/index",
+      "title": "ChatGPT planning board",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "index"
+      ],
+      "path": "planning/chatgpt/index.md",
+      "updatedAt": "2026-06-12T13:48:23.223Z",
+      "archived": false
+    },
+    "planning/chatgpt/memory-and-token-systems": {
+      "slug": "planning/chatgpt/memory-and-token-systems",
+      "title": "AgentOS Memory and Token/Credit Management Systems",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/memory-and-token-systems.md",
+      "updatedAt": "2026-06-12T13:48:23.213Z",
+      "archived": false
+    },
+    "planning/chatgpt/phaser-office-implementation-plan": {
+      "slug": "planning/chatgpt/phaser-office-implementation-plan",
+      "title": "AgentOS Phaser Office Dashboard Implementation Plan",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/phaser-office-implementation-plan.md",
+      "updatedAt": "2026-06-12T13:48:23.214Z",
+      "archived": false
+    },
+    "planning/chatgpt/readme": {
+      "slug": "planning/chatgpt/readme",
+      "title": "AgentOS Project Bundle",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/readme.md",
+      "updatedAt": "2026-06-12T13:48:23.210Z",
+      "archived": false
+    },
+    "planning/chatgpt/sanitization-policy": {
+      "slug": "planning/chatgpt/sanitization-policy",
+      "title": "AgentOS Sanitization Policy",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/sanitization-policy.md",
+      "updatedAt": "2026-06-12T13:48:23.215Z",
+      "archived": false
+    },
+    "planning/chatgpt/simple-codex-steps": {
+      "slug": "planning/chatgpt/simple-codex-steps",
+      "title": "Simple Codex Steps",
+      "tags": [
+        "chatgpt",
+        "planning",
+        "og-board",
+        "bundle-git"
+      ],
+      "path": "planning/chatgpt/simple-codex-steps.md",
+      "updatedAt": "2026-06-12T13:48:23.211Z",
+      "archived": false
+    },
+    "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": {
+      "slug": "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "title": "You are Claude running inside Cursor on my AgentOS repo. Your first job is orientation only. Do not edit files yet. Agen",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586.md",
+      "updatedAt": "2026-06-12T13:43:30.910Z",
+      "archived": false
+    },
+    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": {
+      "slug": "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "title": "can you ge the discord running: For live replies: API must be running with FEATURE_DISCORD=true: pnpm dev:api # or pnpm",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a.md",
+      "updatedAt": "2026-06-12T13:43:30.916Z",
+      "archived": false
+    },
+    "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": {
+      "slug": "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "title": "Summarize all active agents in AgentOS, include all agent data and purpose in prompt cycles/agent chains Each Agent shou",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961.md",
+      "updatedAt": "2026-06-12T13:55:43.788Z",
+      "archived": false
+    },
+    "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": {
+      "slug": "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "title": "You are working inside the AgentOS repository in Cursor. Your job is to implement a premium AgentOS UI/UX system inspire",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388.md",
+      "updatedAt": "2026-06-12T13:43:30.930Z",
+      "archived": false
+    },
+    "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3": {
+      "slug": "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "title": "Discord Commands/Prompts",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3.md",
+      "updatedAt": "2026-06-12T13:43:30.950Z",
+      "archived": false
+    },
+    "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": {
+      "slug": "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "title": "Make a plan for all of the Agent profiles and routing of agents for AgentOS. Give me a map of what is supposed to happen",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d.md",
+      "updatedAt": "2026-06-12T13:43:30.955Z",
+      "archived": false
+    },
+    "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028": {
+      "slug": "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "title": "Create me a 100 step prompt pathway to completion of this project to a demo worthy state. each step should include succe",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028.md",
+      "updatedAt": "2026-06-12T13:43:30.965Z",
+      "archived": false
+    },
+    "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a": {
+      "slug": "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "title": "Paste this into Cursor. It is designed as an **audit/report prompt**, not an implementation prompt. You are working in m",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a.md",
+      "updatedAt": "2026-06-12T13:43:30.973Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13": {
+      "slug": "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "title": "Reply with exactly one word: pong",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13.md",
+      "updatedAt": "2026-06-12T13:43:30.978Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": {
+      "slug": "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "title": "Working now?",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924.md",
+      "updatedAt": "2026-06-12T13:43:30.978Z",
+      "archived": false
+    },
+    "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0": {
+      "slug": "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "title": "all other chats on this repositories have or are working on pushing their git commits. summarize what the project should",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0.md",
+      "updatedAt": "2026-06-12T13:43:30.979Z",
+      "archived": false
+    },
+    "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": {
+      "slug": "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "title": "Analyze the complete file structure, integration network, and any other system schematic profile you can think of that p",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709.md",
+      "updatedAt": "2026-06-12T13:49:43.785Z",
+      "archived": false
+    },
+    "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": {
+      "slug": "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "title": "help me find free equipment to host AgentOS on. Like search facebook marketplace free stuff, or craigslist etc",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7.md",
+      "updatedAt": "2026-06-12T13:43:30.998Z",
+      "archived": false
+    },
+    "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd": {
+      "slug": "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "title": "Plan a layout for the discord server/guild that utilizes the full spectrum of what can be modified in a discord server w",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd.md",
+      "updatedAt": "2026-06-12T13:43:31.004Z",
+      "archived": false
+    },
+    "sessions/cursor/index": {
+      "slug": "sessions/cursor/index",
+      "title": "Cursor chat sessions",
+      "tags": [
+        "cursor",
+        "sessions",
+        "index"
+      ],
+      "path": "sessions/cursor/index.md",
+      "updatedAt": "2026-06-12T13:56:43.866Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319": {
+      "slug": "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "title": "Audit runtime routing in C:\\Users\\gaged\\Documents\\AgenOS. Search and read: 1. `packages/orchestrator` - how missions are",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319.md",
+      "updatedAt": "2026-06-12T13:43:30.973Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240": {
+      "slug": "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
+      "title": "You are helping a user who asks: \"how do I interact with the discord server? I hit pulse and nothing is really happening",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240.md",
+      "updatedAt": "2026-06-12T13:43:31.005Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955": {
+      "slug": "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "title": "Search the AgentOS repository at C:\\Users\\gaged\\Documents\\AgenOS for: 1. App generation / orchestration code 2. uiPreset",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955.md",
+      "updatedAt": "2026-06-12T13:43:30.932Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce": {
+      "slug": "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "title": "Audit conversational control and product narrative in C:\\Users\\gaged\\Documents\\AgenOS: 1. `apps/command-center` - chat-f",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce.md",
+      "updatedAt": "2026-06-12T13:43:30.975Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f": {
+      "slug": "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "title": "Research and return findings for a UI improvement plan. 1. Fetch and analyze https://halotemplate.framer.website/ - docu",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f.md",
+      "updatedAt": "2026-06-12T13:43:30.933Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b": {
+      "slug": "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "title": "Explore C:\\Users\\gaged\\Documents\\AgenOS for: 1. packages/agents/src/implementer-dispatch.ts - how gateway/cursor/mock wo",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b.md",
+      "updatedAt": "2026-06-12T13:43:30.957Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac": {
+      "slug": "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "title": "Audit the AgentOS `.agentos/` control layer in C:\\Users\\gaged\\Documents\\AgenOS. Read and summarize: 1. List all files in",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac.md",
+      "updatedAt": "2026-06-12T13:43:30.975Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5": {
+      "slug": "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "title": "<plugin_info kind=\"matched_installed\"> display_name: Cloudflare description: Skills for the Cloudflare developer platfor",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5.md",
+      "updatedAt": "2026-06-12T13:43:30.980Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5": {
+      "slug": "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
+      "title": "Implement Chat Rooms 1-3 for AgentOS Discord in repo: C:\\Users\\gaged\\Documents\\AgenOS ## User request Add **Chat Rooms 1",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5.md",
+      "updatedAt": "2026-06-12T13:43:31.006Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a": {
+      "slug": "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "title": "Explore the AgentOS monorepo at C:\\Users\\gaged\\Documents\\AgenOS thoroughly. Return: 1. Top-level directory structure and",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a.md",
+      "updatedAt": "2026-06-12T13:43:30.967Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7": {
+      "slug": "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "title": "Audit persistence, worker, gates, and sandbox in C:\\Users\\gaged\\Documents\\AgenOS: 1. `packages/persistence` - backend ty",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7.md",
+      "updatedAt": "2026-06-12T13:43:30.976Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69": {
+      "slug": "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "title": "Explore the AgentOS repository at C:\\Users\\gaged\\Documents\\AgenOS. Find and report: 1. Overall monorepo structure (packa",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69.md",
+      "updatedAt": "2026-06-12T13:43:30.934Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922": {
+      "slug": "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "title": "Explore C:\\Users\\gaged\\Documents\\AgenOS on current branch. Identify remaining gaps from Forge/Halo UI polish work: 1. Le",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922.md",
+      "updatedAt": "2026-06-12T13:43:30.935Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e": {
+      "slug": "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
+      "title": "You are working in C:\\Users\\gaged\\Documents\\AgenOS The user asked: confirm .env has what was requested for Discord stay-",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e.md",
+      "updatedAt": "2026-06-12T13:43:30.935Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b": {
+      "slug": "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "title": "Explore C:\\Users\\gaged\\Documents\\AgenOS for: playwright e2e setup, demo-smoke scripts, redis/queue/cron scheduler stubs,",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b.md",
+      "updatedAt": "2026-06-12T13:43:30.968Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6": {
+      "slug": "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "title": "Execute the FULL Halo-inspired AgentOS UI polish implementation in C:\\Users\\gaged\\Documents\\AgenOS. ## Phase Order (exec",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6.md",
+      "updatedAt": "2026-06-12T13:43:30.937Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210": {
+      "slug": "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
+      "title": "Cursor session 868a7986",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210.md",
+      "updatedAt": "2026-06-12T13:43:30.995Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb": {
+      "slug": "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "title": "In repo C:\\Users\\gaged\\Documents\\AgenOS, implement Wave 0 Lane L5: add `app_creation` task type to packages/shared and s",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb.md",
+      "updatedAt": "2026-06-12T13:43:30.968Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527": {
+      "slug": "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "title": "You are Agent 3 (Discord Control Gate) for AgentOS at C:\\Users\\gaged\\Documents\\AgenOS. **OWNERSHIP — only touch:** - `ap",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527.md",
+      "updatedAt": "2026-06-12T13:43:30.981Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07": {
+      "slug": "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "title": "Explore C:\\Users\\gaged\\Documents\\AgenOS for LLM executor, agents llm.ts, release manager, and runtime processRun flow. R",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07.md",
+      "updatedAt": "2026-06-12T13:43:30.969Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75": {
+      "slug": "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "title": "You are Agent 4 (Postgres Host-Readiness) for AgentOS at C:\\Users\\gaged\\Documents\\AgenOS. **OWNERSHIP — only touch:** -",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75.md",
+      "updatedAt": "2026-06-12T13:43:30.982Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573": {
+      "slug": "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "title": "Explore the AgentOS monorepo at C:\\Users\\gaged\\Documents\\AgenOS for unused/ghost code from previous iterations. Look for",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573.md",
+      "updatedAt": "2026-06-12T13:43:30.970Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67": {
+      "slug": "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "title": "Explore the AgentOS monorepo at C:\\Users\\gaged\\Documents\\AgenOS and return a structured report covering: 1. Top-level fo",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67.md",
+      "updatedAt": "2026-06-12T13:43:30.995Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6": {
+      "slug": "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "title": "You are the Phase 2 implementation agent for AgentOS at C:\\Users\\gaged\\Documents\\AgenOS. ## Part A — Merge PR #1 (do thi",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6.md",
+      "updatedAt": "2026-06-12T13:43:30.983Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430": {
+      "slug": "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
+      "title": "Complete the AgentOS Discord round-table/briefing deployment in repo: C:\\Users\\gaged\\Documents\\AgenOS Context: User want",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430.md",
+      "updatedAt": "2026-06-12T13:43:31.007Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b": {
+      "slug": "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "title": "You are working inside the AgentOS repository in Cursor. Your job is to implement a premium AgentOS UI/UX system inspire",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b.md",
+      "updatedAt": "2026-06-12T13:43:30.946Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6": {
+      "slug": "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "title": "Explore C:\\Users\\gaged\\Documents\\AgenOS for: 1. Existing discord embeds in apps/api/src/discord/embeds.ts, personas.ts 2",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6.md",
+      "updatedAt": "2026-06-12T13:43:31.009Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73": {
+      "slug": "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "title": "Read ALL files in C:\\Users\\gaged\\Documents\\AgenOS\\.agentos\\agents\\*.md and for each agent return: 1. agent id (from file",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73.md",
+      "updatedAt": "2026-06-12T13:43:30.922Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740": {
+      "slug": "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "title": "You are Agent 2 (Runtime Safety) for AgentOS at C:\\Users\\gaged\\Documents\\AgenOS. **OWNERSHIP — only touch:** - `packages",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740.md",
+      "updatedAt": "2026-06-12T13:43:30.984Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639": {
+      "slug": "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "title": "Search the AgentOS repository at C:\\Users\\gaged\\Documents\\AgenOS for the main command center / dashboard application. Lo",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639.md",
+      "updatedAt": "2026-06-12T13:43:30.947Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c": {
+      "slug": "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "title": "Start multitasking",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c.md",
+      "updatedAt": "2026-06-12T13:43:31.009Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e": {
+      "slug": "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "title": "Explore C:\\Users\\gaged\\Documents\\AgenOS dashboard/command-center UI on main branch. Return: 1. Key files: ForgeDashboard",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e.md",
+      "updatedAt": "2026-06-12T13:43:30.948Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83": {
+      "slug": "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "title": "You are Agent 5 (CI & Merge Prep) for AgentOS at C:\\Users\\gaged\\Documents\\AgenOS. **READ-ONLY + validation + PR text. Do",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83.md",
+      "updatedAt": "2026-06-12T13:43:30.985Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9": {
+      "slug": "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9",
+      "title": "Complete three follow-up tasks in C:\\Users\\gaged\\Documents\\AgenOS: ## Task 1 — Dead code removal 1. Remove unused `Dashb",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9.md",
+      "updatedAt": "2026-06-12T13:43:30.949Z",
+      "archived": false
+    }
+  },
+  "outbound": {
+    "agents/admin-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/architect-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/backend-service-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/code-implementer": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/code-reviewer": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/context-minimizer": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/database-migration-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/docs-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/frontend-ui-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/integration-broker": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/issue-intake-researcher": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/memory-curator": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/planner-partitioner": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/product-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/qa-agent": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/quota-steward": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/release-manager": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/repo-cartographer": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/security-auditor": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/systems-synthesizer": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "agents/task-classifier": [
+      "index",
+      "flows/pipeline",
+      "packages/agents"
+    ],
+    "apps/api": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "apps/api"
+    ],
+    "apps/command-center": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "apps/api"
+    ],
+    "apps/gateway": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "apps/api"
+    ],
+    "apps/scheduler": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "apps/api"
+    ],
+    "apps/worker": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "apps/api"
+    ],
+    "areas/apps-api": [
+      "index",
+      "areas/repo-layout",
+      "packages/persistence",
+      "packages/runtime",
+      "areas/apps-command-center",
+      "packages/ui",
+      "packages/orchestrator",
+      "areas/apps-gateway",
+      "packages/shared",
+      "packages/agents",
+      "areas/apps-packages",
+      "areas/apps-worker",
+      "packages/tools",
+      "packages/config",
+      "packages/sandbox"
+    ],
+    "areas/apps-command-center": [
+      "index",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "packages/runtime",
+      "packages/ui",
+      "packages/app-generator",
+      "packages/shared",
+      "areas/apps-packages",
+      "areas/apps-gateway",
+      "packages/tools",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/sandbox",
+      "packages/agents"
+    ],
+    "areas/apps-gateway": [
+      "index",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "packages/runtime",
+      "packages/orchestrator",
+      "areas/apps-packages",
+      "areas/apps-command-center",
+      "packages/persistence",
+      "areas/apps-worker",
+      "packages/sandbox"
+    ],
+    "areas/apps-packages": [
+      "index",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway"
+    ],
+    "areas/apps-scheduler": [
+      "index",
+      "areas/repo-layout",
+      "packages/persistence",
+      "areas/apps-worker",
+      "packages/queue"
+    ],
+    "areas/apps-worker": [
+      "index",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "packages/runtime",
+      "packages/orchestrator",
+      "packages/persistence",
+      "areas/apps-scheduler",
+      "packages/queue",
+      "packages/agents",
+      "packages/sandbox",
+      "areas/apps-gateway",
+      "areas/apps-command-center"
+    ],
+    "areas/code-ownership": [
+      "agents/backend-service-agent",
+      "agents/frontend-ui-agent",
+      "agents/code-implementer",
+      "agents/architect-agent",
+      "agents/memory-curator",
+      "agents/docs-agent",
+      "areas/risk-areas",
+      "packages/agents"
+    ],
+    "areas/config": [
+      "areas/risk-areas",
+      "flows/test-commands",
+      "index"
+    ],
+    "areas/dependency-graph": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "areas/repo-layout": [
+      "apps/api",
+      "apps/command-center",
+      "apps/gateway",
+      "apps/scheduler",
+      "apps/worker",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/game-schema",
+      "packages/memory",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/queue",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/token-manager",
+      "packages/ui",
+      "agents/admin-agent",
+      "agents/task-classifier",
+      "agents/context-minimizer",
+      "agents/quota-steward",
+      "agents/planner-partitioner",
+      "agents/product-agent",
+      "agents/architect-agent",
+      "agents/repo-cartographer",
+      "agents/code-implementer",
+      "agents/systems-synthesizer",
+      "agents/memory-curator",
+      "agents/qa-agent",
+      "agents/code-reviewer",
+      "agents/security-auditor",
+      "agents/release-manager",
+      "agents/frontend-ui-agent",
+      "agents/backend-service-agent",
+      "index",
+      "areas/dependency-graph",
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-packages",
+      "areas/apps-worker",
+      "areas/apps-scheduler",
+      "packages/tools",
+      "packages/config"
+    ],
+    "areas/risk-areas": [
+      "packages/runtime",
+      "flows/test-commands"
+    ],
+    "docs/agentos_local_pivot_plan": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/agentos_session_context": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/agentos_token_optimization_spec": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/architecture": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/asset_manifest_and_needs": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/acceptance_criteria": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/build_progress": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/demo_prerequisites": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/implementation_brief": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/p1-implementer-gaps": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/product_summary": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/project_completion": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/project_scoping_form": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/project_wave_runner": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/project_worksheets": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/scoping_response": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/demo/scoping-form/readme": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/agentos-forge-style-study": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/first-run": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/gates": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/hosted_execution_notes": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/hosting_api_store_audit": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/legal/source_references": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/legal/third_party_notices": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/local_ai_review": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/memory_and_token_systems": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/memory-and-token-systems": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/next_steps": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-124913-cycle-1": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-125204-cycle-1": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-132237-cycle-2": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-135311-cycle-3": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-142346-cycle-4": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-145424-cycle-5": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/20260530-152500-cycle-6": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overnight-plans/index": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/overview": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/phaser_office_implementation_plan": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/phaser-office": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/release_flow": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/sanitization_policy": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/troubleshooting": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "flows/cursor-memory": [
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/index",
+      "flows/memory-curator"
+    ],
+    "flows/memory-curator": [
+      "index",
+      "wikilinks",
+      "packages/agents",
+      "areas/repo-layout"
+    ],
+    "flows/pipeline": [
+      "agents/admin-agent",
+      "agents/task-classifier",
+      "agents/context-minimizer",
+      "agents/quota-steward",
+      "agents/planner-partitioner",
+      "agents/product-agent",
+      "agents/architect-agent",
+      "agents/repo-cartographer",
+      "agents/code-implementer",
+      "agents/systems-synthesizer",
+      "agents/memory-curator",
+      "agents/qa-agent",
+      "agents/code-reviewer",
+      "agents/security-auditor",
+      "agents/release-manager",
+      "agents/frontend-ui-agent",
+      "agents/backend-service-agent",
+      "agents/database-migration-agent",
+      "agents/integration-broker",
+      "agents/docs-agent",
+      "agents/issue-intake-researcher",
+      "packages/runtime",
+      "packages/orchestrator",
+      "index"
+    ],
+    "flows/root-scripts": [
+      "flows/test-commands",
+      "index"
+    ],
+    "flows/test-commands": [
+      "index",
+      "packages/runtime",
+      "areas/risk-areas"
+    ],
+    "index": [
+      "flows/memory-curator",
+      "flows/test-commands",
+      "flows/pipeline",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "planning/chatgpt/index",
+      "areas/repo-layout",
+      "areas/config",
+      "packages/runtime",
+      "apps/api",
+      "apps/command-center",
+      "apps/gateway",
+      "apps/scheduler",
+      "apps/worker",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/game-schema",
+      "packages/memory",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/queue",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/token-manager",
+      "packages/ui",
+      "agents/admin-agent",
+      "agents/task-classifier",
+      "agents/context-minimizer",
+      "agents/quota-steward",
+      "agents/planner-partitioner",
+      "agents/product-agent",
+      "agents/architect-agent",
+      "agents/repo-cartographer",
+      "agents/code-implementer",
+      "agents/systems-synthesizer",
+      "agents/memory-curator",
+      "agents/qa-agent",
+      "agents/code-reviewer",
+      "agents/security-auditor",
+      "agents/release-manager",
+      "agents/frontend-ui-agent",
+      "agents/backend-service-agent",
+      "docs/overview",
+      "docs/architecture",
+      "docs/troubleshooting",
+      "docs/gates",
+      "wikilinks"
+    ],
+    "packages/agents": [
+      "flows/memory-curator",
+      "packages/runtime",
+      "flows/test-commands",
+      "areas/repo-layout",
+      "packages/orchestrator",
+      "packages/ui",
+      "packages/shared",
+      "areas/apps-api",
+      "areas/apps-worker",
+      "packages/persistence",
+      "packages/sandbox",
+      "areas/apps-command-center"
+    ],
+    "packages/app-generator": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "packages/ui",
+      "areas/apps-command-center"
+    ],
+    "packages/config": [
+      "index",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "packages/tools",
+      "packages/shared"
+    ],
+    "packages/game-schema": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "areas/apps-api",
+      "packages/orchestrator",
+      "areas/apps-command-center"
+    ],
+    "packages/memory": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime"
+    ],
+    "packages/orchestrator": [
+      "packages/runtime",
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "packages/agents",
+      "packages/ui",
+      "areas/apps-api",
+      "areas/apps-gateway",
+      "packages/shared",
+      "packages/persistence",
+      "areas/apps-command-center"
+    ],
+    "packages/persistence": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "areas/apps-api",
+      "packages/orchestrator",
+      "areas/apps-command-center",
+      "areas/apps-worker",
+      "areas/apps-scheduler",
+      "packages/queue",
+      "packages/shared",
+      "packages/agents",
+      "packages/sandbox",
+      "areas/apps-gateway",
+      "packages/ui"
+    ],
+    "packages/queue": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "packages/persistence",
+      "areas/apps-worker",
+      "areas/apps-scheduler"
+    ],
+    "packages/runtime": [
+      "packages/orchestrator",
+      "index",
+      "flows/test-commands",
+      "areas/risk-areas",
+      "packages/agents",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "packages/persistence",
+      "areas/apps-command-center",
+      "packages/ui",
+      "areas/apps-gateway",
+      "packages/shared",
+      "areas/apps-worker",
+      "packages/sandbox"
+    ],
+    "packages/sandbox": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "packages/agents",
+      "packages/shared",
+      "packages/orchestrator",
+      "packages/persistence",
+      "areas/apps-worker",
+      "areas/apps-gateway",
+      "areas/apps-command-center",
+      "areas/apps-api",
+      "packages/tools"
+    ],
+    "packages/shared": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "areas/apps-command-center",
+      "areas/apps-api",
+      "packages/orchestrator",
+      "packages/agents",
+      "packages/tools",
+      "packages/config",
+      "packages/persistence"
+    ],
+    "packages/token-manager": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime"
+    ],
+    "packages/tools": [
+      "index",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "packages/shared",
+      "packages/config",
+      "areas/apps-command-center",
+      "packages/sandbox"
+    ],
+    "packages/ui": [
+      "areas/repo-layout",
+      "areas/dependency-graph",
+      "packages/runtime",
+      "areas/apps-command-center",
+      "areas/apps-api",
+      "packages/orchestrator",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/persistence",
+      "packages/shared"
+    ],
+    "planning/chatgpt/agentos-master-codex-prompt": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/agentos-project": [
+      "planning/chatgpt/index",
+      "docs/agentos_session_context",
+      "index"
+    ],
+    "planning/chatgpt/asset-manifest-and-needs": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/codex-repair-prompt": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/generated-asset-prompts": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/index": [
+      "planning/chatgpt/asset-manifest-and-needs",
+      "planning/chatgpt/agentos-master-codex-prompt",
+      "planning/chatgpt/memory-and-token-systems",
+      "planning/chatgpt/phaser-office-implementation-plan",
+      "planning/chatgpt/readme",
+      "planning/chatgpt/sanitization-policy",
+      "planning/chatgpt/codex-repair-prompt",
+      "planning/chatgpt/generated-asset-prompts",
+      "planning/chatgpt/simple-codex-steps",
+      "planning/chatgpt/agentos-project",
+      "docs/overview",
+      "flows/cursor-memory"
+    ],
+    "planning/chatgpt/memory-and-token-systems": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/phaser-office-implementation-plan": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/readme": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/sanitization-policy": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "planning/chatgpt/simple-codex-steps": [
+      "planning/chatgpt/index",
+      "planning/chatgpt/agentos-project",
+      "index"
+    ],
+    "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": [
+      "packages/persistence",
+      "packages/runtime",
+      "packages/agents",
+      "packages/orchestrator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": [
+      "packages/runtime",
+      "packages/ui",
+      "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": [
+      "packages/orchestrator",
+      "packages/agents",
+      "packages/runtime",
+      "packages/ui",
+      "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": [
+      "packages/ui",
+      "packages/app-generator",
+      "packages/shared",
+      "packages/orchestrator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": [
+      "packages/orchestrator",
+      "packages/runtime",
+      "packages/agents",
+      "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028": [
+      "packages/runtime",
+      "packages/shared",
+      "packages/persistence",
+      "packages/memory",
+      "packages/orchestrator",
+      "packages/tools",
+      "packages/sandbox",
+      "packages/agents",
+      "packages/config",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a": [
+      "packages/orchestrator",
+      "packages/runtime",
+      "packages/persistence",
+      "packages/shared",
+      "packages/sandbox",
+      "packages/ui",
+      "packages/app-generator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0": [
+      "packages/orchestrator",
+      "packages/agents",
+      "packages/ui",
+      "packages/persistence",
+      "packages/runtime",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": [
+      "packages/tools",
+      "packages/sandbox",
+      "packages/agents",
+      "packages/runtime",
+      "packages/persistence",
+      "packages/queue",
+      "packages/memory",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd": [
+      "packages/shared",
+      "packages/orchestrator",
+      "packages/runtime",
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/index": [
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
+      "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9",
+      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
+      "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
+      "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319": [
+      "packages/orchestrator",
+      "packages/runtime",
+      "packages/shared",
+      "packages/agents",
+      "packages/persistence",
+      "packages/token-manager",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955": [
+      "packages/runtime",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/game-schema",
+      "packages/shared",
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce": [
+      "packages/orchestrator",
+      "packages/runtime",
+      "packages/game-schema",
+      "packages/persistence",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f": [
+      "packages/ui",
+      "packages/app-generator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b": [
+      "packages/agents",
+      "packages/shared",
+      "packages/orchestrator",
+      "packages/runtime",
+      "packages/sandbox",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac": [
+      "packages/shared",
+      "packages/orchestrator",
+      "packages/agents",
+      "packages/persistence",
+      "packages/runtime",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5": [
+      "packages/runtime",
+      "packages/persistence",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a": [
+      "packages/persistence",
+      "packages/runtime",
+      "packages/orchestrator",
+      "packages/agents",
+      "packages/shared",
+      "packages/memory",
+      "packages/token-manager",
+      "packages/game-schema",
+      "packages/app-generator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7": [
+      "packages/persistence",
+      "packages/sandbox",
+      "packages/runtime",
+      "packages/agents",
+      "packages/token-manager",
+      "packages/orchestrator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69": [
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922": [
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b": [
+      "packages/persistence",
+      "packages/queue",
+      "packages/agents",
+      "packages/runtime",
+      "packages/orchestrator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6": [
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb": [
+      "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527": [
+      "packages/runtime",
+      "packages/persistence",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07": [
+      "packages/agents",
+      "packages/runtime",
+      "packages/orchestrator",
+      "packages/sandbox",
+      "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75": [
+      "packages/persistence",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573": [
+      "packages/tools",
+      "packages/shared",
+      "packages/config",
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67": [
+      "packages/agents",
+      "packages/runtime",
+      "packages/shared",
+      "packages/persistence",
+      "packages/orchestrator",
+      "packages/queue",
+      "packages/memory",
+      "packages/token-manager",
+      "packages/sandbox",
+      "packages/ui",
+      "packages/app-generator",
+      "packages/game-schema",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6": [
+      "packages/runtime",
+      "packages/orchestrator",
+      "packages/shared",
+      "packages/agents",
+      "packages/executor",
+      "packages/persistence",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b": [
+      "packages/ui",
+      "packages/app-generator",
+      "packages/shared",
+      "packages/orchestrator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6": [
+      "packages/shared",
+      "packages/runtime",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/ui",
+      "packages/discord",
+      "packages/messaging",
+      "packages/app-generator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740": [
+      "packages/runtime",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639": [
+      "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e": [
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83": [
+      "packages/persistence",
+      "packages/shared",
+      "packages/runtime",
+      "packages/ui",
+      "packages/orchestrator",
+      "packages/token-manager",
+      "packages/game-schema",
+      "packages/agents",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9": [
+      "packages/ui",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ]
+  },
+  "inbound": {
+    "index": [
+      "agents/admin-agent",
+      "agents/architect-agent",
+      "agents/backend-service-agent",
+      "agents/code-implementer",
+      "agents/code-reviewer",
+      "agents/context-minimizer",
+      "agents/database-migration-agent",
+      "agents/docs-agent",
+      "agents/frontend-ui-agent",
+      "agents/integration-broker",
+      "agents/issue-intake-researcher",
+      "agents/memory-curator",
+      "agents/planner-partitioner",
+      "agents/product-agent",
+      "agents/qa-agent",
+      "agents/quota-steward",
+      "agents/release-manager",
+      "agents/repo-cartographer",
+      "agents/security-auditor",
+      "agents/systems-synthesizer",
+      "agents/task-classifier",
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-packages",
+      "areas/apps-scheduler",
+      "areas/apps-worker",
+      "areas/config",
+      "areas/dependency-graph",
+      "areas/repo-layout",
+      "docs/agentos_local_pivot_plan",
+      "docs/agentos_session_context",
+      "docs/agentos_token_optimization_spec",
+      "docs/architecture",
+      "docs/asset_manifest_and_needs",
+      "docs/demo/acceptance_criteria",
+      "docs/demo/build_progress",
+      "docs/demo/demo_prerequisites",
+      "docs/demo/implementation_brief",
+      "docs/demo/p1-implementer-gaps",
+      "docs/demo/product_summary",
+      "docs/demo/project_completion",
+      "docs/demo/project_scoping_form",
+      "docs/demo/project_wave_runner",
+      "docs/demo/project_worksheets",
+      "docs/demo/scoping-form/readme",
+      "docs/demo/scoping_response",
+      "docs/design/agentos-forge-style-study",
+      "docs/first-run",
+      "docs/gates",
+      "docs/hosted_execution_notes",
+      "docs/hosting_api_store_audit",
+      "docs/legal/source_references",
+      "docs/legal/third_party_notices",
+      "docs/local_ai_review",
+      "docs/memory-and-token-systems",
+      "docs/memory_and_token_systems",
+      "docs/next_steps",
+      "docs/overnight-plans/20260530-124913-cycle-1",
+      "docs/overnight-plans/20260530-125204-cycle-1",
+      "docs/overnight-plans/20260530-132237-cycle-2",
+      "docs/overnight-plans/20260530-135311-cycle-3",
+      "docs/overnight-plans/20260530-142346-cycle-4",
+      "docs/overnight-plans/20260530-145424-cycle-5",
+      "docs/overnight-plans/20260530-152500-cycle-6",
+      "docs/overnight-plans/index",
+      "docs/overview",
+      "docs/phaser-office",
+      "docs/phaser_office_implementation_plan",
+      "docs/release_flow",
+      "docs/sanitization_policy",
+      "docs/troubleshooting",
+      "flows/memory-curator",
+      "flows/pipeline",
+      "flows/root-scripts",
+      "flows/test-commands",
+      "packages/config",
+      "packages/runtime",
+      "packages/tools",
+      "planning/chatgpt/agentos-master-codex-prompt",
+      "planning/chatgpt/agentos-project",
+      "planning/chatgpt/asset-manifest-and-needs",
+      "planning/chatgpt/codex-repair-prompt",
+      "planning/chatgpt/generated-asset-prompts",
+      "planning/chatgpt/memory-and-token-systems",
+      "planning/chatgpt/phaser-office-implementation-plan",
+      "planning/chatgpt/readme",
+      "planning/chatgpt/sanitization-policy",
+      "planning/chatgpt/simple-codex-steps",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/index",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
+      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
+    ],
+    "flows/pipeline": [
+      "agents/admin-agent",
+      "agents/architect-agent",
+      "agents/backend-service-agent",
+      "agents/code-implementer",
+      "agents/code-reviewer",
+      "agents/context-minimizer",
+      "agents/database-migration-agent",
+      "agents/docs-agent",
+      "agents/frontend-ui-agent",
+      "agents/integration-broker",
+      "agents/issue-intake-researcher",
+      "agents/memory-curator",
+      "agents/planner-partitioner",
+      "agents/product-agent",
+      "agents/qa-agent",
+      "agents/quota-steward",
+      "agents/release-manager",
+      "agents/repo-cartographer",
+      "agents/security-auditor",
+      "agents/systems-synthesizer",
+      "agents/task-classifier",
+      "index"
+    ],
+    "packages/agents": [
+      "agents/admin-agent",
+      "agents/architect-agent",
+      "agents/backend-service-agent",
+      "agents/code-implementer",
+      "agents/code-reviewer",
+      "agents/context-minimizer",
+      "agents/database-migration-agent",
+      "agents/docs-agent",
+      "agents/frontend-ui-agent",
+      "agents/integration-broker",
+      "agents/issue-intake-researcher",
+      "agents/memory-curator",
+      "agents/planner-partitioner",
+      "agents/product-agent",
+      "agents/qa-agent",
+      "agents/quota-steward",
+      "agents/release-manager",
+      "agents/repo-cartographer",
+      "agents/security-auditor",
+      "agents/systems-synthesizer",
+      "agents/task-classifier",
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-worker",
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/memory-curator",
+      "index",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/ui",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "areas/repo-layout": [
+      "apps/api",
+      "apps/command-center",
+      "apps/gateway",
+      "apps/scheduler",
+      "apps/worker",
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-packages",
+      "areas/apps-scheduler",
+      "areas/apps-worker",
+      "areas/dependency-graph",
+      "docs/agentos_local_pivot_plan",
+      "docs/agentos_session_context",
+      "docs/agentos_token_optimization_spec",
+      "docs/architecture",
+      "docs/asset_manifest_and_needs",
+      "docs/demo/acceptance_criteria",
+      "docs/demo/build_progress",
+      "docs/demo/demo_prerequisites",
+      "docs/demo/implementation_brief",
+      "docs/demo/p1-implementer-gaps",
+      "docs/demo/product_summary",
+      "docs/demo/project_completion",
+      "docs/demo/project_scoping_form",
+      "docs/demo/project_wave_runner",
+      "docs/demo/project_worksheets",
+      "docs/demo/scoping-form/readme",
+      "docs/demo/scoping_response",
+      "docs/design/agentos-forge-style-study",
+      "docs/first-run",
+      "docs/gates",
+      "docs/hosted_execution_notes",
+      "docs/hosting_api_store_audit",
+      "docs/legal/source_references",
+      "docs/legal/third_party_notices",
+      "docs/local_ai_review",
+      "docs/memory-and-token-systems",
+      "docs/memory_and_token_systems",
+      "docs/next_steps",
+      "docs/overnight-plans/20260530-124913-cycle-1",
+      "docs/overnight-plans/20260530-125204-cycle-1",
+      "docs/overnight-plans/20260530-132237-cycle-2",
+      "docs/overnight-plans/20260530-135311-cycle-3",
+      "docs/overnight-plans/20260530-142346-cycle-4",
+      "docs/overnight-plans/20260530-145424-cycle-5",
+      "docs/overnight-plans/20260530-152500-cycle-6",
+      "docs/overnight-plans/index",
+      "docs/overview",
+      "docs/phaser-office",
+      "docs/phaser_office_implementation_plan",
+      "docs/release_flow",
+      "docs/sanitization_policy",
+      "docs/troubleshooting",
+      "flows/memory-curator",
+      "index",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/config",
+      "packages/game-schema",
+      "packages/memory",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/queue",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/token-manager",
+      "packages/tools",
+      "packages/ui"
+    ],
+    "areas/dependency-graph": [
+      "apps/api",
+      "apps/command-center",
+      "apps/gateway",
+      "apps/scheduler",
+      "apps/worker",
+      "areas/repo-layout",
+      "packages/app-generator",
+      "packages/game-schema",
+      "packages/memory",
+      "packages/persistence",
+      "packages/queue",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/token-manager",
+      "packages/ui"
+    ],
+    "apps/api": [
+      "apps/api",
+      "apps/command-center",
+      "apps/gateway",
+      "apps/scheduler",
+      "apps/worker",
+      "areas/repo-layout",
+      "index"
+    ],
+    "packages/persistence": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-scheduler",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "index",
+      "packages/agents",
+      "packages/orchestrator",
+      "packages/queue",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/ui",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "packages/runtime": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "areas/risk-areas",
+      "flows/pipeline",
+      "flows/test-commands",
+      "index",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/game-schema",
+      "packages/memory",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/queue",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/token-manager",
+      "packages/ui",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "areas/apps-command-center": [
+      "areas/apps-api",
+      "areas/apps-gateway",
+      "areas/apps-packages",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/game-schema",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/tools",
+      "packages/ui"
+    ],
+    "packages/ui": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/repo-layout",
+      "index",
+      "packages/agents",
+      "packages/app-generator",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/runtime",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
+    ],
+    "packages/orchestrator": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index",
+      "packages/agents",
+      "packages/game-schema",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/ui",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "areas/apps-gateway": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-packages",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/sandbox"
+    ],
+    "packages/shared": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/repo-layout",
+      "index",
+      "packages/agents",
+      "packages/config",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/tools",
+      "packages/ui",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "areas/apps-packages": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/repo-layout"
+    ],
+    "areas/apps-worker": [
+      "areas/apps-api",
+      "areas/apps-gateway",
+      "areas/apps-scheduler",
+      "areas/repo-layout",
+      "packages/agents",
+      "packages/persistence",
+      "packages/queue",
+      "packages/runtime",
+      "packages/sandbox"
+    ],
+    "packages/tools": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/repo-layout",
+      "packages/config",
+      "packages/sandbox",
+      "packages/shared",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573"
+    ],
+    "packages/config": [
+      "areas/apps-api",
+      "areas/repo-layout",
+      "packages/shared",
+      "packages/tools",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573"
+    ],
+    "packages/sandbox": [
+      "areas/apps-api",
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "index",
+      "packages/agents",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/tools",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67"
+    ],
+    "areas/apps-api": [
+      "areas/apps-command-center",
+      "areas/apps-gateway",
+      "areas/apps-packages",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "packages/agents",
+      "packages/config",
+      "packages/game-schema",
+      "packages/orchestrator",
+      "packages/persistence",
+      "packages/runtime",
+      "packages/sandbox",
+      "packages/shared",
+      "packages/tools",
+      "packages/ui"
+    ],
+    "packages/app-generator": [
+      "areas/apps-command-center",
+      "areas/repo-layout",
+      "index",
+      "packages/ui",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6"
+    ],
+    "packages/queue": [
+      "areas/apps-scheduler",
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "index",
+      "packages/persistence",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67"
+    ],
+    "areas/apps-scheduler": [
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "packages/persistence",
+      "packages/queue"
+    ],
+    "agents/backend-service-agent": [
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/frontend-ui-agent": [
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/code-implementer": [
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/architect-agent": [
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/memory-curator": [
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/docs-agent": [
+      "areas/code-ownership",
+      "flows/pipeline"
+    ],
+    "areas/risk-areas": [
+      "areas/code-ownership",
+      "areas/config",
+      "flows/test-commands",
+      "packages/runtime"
+    ],
+    "flows/test-commands": [
+      "areas/config",
+      "areas/risk-areas",
+      "flows/root-scripts",
+      "index",
+      "packages/agents",
+      "packages/runtime"
+    ],
+    "apps/command-center": [
+      "areas/repo-layout",
+      "index"
+    ],
+    "apps/gateway": [
+      "areas/repo-layout",
+      "index"
+    ],
+    "apps/scheduler": [
+      "areas/repo-layout",
+      "index"
+    ],
+    "apps/worker": [
+      "areas/repo-layout",
+      "index"
+    ],
+    "packages/game-schema": [
+      "areas/repo-layout",
+      "index",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "packages/memory": [
+      "areas/repo-layout",
+      "index",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67"
+    ],
+    "packages/token-manager": [
+      "areas/repo-layout",
+      "index",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "agents/admin-agent": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/task-classifier": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/context-minimizer": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/quota-steward": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/planner-partitioner": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/product-agent": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/repo-cartographer": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/systems-synthesizer": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/qa-agent": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/code-reviewer": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/security-auditor": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/release-manager": [
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/index": [
+      "flows/cursor-memory",
+      "index",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
+      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
+    ],
+    "flows/memory-curator": [
+      "flows/cursor-memory",
+      "index",
+      "packages/agents"
+    ],
+    "wikilinks": [
+      "flows/memory-curator",
+      "index"
+    ],
+    "agents/database-migration-agent": [
+      "flows/pipeline"
+    ],
+    "agents/integration-broker": [
+      "flows/pipeline"
+    ],
+    "agents/issue-intake-researcher": [
+      "flows/pipeline"
+    ],
+    "flows/cursor-memory": [
+      "index",
+      "planning/chatgpt/index",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/index",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
+      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
+    ],
+    "planning/chatgpt/index": [
+      "index",
+      "planning/chatgpt/agentos-master-codex-prompt",
+      "planning/chatgpt/agentos-project",
+      "planning/chatgpt/asset-manifest-and-needs",
+      "planning/chatgpt/codex-repair-prompt",
+      "planning/chatgpt/generated-asset-prompts",
+      "planning/chatgpt/memory-and-token-systems",
+      "planning/chatgpt/phaser-office-implementation-plan",
+      "planning/chatgpt/readme",
+      "planning/chatgpt/sanitization-policy",
+      "planning/chatgpt/simple-codex-steps"
+    ],
+    "areas/config": [
+      "index"
+    ],
+    "docs/overview": [
+      "index",
+      "planning/chatgpt/index"
+    ],
+    "docs/architecture": [
+      "index"
+    ],
+    "docs/troubleshooting": [
+      "index"
+    ],
+    "docs/gates": [
+      "index"
+    ],
+    "areas/code-ownership": [
+      "packages/orchestrator"
+    ],
+    "planning/chatgpt/agentos-project": [
+      "planning/chatgpt/agentos-master-codex-prompt",
+      "planning/chatgpt/asset-manifest-and-needs",
+      "planning/chatgpt/codex-repair-prompt",
+      "planning/chatgpt/generated-asset-prompts",
+      "planning/chatgpt/index",
+      "planning/chatgpt/memory-and-token-systems",
+      "planning/chatgpt/phaser-office-implementation-plan",
+      "planning/chatgpt/readme",
+      "planning/chatgpt/sanitization-policy",
+      "planning/chatgpt/simple-codex-steps"
+    ],
+    "docs/agentos_session_context": [
+      "planning/chatgpt/agentos-project"
+    ],
+    "planning/chatgpt/asset-manifest-and-needs": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/agentos-master-codex-prompt": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/memory-and-token-systems": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/phaser-office-implementation-plan": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/readme": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/sanitization-policy": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/codex-repair-prompt": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/generated-asset-prompts": [
+      "planning/chatgpt/index"
+    ],
+    "planning/chatgpt/simple-codex-steps": [
+      "planning/chatgpt/index"
+    ],
+    "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240": [
+      "sessions/cursor/index"
+    ],
+    "packages/executor": [
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6"
+    ],
+    "packages/discord": [
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6"
+    ],
+    "packages/messaging": [
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6"
+    ]
+  }
+}

@@ -4,9 +4,10 @@ type MetricPillProps = {
   label: string;
   value: string;
   status?: "ok" | "warn" | "error" | "idle";
+  compact?: boolean;
 };
 
-export function MetricPill({ label, value, status = "idle" }: MetricPillProps) {
+export function MetricPill({ label, value, status = "idle", compact = false }: MetricPillProps) {
   const statusClass =
     status === "ok"
       ? "forge-chip-active"
@@ -17,9 +18,12 @@ export function MetricPill({ label, value, status = "idle" }: MetricPillProps) {
           : "forge-chip";
 
   return (
-    <div className={statusClass} data-forge-proximity="true">
-      <span className="forge-mono">{label}</span>
-      <strong>{value}</strong>
+    <div
+      className={`${statusClass} ${compact ? "forge-metric-pill-compact" : ""}`.trim()}
+      data-forge-proximity="true"
+    >
+      <span className="forge-metric-pill-label">{label}</span>
+      <strong className="forge-metric-pill-value">{value}</strong>
     </div>
   );
 }

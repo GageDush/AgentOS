@@ -98,12 +98,12 @@ function main() {
     fail("agent-registry.json does not list any agents.");
   }
 
-  if ((registry.memoryCuratorStatus ?? "") !== "excluded_for_later_design") {
-    fail('memoryCuratorStatus must stay "excluded_for_later_design".');
+  const curatorStatus = registry.memoryCuratorStatus ?? "excluded_for_later_design";
+  if (curatorStatus === "active" && !allAgents.includes("memory-curator")) {
+    fail('memoryCuratorStatus is "active" but memory-curator is not registered.');
   }
-
-  if (allAgents.includes("memory-curator")) {
-    fail("memory-curator should not be required in this phase.");
+  if (allAgents.includes("memory-curator") && curatorStatus === "excluded_for_later_design") {
+    fail("memory-curator is registered but memoryCuratorStatus is still excluded.");
   }
 
   const pipeline = registry.conditionalPipeline ?? [];
@@ -124,8 +124,39 @@ function main() {
     }
   }
 
+  const allowedProfileTiers = new Set(["min-maxed", "competitive", "control-plane"]);
+  const profileTiers = registry.profileTiers ?? {};
+  const profileTierPolicy = registry.profileTierPolicy ?? {};
+
+  for (const tier of allowedProfileTiers) {
+    if (!profileTierPolicy[tier]?.lineCeiling || !profileTierPolicy[tier]?.scoreFloor) {
+      fail(`agent-registry.json profileTierPolicy is missing "${tier}" lineCeiling or scoreFloor.`);
+    }
+  }
+
+  const missingRuntimeExcerpt = [];
+  const missingProfileTier = [];
+
   for (const agentName of allAgents) {
     validateProfile(agentName);
+    const markdown = fs.readFileSync(path.join(agentsRoot, `${agentName}.md`), "utf8").replace(/\r\n/g, "\n");
+    if (!/^# Runtime Excerpt$/m.test(markdown)) {
+      missingRuntimeExcerpt.push(agentName);
+    }
+    const tier = profileTiers[agentName];
+    if (!tier) {
+      missingProfileTier.push(agentName);
+    } else if (!allowedProfileTiers.has(tier)) {
+      fail(`agent-registry.json profileTiers.${agentName} has invalid tier "${tier}".`);
+    }
+  }
+
+  if (missingProfileTier.length > 0) {
+    fail(`Registered agents missing profileTiers entry: ${missingProfileTier.join(", ")}`);
+  }
+
+  if (missingRuntimeExcerpt.length > 0) {
+    fail(`Registered agents missing Runtime Excerpt section: ${missingRuntimeExcerpt.join(", ")}`);
   }
 
   const installedProfiles = fs
@@ -143,6 +174,7 @@ function main() {
         ok: true,
         registryPath,
         profilesValidated: allAgents.length,
+        profileTiersValidated: allAgents.length,
         contractsValidated: 2,
         conditionalPipeline: pipeline
       },

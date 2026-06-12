@@ -1,192 +1,169 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import type { ForgeNavItem, ForgeStatusChip } from "../adapters/types";
+import { useCallback, useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import type { ForgeHealthMetric, ForgeNavItem } from "../adapters/types";
+import { useForgeScrollNav } from "../motion/useForgeScrollNav";
 import { MetricPill } from "./MetricPill";
+
+export type ForgeNavLinkProps = {
+  href: string;
+  className?: string;
+  children: ReactNode;
+  onClick?: () => void;
+  title?: string;
+  "aria-current"?: "page" | undefined;
+  "data-forge-proximity"?: string;
+};
 
 type TopNavProps = {
   wordmark?: string;
   items: ForgeNavItem[];
-  statusChips?: ForgeStatusChip[];
-  extraLinks?: ForgeNavItem[];
+  overflowItems?: ForgeNavItem[];
+  healthMetrics?: ForgeHealthMetric[];
   pendingApprovals?: number;
+  approvalsHref?: string;
   onOpenCommandPalette?: () => void;
+  linkComponent?: ComponentType<ForgeNavLinkProps>;
 };
+
+function DefaultNavLink({ href, className, children, onClick, ...rest }: ForgeNavLinkProps) {
+  return (
+    <a href={href} className={className} onClick={onClick} {...rest}>
+      {children}
+    </a>
+  );
+}
 
 export function TopNav({
   wordmark = "AgentOS",
   items,
-  statusChips = [],
-  extraLinks = [],
+  overflowItems = [],
+  healthMetrics = [],
   pendingApprovals = 0,
-  onOpenCommandPalette
+  approvalsHref = "/control-gate",
+  onOpenCommandPalette,
+  linkComponent: LinkComponent = DefaultNavLink
 }: TopNavProps) {
-  const [scrolled, setScrolled] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const { scrolled, hidden } = useForgeScrollNav();
+  const [overflowOpen, setOverflowOpen] = useState(false);
+  const overflowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    if (!overflowOpen) return;
+    const onPointerDown = (event: MouseEvent) => {
+      if (!overflowRef.current?.contains(event.target as Node)) {
+        setOverflowOpen(false);
+      }
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => window.removeEventListener("pointerdown", onPointerDown);
+  }, [overflowOpen]);
 
   const openPalette = useCallback(() => {
     onOpenCommandPalette?.();
-    setDrawerOpen(false);
+    setOverflowOpen(false);
   }, [onOpenCommandPalette]);
 
-  const allNavItems = [...items, ...extraLinks];
+  const shellClass = [
+    "forge-topnav-shell",
+    scrolled ? "forge-topnav-shell-scrolled" : "",
+    hidden ? "forge-topnav-shell-hidden" : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const pillClass = ["forge-topnav-pill", scrolled ? "forge-topnav-pill-scrolled" : ""].filter(Boolean).join(" ");
+
+  const compactHealth = healthMetrics.filter((m) => ["server", "api", "approvals"].includes(m.id));
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 40,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "0.65rem 1rem",
-        pointerEvents: "none"
-      }}
-      className="forge-topnav-shell"
-    >
-      <div
-        style={{
-          pointerEvents: "auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "1rem",
-          width: "min(100%, 1120px)",
-          padding: "0.55rem 0.85rem",
-          borderRadius: "999px",
-          border: `1px solid ${scrolled ? "var(--forge-border-strong)" : "var(--forge-border)"}`,
-          background: scrolled ? "rgba(8, 10, 14, 0.82)" : "rgba(12, 14, 18, 0.62)",
-          backdropFilter: "blur(14px)",
-          boxShadow: scrolled ? "var(--forge-shadow)" : "none",
-          transition: "background 200ms ease, border-color 200ms ease, box-shadow 200ms ease",
-          flexWrap: "wrap"
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", minWidth: 0 }}>
-          <strong className="forge-mono" style={{ color: "var(--forge-accent)", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+    <header className={shellClass}>
+      <div className={pillClass}>
+        <div className="forge-topnav-start">
+          <LinkComponent href="/" className="forge-brand forge-topnav-wordmark">
             {wordmark}
-          </strong>
+          </LinkComponent>
           {pendingApprovals > 0 ? (
-            <span
-              className="forge-chip forge-chip-active"
+            <LinkComponent
+              href={approvalsHref}
+              className="forge-chip forge-chip-active forge-topnav-pending"
               title="Pending approvals"
-              style={{ fontSize: "0.62rem" }}
             >
               {pendingApprovals} pending
-            </span>
+            </LinkComponent>
           ) : null}
           <nav aria-label="Primary" className="forge-topnav-desktop">
             {items.map((item) => (
-              <a
+              <LinkComponent
                 key={item.id}
                 href={item.href}
-                className={`forge-btn forge-magnetic ${item.active ? "forge-btn-primary" : ""}`}
+                className={`forge-btn forge-magnetic forge-btn-sm ${item.active ? "forge-btn-primary" : ""}`.trim()}
+                aria-current={item.active ? "page" : undefined}
                 data-forge-proximity="true"
-                style={{ padding: "0.32rem 0.62rem", fontSize: "0.76rem" }}
               >
                 {item.label}
-              </a>
-            ))}
-            {extraLinks.map((item) => (
-              <a
-                key={item.id}
-                href={item.href}
-                className="forge-btn forge-magnetic"
-                data-forge-proximity="true"
-                style={{ padding: "0.32rem 0.62rem", fontSize: "0.72rem", opacity: 0.75 }}
-              >
-                {item.label}
-              </a>
+              </LinkComponent>
             ))}
           </nav>
+          {overflowItems.length > 0 ? (
+            <div className="forge-topnav-overflow" ref={overflowRef}>
+              <button
+                type="button"
+                className="forge-btn forge-magnetic forge-btn-sm"
+                data-forge-proximity="true"
+                aria-expanded={overflowOpen}
+                aria-haspopup="menu"
+                onClick={() => setOverflowOpen((open) => !open)}
+              >
+                More
+              </button>
+              {overflowOpen ? (
+                <div className="forge-topnav-overflow-menu" role="menu">
+                  {overflowItems.map((item) => (
+                    <LinkComponent
+                      key={item.id}
+                      href={item.href}
+                      className={`forge-btn ${item.active ? "forge-btn-primary" : ""}`.trim()}
+                      onClick={() => setOverflowOpen(false)}
+                    >
+                      {item.label}
+                    </LinkComponent>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "wrap" }}>
+        <div className="forge-topnav-end">
+          {scrolled && compactHealth.length > 0 ? (
+            <div className="forge-topnav-health" aria-label="System health">
+              {compactHealth.map((metric) => (
+                <MetricPill key={metric.id} label={metric.label} value={metric.value} status={metric.status} compact />
+              ))}
+            </div>
+          ) : null}
           <button
             type="button"
-            className="forge-btn forge-magnetic"
+            className="forge-btn forge-magnetic forge-btn-sm"
             data-forge-proximity="true"
             onClick={openPalette}
-            style={{ padding: "0.32rem 0.65rem", fontSize: "0.72rem", display: "inline-flex", gap: "0.45rem" }}
             aria-label="Open command palette"
           >
             <span>Command</span>
-            <kbd
-              className="forge-mono"
-              style={{
-                padding: "0.1rem 0.35rem",
-                borderRadius: "4px",
-                border: "1px solid var(--forge-border)",
-                background: "rgba(0,0,0,0.35)",
-                fontSize: "0.62rem",
-                color: "var(--forge-muted)"
-              }}
-            >
-              ⌘K
-            </kbd>
+            <kbd className="forge-mono forge-topnav-kbd">⌘K</kbd>
           </button>
-          <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap" }}>
-            {statusChips.map((chip) => (
-              <MetricPill key={chip.id} label={chip.label} value={chip.value} status={chip.status} />
-            ))}
-          </div>
           <button
             type="button"
-            className="forge-btn forge-magnetic forge-topnav-menu"
+            className="forge-btn forge-magnetic forge-btn-sm forge-topnav-menu"
             data-forge-proximity="true"
-            aria-expanded={drawerOpen}
-            aria-controls="forge-topnav-drawer"
-            onClick={() => setDrawerOpen((open) => !open)}
-            style={{ padding: "0.32rem 0.55rem", fontSize: "0.78rem" }}
+            aria-expanded={overflowOpen}
+            onClick={() => setOverflowOpen((open) => !open)}
           >
             Menu
           </button>
         </div>
       </div>
-
-      {drawerOpen ? (
-        <div
-          id="forge-topnav-drawer"
-          className="forge-topnav-drawer"
-          style={{
-            pointerEvents: "auto",
-            position: "absolute",
-            top: "calc(100% + 0.35rem)",
-            left: "1rem",
-            right: "1rem",
-            maxWidth: "1120px",
-            margin: "0 auto",
-            padding: "0.75rem",
-            borderRadius: "12px",
-            border: "1px solid var(--forge-border-strong)",
-            background: "var(--forge-panel-strong)",
-            backdropFilter: "blur(16px)",
-            display: "grid",
-            gap: "0.35rem",
-            zIndex: 50
-          }}
-        >
-          {allNavItems.map((item) => (
-            <a
-              key={`drawer-${item.id}`}
-              href={item.href}
-              className={`forge-btn ${item.active ? "forge-btn-primary" : ""}`}
-              onClick={() => setDrawerOpen(false)}
-              style={{ justifyContent: "flex-start", width: "100%" }}
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      ) : null}
     </header>
   );
 }

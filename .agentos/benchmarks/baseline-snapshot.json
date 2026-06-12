@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "description": "Committed AgentOS bench regression baseline. Refresh with: pnpm agentos:bench-baseline --write",
+  "capturedAt": "2026-06-12T13:45:06.660Z",
+  "profiles": {
+    "benchmark": "agent-md-v1",
+    "minAverageOverall": 88,
+    "meetsPolicyCount": 21,
+    "totalAgents": 21,
+    "belowPolicy": []
+  },
+  "pipeline": {
+    "gateFidelityScenarios": 3,
+    "routingMissions": {
+      "answer-readme": { "expectPrimary": "admin-agent", "maxSupporting": 4 },
+      "typo-fix": { "expectPrimary": "code-implementer", "maxSupporting": 8 },
+      "security-auth": { "expectPrimary": "security-auditor", "maxSupporting": 8 },
+      "backend-api-route": { "expectPrimary": "backend-service-agent", "maxSupporting": 8 },
+      "security-over-backend": { "expectPrimary": "security-auditor", "maxSupporting": 9 },
+      "release-commit": { "expectPrimary": "release-manager", "maxSupporting": 8 },
+      "vague-intake": { "expectPrimary": "issue-intake-researcher", "maxSupporting": 6 },
+      "docs-only": { "expectPrimary": "docs-agent", "maxSupporting": 7 }
+    }
+  },
+  "missionSmoke": {
+    "testFile": "packages/runtime/src/mission-execution-smoke.test.ts",
+    "testCount": 2
+  }
+}

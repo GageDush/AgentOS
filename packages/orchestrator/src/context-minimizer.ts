@@ -2,6 +2,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { ContextPacket, TaskEnvelope } from "@agentos/shared";
 import { findRepoRoot } from "@agentos/persistence";
+import {
+  buildWikiContextForEnvelope,
+  extractRiskAreasFromWiki,
+  isMemoryWikiEnabled,
+  wikiMemoryEntries
+} from "@agentos/memory";
 
 const MEMORY_CANDIDATES = [
   "repo-map.md",
@@ -41,7 +47,7 @@ function extractPathsFromCommand(command: string): string[] {
   return [...paths];
 }
 
-function loadMemoryFiles(memoryDir: string) {
+function loadLegacyMemoryFiles(memoryDir: string) {
   const memoryIncluded: ContextPacket["memoryIncluded"] = [];
   const riskAreas: string[] = [];
 
@@ -64,6 +70,42 @@ function loadMemoryFiles(memoryDir: string) {
   return { memoryIncluded, riskAreas };
 }
 
+function loadWikiMemoryContext(
+  repoRoot: string,
+  envelope: TaskEnvelope,
+  repoPaths: string[],
+  command: string
+) {
+  const wiki = buildWikiContextForEnvelope(repoRoot, envelope, { command, repoPaths });
+  const memoryIncluded = wiki.retrieve.slugs.length
+    ? wikiMemoryEntries(repoRoot, wiki.retrieve.slugs, wiki.seedSlugs, wiki.retrieve.sections)
+    : [];
+
+  const wikiRisks = extractRiskAreasFromWiki(repoRoot, wiki.retrieve.slugs);
+  const notes: string[] = [];
+
+  if (wiki.manifestLoaded) {
+    notes.push(
+      `Wiki manifest-first: ${wiki.retrieve.sectionCount} sections from ${wiki.retrieve.slugs.length} articles (${wiki.retrieve.chars} chars); ${wiki.prunedCandidates} low-signal candidates pruned.`
+    );
+  } else {
+    notes.push("Wiki manifest missing; keyword search + graph expansion used.");
+  }
+
+  if (wiki.seedSlugs.length) {
+    notes.push(`Manifest seeds: ${wiki.seedSlugs.join(", ")}.`);
+  }
+
+  return {
+    memoryIncluded,
+    riskAreas: wikiRisks,
+    wikiSlugs: wiki.retrieve.slugs,
+    wikiChars: wiki.retrieve.chars,
+    wikiSectionCount: wiki.retrieve.sectionCount,
+    notes
+  };
+}
+
 export function buildContextPacket(
   envelope: TaskEnvelope,
   options?: { repoRoot?: string; command?: string }
@@ -71,11 +113,43 @@ export function buildContextPacket(
   const repoRoot = options?.repoRoot ?? findRepoRoot();
   const memoryDir = join(repoRoot, ".agentos", "memory");
   const command = options?.command ?? envelope.inScope[0] ?? "";
-  const { memoryIncluded, riskAreas } = loadMemoryFiles(memoryDir);
 
   const commandPaths = extractPathsFromCommand(command);
   const envelopePaths = envelope.filesInScope.filter(Boolean);
   const repoPaths = [...new Set([...envelopePaths, ...commandPaths])].slice(0, 12);
+
+  let memoryIncluded: ContextPacket["memoryIncluded"] = [];
+  let riskAreas: string[] = [];
+  let wikiSlugs: string[] | undefined;
+  let wikiChars: number | undefined;
+  let wikiSectionCount: number | undefined;
+  const notes: string[] = [];
+
+  if (isMemoryWikiEnabled()) {
+    const wikiContext = loadWikiMemoryContext(repoRoot, envelope, repoPaths, command);
+    memoryIncluded = wikiContext.memoryIncluded;
+    riskAreas = wikiContext.riskAreas;
+    wikiSlugs = wikiContext.wikiSlugs;
+    wikiChars = wikiContext.wikiChars;
+    wikiSectionCount = wikiContext.wikiSectionCount;
+    notes.push(...wikiContext.notes);
+
+    if (!memoryIncluded.length) {
+      const legacy = loadLegacyMemoryFiles(memoryDir);
+      memoryIncluded = legacy.memoryIncluded;
+      riskAreas = legacy.riskAreas.length ? legacy.riskAreas : riskAreas;
+      notes.push("Wiki returned no articles; fell back to legacy flat memory files.");
+    } else {
+      notes.push("Legacy flat memory files skipped (FEATURE_MEMORY_WIKI=true).");
+    }
+  } else {
+    const legacy = loadLegacyMemoryFiles(memoryDir);
+    memoryIncluded = legacy.memoryIncluded;
+    riskAreas = legacy.riskAreas;
+    if (memoryIncluded.length === 0) {
+      notes.push("Repo memory cache is empty; consider running repo-cartographer during downtime.");
+    }
+  }
 
   const filesIncluded = repoPaths.map((path) => ({
     path,
@@ -93,10 +167,15 @@ export function buildContextPacket(
     { path: "unrelated apps/", reason: "Out of scope for this envelope." }
   ];
 
-  const notes: string[] = [];
-  if (memoryIncluded.length === 0) {
-    notes.push("Repo memory cache is empty; consider running repo-cartographer during downtime.");
+  if (isMemoryWikiEnabled()) {
+    for (const fileName of MEMORY_CANDIDATES) {
+      excludedContext.push({
+        path: `.agentos/memory/${fileName}`,
+        reason: "Superseded by wiki manifest retrieval."
+      });
+    }
   }
+
   if (repoPaths.length === 0) {
     notes.push("No file paths inferred; downstream agents should search likely folders first.");
   }
@@ -112,6 +191,9 @@ export function buildContextPacket(
     filesIncluded,
     memoryIncluded,
     excludedContext,
-    notes
+    notes,
+    wikiSlugs,
+    wikiChars,
+    wikiSectionCount
   };
 }

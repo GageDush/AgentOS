@@ -56,6 +56,26 @@ await check("api /auth/discord redirect", async () => {
   return "redirects to Discord authorize URL";
 });
 
+await check("discord avatar public URL", async () => {
+  const base =
+    env.AGENTOS_DISCORD_AVATAR_BASE_URL?.replace(/\/$/, "") ||
+    (env.AGENTOS_API_BASE_URL ? `${env.AGENTOS_API_BASE_URL.replace(/\/$/, "")}/media/agents` : "");
+  if (!base.startsWith("https://")) throw new Error("Set AGENTOS_DISCORD_AVATAR_BASE_URL or AGENTOS_API_BASE_URL (HTTPS)");
+  const url = `${base}/agentos-operator.png`;
+  const local = await fetch(`${apiBase}/media/agents/agentos-operator.png`);
+  if (!local.ok) throw new Error(`Local API portrait HTTP ${local.status} — ensure agent PNGs exist`);
+  try {
+    const remote = await fetch(url, { method: "HEAD" });
+    if (!remote.ok) throw new Error(`Public portrait HTTP ${remote.status} at ${url}`);
+    return url;
+  } catch (error) {
+    if (apiBase.startsWith("http://127.0.0.1")) {
+      return `${url} (local API ok; tunnel required for Discord CDN)`;
+    }
+    throw error;
+  }
+});
+
 await check("discord bot identity", async () => {
   const response = await fetch("https://discord.com/api/v10/users/@me", {
     headers: { Authorization: `Bot ${env.DISCORD_BOT_TOKEN}` }

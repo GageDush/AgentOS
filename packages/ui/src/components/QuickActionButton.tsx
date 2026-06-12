@@ -7,15 +7,29 @@ type QuickActionButtonProps = {
   description?: string;
   onClick?: () => void;
   disabled?: boolean;
+  importance?: "primary" | "secondary" | "default";
 };
 
-export function QuickActionButton({ label, description, onClick, disabled }: QuickActionButtonProps) {
+export function QuickActionButton({
+  label,
+  description,
+  onClick,
+  disabled,
+  importance = "default"
+}: QuickActionButtonProps) {
+  const variant = importance === "primary" ? "primary" : "default";
+  const size = importance === "primary" ? "lg" : importance === "secondary" ? "md" : "sm";
+
   return (
-    <MagneticButton onClick={onClick} disabled={disabled} style={{ width: "100%", textAlign: "left", flexDirection: "column", alignItems: "flex-start" }}>
-      <span className="forge-mono" style={{ color: "var(--forge-accent)" }}>
-        {label}
-      </span>
-      {description ? <span style={{ fontSize: "0.75rem", color: "var(--forge-muted)" }}>{description}</span> : null}
+    <MagneticButton
+      variant={variant}
+      size={size}
+      onClick={onClick}
+      disabled={disabled}
+      className="forge-quick-action"
+    >
+      <span className="forge-quick-action-label">{label}</span>
+      {description ? <span className="forge-quick-action-desc">{description}</span> : null}
     </MagneticButton>
   );
 }

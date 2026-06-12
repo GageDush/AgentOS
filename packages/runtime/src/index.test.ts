@@ -3,7 +3,17 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SqlitePersistenceAdapter } from "@agentos/persistence";
-import { executeRichQuickAction, handleChatMessage, pauseMissionRun, processPendingMissionRuns, resolveApprovalDecision } from "./index";
+import {
+  approveRunReleaseGate,
+  bulkApprovePendingApprovals,
+  executeRichQuickAction,
+  handleChatMessage,
+  pauseMissionRun,
+  prepareRunReleaseGate,
+  processPendingMissionRuns,
+  resolveApprovalDecision
+} from "./index";
+import { nowIso } from "@agentos/shared";
 
 function mockGatewaySuccess() {
   vi.stubGlobal(
@@ -185,6 +195,54 @@ describe("runtime spine", () => {
     expect(snapshot.missionRuns.find((item) => item.id === "run-quota")?.status).toBe("paused");
   });
 
+  it("bulk approves stale pending approvals without requeueing finished runs", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    persistence.mutate((database) => {
+      const operatorId = database.operators[0]!.id;
+      database.missionRuns.push({
+        id: "run-stale-dashboard",
+        workspaceId: database.workspaces[0]!.id,
+        missionId: database.missions[0]!.id,
+        sessionId: database.sessions[0]!.id,
+        requestedByOperatorId: operatorId,
+        operatorId: "builder-agent",
+        provider: "mock",
+        model: "mock-agentos-local",
+        status: "completed",
+        commandPolicy: "approval_required",
+        requestedCommand: "pnpm test",
+        completedAt: nowIso(),
+        createdAt: nowIso(),
+        updatedAt: nowIso()
+      });
+      database.approvals.push({
+        id: "approval-stale-dashboard",
+        workspaceId: database.workspaces[0]!.id,
+        requestedByOperatorId: operatorId,
+        agentId: "builder-agent",
+        missionId: database.missions[0]!.id,
+        sessionId: database.sessions[0]!.id,
+        runId: "run-stale-dashboard",
+        tool: "command.execute",
+        permissionLevel: "safe_execute",
+        inputSummary: "Stale dashboard approval",
+        status: "pending",
+        scope: "once",
+        command: "pnpm test",
+        createdAt: nowIso()
+      });
+    });
+
+    const result = await bulkApprovePendingApprovals(persistence.snapshot().operators[0]!.id, { persistence });
+    expect(result.ok).toBe(true);
+    expect(result.approved).toBe(2);
+
+    const snapshot = persistence.snapshot();
+    expect(snapshot.approvals.find((item) => item.id === "approval-stale-dashboard")?.status).toBe("approved");
+    expect(snapshot.missionRuns.find((item) => item.id === "run-stale-dashboard")?.status).toBe("completed");
+  });
+
   it("rejects implementer self-approval", async () => {
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
@@ -254,8 +312,53 @@ describe("runtime spine", () => {
     expect(run?.status).not.toBe("completed");
   });
 
+  it("finalizes a release-gated run after prepare and approve", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
+    mockGatewaySuccess();
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    persistence.mutate((database) => {
+      const mission = database.missions[0]!;
+      mission.title = "Ship release";
+      mission.objective = "Prepare the release checklist.";
+      mission.prompt = "Prepare release readiness.";
+      mission.command = "git status";
+      mission.status = "queued";
+      mission.sandboxLevel = "observe";
+      mission.commandPolicy = "auto_allowed";
+      database.missionRuns.unshift({
+        id: "run-release-finalize",
+        workspaceId: database.workspaces[0].id,
+        missionId: mission.id,
+        sessionId: database.sessions[0].id,
+        requestedByOperatorId: database.operators[0].id,
+        operatorId: "release-manager",
+        provider: "mock",
+        model: "mock-agentos-local",
+        status: "queued",
+        commandPolicy: "auto_allowed",
+        requestedCommand: "git status",
+        attemptCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      mission.latestRunId = "run-release-finalize";
+    });
+    await processPendingMissionRuns({ persistence, gatewayBase: "http://127.0.0.1:8790", workerId: "worker-test" });
+    const prepared = await prepareRunReleaseGate("run-release-finalize", "agentos-operator", { persistence });
+    expect(prepared.ok).toBe(true);
+    const approved = await approveRunReleaseGate("run-release-finalize", "agentos-operator", { persistence });
+    expect(approved.ok).toBe(true);
+    const run = persistence.getMissionRunById("run-release-finalize");
+    expect(run?.status).toBe("completed");
+    expect(
+      persistence.snapshot().auditEvents.some((event) => event.event === "gate.release_passed" && event.runId === "run-release-finalize")
+    ).toBe(true);
+  });
+
   it("fires approval-created listeners when runtime creates approval bundles", async () => {
     vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "true");
+    mockGatewaySuccess();
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
     const listener = vi.fn();

@@ -1,4 +1,5 @@
-import { pngDataUri, type Rgba } from "./artwork";
+import type { Rgba } from "./artwork";
+import { personaAvatarDataUri, resolveAgentAvatarUrl } from "./agent-avatars";
 
 export type AgentPersona = {
   agentId: string;
@@ -75,8 +76,101 @@ export const AGENT_PERSONAS: AgentPersona[] = [
     color: 0x00f5ff,
     glyph: "plus",
     accent: [0, 245, 255, 255]
+  },
+  {
+    agentId: "code-implementer",
+    roleTitle: "Builder",
+    characterName: "Brock",
+    color: 0x3498db,
+    glyph: "plus",
+    accent: [52, 152, 219, 255]
+  },
+  {
+    agentId: "systems-synthesizer",
+    roleTitle: "Synth",
+    characterName: "Blaine",
+    color: 0xe67e22,
+    glyph: "dot",
+    accent: [230, 126, 34, 255]
+  },
+  {
+    agentId: "task-classifier",
+    roleTitle: "Classifier",
+    characterName: "Clemont",
+    color: 0xf39c12,
+    glyph: "dot",
+    accent: [243, 156, 18, 255]
+  },
+  {
+    agentId: "planner-partitioner",
+    roleTitle: "Planner",
+    characterName: "Oak",
+    color: 0x795548,
+    glyph: "plus",
+    accent: [121, 85, 72, 255]
+  },
+  {
+    agentId: "code-reviewer",
+    roleTitle: "Reviewer",
+    characterName: "Gary",
+    color: 0x9b59b6,
+    glyph: "eye",
+    accent: [155, 89, 182, 255]
+  },
+  {
+    agentId: "reviewer-agent",
+    roleTitle: "Reviewer",
+    characterName: "Gary",
+    color: 0x9b59b6,
+    glyph: "eye",
+    accent: [155, 89, 182, 255]
+  },
+  {
+    agentId: "product-agent",
+    roleTitle: "Product",
+    characterName: "Leaf",
+    color: 0x27ae60,
+    glyph: "dot",
+    accent: [39, 174, 96, 255]
+  },
+  {
+    agentId: "issue-intake-researcher",
+    roleTitle: "Intake",
+    characterName: "Joy",
+    color: 0xff6b9d,
+    glyph: "dot",
+    accent: [255, 107, 157, 255]
+  },
+  {
+    agentId: "context-minimizer",
+    roleTitle: "Context",
+    characterName: "Erika",
+    color: 0x1abc9c,
+    glyph: "dot",
+    accent: [26, 188, 156, 255]
+  },
+  {
+    agentId: "architect-agent",
+    roleTitle: "Architect",
+    characterName: "Steven",
+    color: 0x34495e,
+    glyph: "eye",
+    accent: [52, 73, 94, 255]
+  },
+  {
+    agentId: "docs-agent",
+    roleTitle: "Docs",
+    characterName: "Dawn",
+    color: 0x74b9ff,
+    glyph: "dot",
+    accent: [116, 185, 255, 255]
   }
 ];
+
+const PERSONA_ALIASES: Record<string, string> = {
+  "builder-agent": "code-implementer",
+  "security-agent": "security-auditor"
+};
 
 /** Agents that participate in the round-table briefing channel. */
 export const ROUND_TABLE_AGENT_IDS = [
@@ -94,7 +188,9 @@ export const DEFAULT_PERSONA = AGENT_PERSONAS[0];
 
 export function resolvePersona(agentId?: string) {
   if (!agentId) return DEFAULT_PERSONA;
-  return personaByAgentId.get(agentId) ?? personaByAgentId.get(agentId.replace(/_/g, "-")) ?? DEFAULT_PERSONA;
+  const normalized = agentId.replace(/_/g, "-");
+  const canonical = PERSONA_ALIASES[normalized] ?? normalized;
+  return personaByAgentId.get(canonical) ?? personaByAgentId.get(normalized) ?? DEFAULT_PERSONA;
 }
 
 export function personaDiscordName(persona: AgentPersona) {
@@ -106,8 +202,10 @@ export function personaMessageLine(persona: AgentPersona, text: string) {
 }
 
 export function personaAvatarUrl(persona: AgentPersona) {
-  return pngDataUri(128, persona.glyph, persona.accent);
+  return resolveAgentAvatarUrl(persona.agentId);
 }
+
+export { personaAvatarDataUri };
 
 export function personaEmbedAuthor(persona: AgentPersona) {
   return personaDiscordName(persona);
@@ -180,14 +278,25 @@ export const LEGACY_AGENT_ROLE_NAMES = new Set([
   "Builder"
 ]);
 
-export type AgentPersonaRoleKey = "adminAgent" | "builderAgent" | "qaAgent" | "securityAgent" | "releaseAgent";
+export type AgentPersonaRoleKey =
+  | "adminAgent"
+  | "builderAgent"
+  | "qaAgent"
+  | "securityAgent"
+  | "releaseAgent"
+  | "quotaAgent"
+  | "plannerAgent"
+  | "reviewerAgent";
 
 export const PERSONA_ROLE_KEYS: Record<AgentPersonaRoleKey, string> = {
   adminAgent: "admin-agent",
-  builderAgent: "builder-agent",
+  builderAgent: "code-implementer",
   qaAgent: "qa-agent",
   securityAgent: "security-auditor",
-  releaseAgent: "release-manager"
+  releaseAgent: "release-manager",
+  quotaAgent: "quota-steward",
+  plannerAgent: "planner-partitioner",
+  reviewerAgent: "code-reviewer"
 };
 
 /** Legacy role names that map to a persona role when renaming. */
@@ -196,7 +305,10 @@ export const PERSONA_ROLE_LEGACY: Record<AgentPersonaRoleKey, string[]> = {
   builderAgent: ["Builder Agent", "Builder", "[Builder AgentOS] (Marcus Chen)"],
   qaAgent: ["QA Agent", "[QA AgentOS] (Priya Nair)"],
   securityAgent: ["Security Agent", "[Security AgentOS] (Elena Vasquez)"],
-  releaseAgent: ["Release Manager", "[Release AgentOS] (Samuel Ortiz)"]
+  releaseAgent: ["Release Manager", "[Release AgentOS] (Samuel Ortiz)"],
+  quotaAgent: ["Quota AgentOS"],
+  plannerAgent: ["Planner Agent", "ProfessorOak"],
+  reviewerAgent: ["Reviewer Agent", "Gary"]
 };
 
 export const ROSTER_PERSONAS = [

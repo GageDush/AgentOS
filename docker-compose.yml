@@ -1,4 +1,55 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    ports:
+      - "8787:8787"
+    environment:
+      AGENTOS_API_PORT: 8787
+      AGENTOS_GATEWAY_URL: http://gateway:8790
+    volumes:
+      - agentos-data:/app/.agentos/state
+    depends_on:
+      - gateway
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/gateway.Dockerfile
+    ports:
+      - "8790:8790"
+    environment:
+      AGENTOS_GATEWAY_PORT: 8790
+      AGENTOS_REPO_ROOT: /app
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    environment:
+      AGENTOS_API_URL: http://api:8787
+      AGENTOS_GATEWAY_URL: http://gateway:8790
+    depends_on:
+      - api
+      - gateway
+
+  command-center:
+    build:
+      context: .
+      dockerfile: docker/command-center.Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_AGENTOS_API_URL: http://localhost:8787
+    depends_on:
+      - api
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
   postgres:
     image: postgres:16-alpine
     environment:
@@ -8,22 +59,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - agentos-postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agentos"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      - pg-data:/var/lib/postgresql/data
 
 volumes:
-  agentos-postgres:
+  agentos-data:
+  pg-data:

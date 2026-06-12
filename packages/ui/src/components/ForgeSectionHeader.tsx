@@ -15,7 +15,7 @@ export function ForgeSectionHeader({ kicker, title, accentWord, copy, actions }:
 
   return (
     <header className="forge-section-header">
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem" }}>
+      <div className="forge-section-header-row">
         <div>
           <p className="forge-section-header-kicker">{kicker}</p>
           <h2 className="forge-section-header-title">

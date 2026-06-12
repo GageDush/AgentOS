@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgentOS Project Scoping Form</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-dim: #1f6feb33;
+      --ok: #3fb950;
+      --radius: 10px;
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+    header {
+      margin-bottom: 28px;
+    }
+    header h1 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin: 0 0 6px;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .progress-wrap {
+      margin-bottom: 24px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--ok));
+      border-radius: 99px;
+      transition: width 0.25s ease;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    #step-title {
+      margin: 0 0 4px;
+      font-size: 1.15rem;
+    }
+    #step-subtitle {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .field {
+      margin-bottom: 18px;
+    }
+    .field.dimmed {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .field > label:first-child {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font: inherit;
+      font-size: 0.95rem;
+    }
+    input:focus, textarea:focus {
+      outline: 2px solid var(--accent-dim);
+      border-color: var(--accent);
+    }
+    textarea { resize: vertical; min-height: 72px; }
+    .option-group { display: flex; flex-direction: column; gap: 8px; }
+    .option-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.92rem;
+    }
+    .option-row:has(input:checked) {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .option-row input { margin-top: 3px; accent-color: var(--accent); }
+    .nav {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.92rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+    }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    #btn-next {
+      flex: 1;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    #btn-next:hover:not(:disabled) { filter: brightness(1.08); }
+    #save-hint {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 12px;
+      min-height: 1.2em;
+    }
+    #export-panel {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    #export-panel h2 {
+      font-size: 1rem;
+      margin: 0 0 8px;
+    }
+    #export-panel p {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin: 0 0 12px;
+    }
+    #export-text {
+      width: 100%;
+      min-height: 200px;
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.75rem;
+      margin-bottom: 12px;
+    }
+    .export-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    #btn-clear {
+      margin-left: auto;
+      color: #f85149;
+      border-color: #f8514966;
+    }
+    .tip {
+      margin-top: 20px;
+      padding: 12px 14px;
+      background: var(--accent-dim);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .tip strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AgentOS project scoping</h1>
+      <p>One project per screen · auto-saves · export when done</p>
+    </header>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label">Step 1 of 12</span>
+        <span id="save-hint"></span>
+      </div>
+      <div class="progress-track"><div id="progress-bar"></div></div>
+    </div>
+
+    <div class="card">
+      <h2 id="step-title"></h2>
+      <p id="step-subtitle"></p>
+      <div id="fields"></div>
+
+      <div class="nav">
+        <button type="button" id="btn-prev">Back</button>
+        <button type="button" id="btn-next">Next</button>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>Tip:</strong> Set a project to NO or DEFER to dim its questions. You can close the browser and come back — answers stay in this browser’s local storage.
+    </div>
+
+    <div class="card" id="export-panel" hidden>
+      <h2>Export</h2>
+      <p>Copy this block into Cursor chat to get revised 10-step gameplans per project.</p>
+      <textarea id="export-text" readonly></textarea>
+      <div class="export-actions">
+        <button type="button" id="btn-copy">Copy for Cursor chat</button>
+        <button type="button" id="btn-download">Download .txt</button>
+        <button type="button" id="btn-clear">Clear saved form</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="form-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

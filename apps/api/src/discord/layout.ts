@@ -18,6 +18,8 @@ export type AgentOsChannelKey =
   | "approvals"
   | "missions"
   | "opsFeed"
+  | "operatorCommand"
+  | "cursor"
   | "roundTable"
   | "chatRoom1"
   | "chatRoom2"
@@ -40,7 +42,10 @@ export const ROLE_SPECS: Record<AgentOsRoleKey, { name: string; color: number; h
   builderAgent: personaRoleSpec("builderAgent"),
   qaAgent: personaRoleSpec("qaAgent"),
   securityAgent: personaRoleSpec("securityAgent"),
-  releaseAgent: personaRoleSpec("releaseAgent")
+  releaseAgent: personaRoleSpec("releaseAgent"),
+  quotaAgent: personaRoleSpec("quotaAgent"),
+  plannerAgent: personaRoleSpec("plannerAgent"),
+  reviewerAgent: personaRoleSpec("reviewerAgent")
 };
 
 export const STREAMLINED_LAYOUT: Record<
@@ -101,6 +106,20 @@ export const STREAMLINED_LAYOUT: Record<
     type: 0,
     topic: "Audit trail, worker logs, and token budget alerts in one stream.",
     legacyNames: ["ops-feed", "audit-log", "agentos-audit", "agent-logs", "webhook-log", "model-routing", "agentos-tokens", "agentos-logs"]
+  },
+  operatorCommand: {
+    name: "operator-command",
+    category: CATEGORY_OPS,
+    type: 0,
+    topic: "Private operator command lane — owner + AgentOS bot only. Send commands or chat here.",
+    legacyNames: ["operator-command", "command-lane", "owner-command", "operator-lane"]
+  },
+  cursor: {
+    name: "cursor",
+    category: CATEGORY_OPS,
+    type: 0,
+    topic: "Discord ↔ Cursor bridge — send prompts; Cursor replies in-channel against the AgentOS repo.",
+    legacyNames: ["cursor", "cursor-chat", "cursor-bridge", "cursor-channel"]
   },
   roundTable: {
     name: "round-table",
@@ -226,38 +245,6 @@ export const AGENTOS_ROOT_COMMAND = {
     }
   ]
 } as const;
-
-/** @deprecated Use AGENTOS_ROOT_COMMAND subcommands via /agentos */
-export const SLASH_COMMANDS = [
-  { name: "status", description: "Show AgentOS system health and feature flags." },
-  { name: "agents", description: "List configured AgentOS agents." },
-  { name: "tasks", description: "List recent AgentOS tasks." },
-  {
-    name: "task-create",
-    description: "Create a new AgentOS task.",
-    options: [
-      { name: "title", description: "Task title", type: 3, required: true },
-      { name: "description", description: "Task description", type: 3, required: false }
-    ]
-  },
-  {
-    name: "approve",
-    description: "Approve a pending AgentOS gate.",
-    options: [{ name: "id", description: "Approval id", type: 3, required: true }]
-  },
-  {
-    name: "deny",
-    description: "Deny a pending AgentOS gate.",
-    options: [{ name: "id", description: "Approval id", type: 3, required: true }]
-  },
-  { name: "logs", description: "Show recent AgentOS audit events." },
-  { name: "tokens", description: "Show token usage and budget summary." },
-  {
-    name: "memory-search",
-    description: "Search AgentOS memory archive.",
-    options: [{ name: "query", description: "Search query", type: 3, required: true }]
-  }
-] as const;
 
 // Backward-compatible alias used during migration
 export const AGENTOS_CATEGORY_NAME = CATEGORY_OPS;

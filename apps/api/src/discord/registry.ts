@@ -1,13 +1,19 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { findRepoRoot } from "@agentos/persistence";
+import type { AgentRichMessageScope } from "@agentos/shared";
+
+export type DiscordCardChannel = "general" | "operator" | "cursor" | "approvals";
 
 export type DiscordMessageRecord = {
   channelId: string;
-  kind: "approval" | "task" | "status" | "audit" | "generic";
+  kind: "approval" | "task" | "status" | "audit" | "generic" | "rich-card";
   entityId?: string;
   embedSnapshot?: Record<string, unknown>;
   componentsSnapshot?: Array<{ type: 1; components: Array<Record<string, unknown>> }>;
+  richScope?: AgentRichMessageScope;
+  cardChannel?: DiscordCardChannel;
+  reactionCommands?: Record<string, string>;
   seenAt?: string;
   seenBy?: string;
   createdAt: string;

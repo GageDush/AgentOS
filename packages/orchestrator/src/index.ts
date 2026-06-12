@@ -16,6 +16,11 @@ import type {
 import { DEFAULT_UI_PRESET, DEFAULT_UI_SURFACES } from "@agentos/shared";
 import { nowIso } from "@agentos/shared";
 import type { InstalledAgentProfileSet } from "@agentos/agents";
+import { applyMissionRouteCacheHint, recordMissionRouteCache } from "./mission-cache";
+import { scorePlannerNeed } from "./planner-score";
+import { refineResearchRoute } from "./research-route";
+import { inferProviderLaneSmart, shouldPruneSupportingAgent } from "./lane-router";
+import { tier0RouteConfidence } from "./task-classifier-tier";
 
 type RouteContext = Pick<MissionRecord, "id" | "workspaceId" | "title" | "objective" | "prompt" | "command"> & {
   runId?: string;
@@ -35,29 +40,114 @@ const keywordSets = {
   backend: ["api", "backend", "server", "gateway", "worker", "route", "endpoint"],
   database: ["database", "sql", "migration", "schema", "postgres", "sqlite"],
   integration: ["github", "linear", "discord", "integration", "webhook"],
-  docs: ["readme", "docs", "document", "overview", "guide"]
+  docs: ["readme", "docs", "document", "documentation", "overview", "guide", "runbook", "changelog"]
 };
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Avoid false positives such as `ui` inside `guide`. */
+function containsKeyword(text: string, keyword: string) {
+  if (keyword.length <= 3) {
+    return new RegExp(`\\b${escapeRegExp(keyword)}\\b`, "i").test(text);
+  }
+  return text.includes(keyword);
+}
+
 function containsAny(text: string, keywords: string[]) {
-  return keywords.some((keyword) => text.includes(keyword));
+  return keywords.some((keyword) => containsKeyword(text, keyword));
+}
+
+function hasImplementIntent(text: string) {
+  return /\b(fix|typo|implement|patch|refactor|update|change|add|write)\b/.test(text) && !isAnswerOnlyRequest(text);
+}
+
+function isAnswerOnlyRequest(text: string): boolean {
+  const implementSignals = [
+    "fix",
+    "implement",
+    "build me",
+    "create ",
+    "add ",
+    "refactor",
+    "update ",
+    "change ",
+    "write code",
+    "commit",
+    "deploy",
+    "migration"
+  ];
+  if (implementSignals.some((signal) => text.includes(signal))) return false;
+  const answerSignals = [
+    "what is",
+    "what are",
+    "how does",
+    "how do",
+    "explain",
+    "summarize",
+    "summary of",
+    "tell me about",
+    "why is",
+    "why does",
+    "describe"
+  ];
+  if (answerSignals.some((signal) => text.includes(signal))) return true;
+  return text.endsWith("?") && text.length < 320 && !containsAny(text, keywordSets.release);
+}
+
+function isAgentProfileElevatedEdit(text: string) {
+  return (
+    text.includes("permission:") ||
+    text.includes("handoff_to") ||
+    text.includes("agent-registry") ||
+    text.includes("registry.json") ||
+    (text.includes("profile") && (text.includes("permission") || text.includes("security")))
+  );
 }
 
 function classifyTask(text: string): RouteTaskType {
-  if (containsAny(text, keywordSets.qa)) return "qa";
+  if (
+    containsAny(text, ["standalone app", "build me", "make me a", "make me an app", "workflow", "automation"]) ||
+    (text.includes("app") && text.includes("landing page"))
+  ) {
+    return "app_creation";
+  }
   if (containsAny(text, keywordSets.security)) return "security";
+  if (hasImplementIntent(text)) {
+    if (text.includes("bug")) return "bug_fix";
+    return text.includes("typo") || text.includes("fix") ? "bug_fix" : "code_change";
+  }
+  if (containsAny(text, keywordSets.qa)) return "qa";
   if (containsAny(text, keywordSets.release)) return "release";
   if (containsAny(text, keywordSets.database)) return "config";
-  if (text.includes("bug") || text.includes("fix")) return "bug_fix";
   if (text.includes("analyze") || text.includes("audit") || text.includes("overview")) return "repo_analysis";
   if (text.includes("research")) return "research";
-  if (text.includes("profile")) return "agent_profile_work";
+  if (text.includes("profile") || text.includes("agent-registry")) return "agent_profile_work";
+  if (isAnswerOnlyRequest(text)) return "answer_only";
   return "code_change";
 }
 
-function classifyComplexity(text: string): RouteComplexity {
-  if (text.length > 900) return "complex";
-  if (text.length > 450) return "moderate";
-  if (text.length > 180) return "simple";
+function classifyComplexity(text: string, taskType: RouteTaskType): RouteComplexity {
+  let score = 0;
+  if (text.length > 900) score += 0.35;
+  else if (text.length > 450) score += 0.22;
+  else if (text.length > 180) score += 0.1;
+
+  const domainHits = [
+    containsAny(text, keywordSets.frontend),
+    containsAny(text, keywordSets.backend),
+    containsAny(text, keywordSets.database),
+    containsAny(text, keywordSets.integration)
+  ].filter(Boolean).length;
+  score += domainHits * 0.12;
+
+  if (taskType === "app_creation" || taskType === "research") score += 0.2;
+  if (taskType === "answer_only") score = Math.min(score, 0.15);
+
+  if (score >= 0.55) return "complex";
+  if (score >= 0.32) return "moderate";
+  if (score >= 0.12) return "simple";
   return "trivial";
 }
 
@@ -69,10 +159,13 @@ function classifyRisk(text: string): RouteRiskLevel {
   return "low";
 }
 
-function inferProviderLane(text: string): ProviderLane {
-  if (text.includes("ollama")) return "ollama_local";
-  if (text.includes("later") || text.includes("defer")) return "defer";
-  return "mock_local";
+function inferProviderLane(text: string, complexity: RouteComplexity, riskLevel: RouteRiskLevel): ProviderLane {
+  return inferProviderLaneSmart({
+    text,
+    complexity,
+    riskLevel,
+    quotaBlocked: text.includes("quota blocked") || text.includes("bucket depleted")
+  });
 }
 
 function buildRequiredGates(riskLevel: RouteRiskLevel, taskType: RouteTaskType, command: string) {
@@ -131,10 +224,18 @@ export function buildTaskEnvelope(
   route: Pick<AgentRoutingDecisionRecord, "taskType" | "complexity" | "riskLevel" | "requiredGates" | "providerLane" | "id">
 ): TaskEnvelope {
   const requiredGates = mapRoutingGatesToEnvelopeGates(route.requiredGates, route.taskType);
-  const requiresCodeChange = route.taskType === "code_change" || route.taskType === "bug_fix" || route.taskType === "config";
-  const requiresQa = requiredGates.includes("qa");
-  const requiresCodeReview = requiredGates.includes("code_review");
-  const requiresSecurityReview = requiredGates.includes("security_review");
+  const requiresCodeChange =
+    route.taskType !== "answer_only" &&
+    (route.taskType === "code_change" ||
+      route.taskType === "bug_fix" ||
+      route.taskType === "config" ||
+      route.taskType === "app_creation");
+  const requiresQa = route.taskType !== "answer_only" && requiredGates.includes("qa");
+  const requiresCodeReview = route.taskType !== "answer_only" && requiredGates.includes("code_review");
+  const requiresSecurityReview =
+    route.taskType === "agent_profile_work" && requiredGates.includes("security_review")
+      ? true
+      : route.taskType !== "answer_only" && requiredGates.includes("security_review");
   const requiresReleaseGate = requiredGates.includes("release_manager");
   const modelLane = mapProviderLaneToModelLane(route.providerLane);
 
@@ -173,10 +274,31 @@ export function buildTaskEnvelope(
   };
 }
 
+function isDocsPrimaryTask(text: string) {
+  if (/\b(fix|typo|bug|patch|implement|refactor)\b/.test(text)) return false;
+  const docsOnly =
+    containsAny(text, keywordSets.docs) &&
+    /\b(readme|docs|documentation|runbook|changelog|operator guide|release notes)\b/i.test(text);
+  return docsOnly && !containsAny(text, keywordSets.frontend);
+}
+
+function countDomainSpan(text: string) {
+  return [
+    containsAny(text, keywordSets.frontend),
+    containsAny(text, keywordSets.backend),
+    containsAny(text, keywordSets.database),
+    containsAny(text, keywordSets.integration)
+  ].filter(Boolean).length;
+}
+
 function choosePrimaryAgent(text: string, taskType: RouteTaskType) {
+  if (taskType === "answer_only" || taskType === "agent_profile_work") return "admin-agent";
+  if (taskType === "research") return "issue-intake-researcher";
+  if (taskType === "app_creation") return "frontend-ui-agent";
   if (taskType === "qa") return "qa-agent";
   if (taskType === "security") return "security-auditor";
   if (taskType === "release") return "release-manager";
+  if (isDocsPrimaryTask(text)) return "docs-agent";
   if (containsAny(text, keywordSets.frontend)) return "frontend-ui-agent";
   if (containsAny(text, keywordSets.backend)) return "backend-service-agent";
   if (containsAny(text, keywordSets.database)) return "database-migration-agent";
@@ -188,24 +310,40 @@ function choosePrimaryAgent(text: string, taskType: RouteTaskType) {
 export function determineMissionRoute(installed: InstalledAgentProfileSet, mission: RouteContext): AgentRoutingDecisionRecord {
   const text = `${mission.title}\n${mission.objective}\n${mission.prompt}\n${mission.command}`.toLowerCase();
   const taskType = classifyTask(text);
-  const complexity = classifyComplexity(text);
+  const complexity = classifyComplexity(text, taskType);
   const riskLevel = classifyRisk(text);
+  const domainSpan = countDomainSpan(text);
   const primaryAgent = choosePrimaryAgent(text, taskType);
   const supportingAgents = new Set<string>(["task-classifier", "quota-steward"]);
 
-  if (complexity === "moderate" || complexity === "complex") supportingAgents.add("context-minimizer");
-  if (complexity === "complex") supportingAgents.add("planner-partitioner");
-  if (containsAny(text, keywordSets.frontend) && primaryAgent !== "frontend-ui-agent") supportingAgents.add("frontend-ui-agent");
-  if (containsAny(text, keywordSets.backend) && primaryAgent !== "backend-service-agent") supportingAgents.add("backend-service-agent");
-  if (containsAny(text, keywordSets.database)) supportingAgents.add("database-migration-agent");
-  if (containsAny(text, keywordSets.integration)) supportingAgents.add("integration-broker");
+  if (taskType === "answer_only") {
+    supportingAgents.add("systems-synthesizer");
+  } else {
+    if (complexity === "moderate" || complexity === "complex") {
+      supportingAgents.add("product-agent");
+    }
+    if (complexity === "complex") {
+      supportingAgents.add("architect-agent");
+    }
+    if (taskType === "research") {
+      supportingAgents.add("repo-cartographer");
+    }
+    if (containsAny(text, keywordSets.frontend) && primaryAgent !== "frontend-ui-agent") supportingAgents.add("frontend-ui-agent");
+    if (containsAny(text, keywordSets.backend) && primaryAgent !== "backend-service-agent") supportingAgents.add("backend-service-agent");
+    if (containsAny(text, keywordSets.database)) supportingAgents.add("database-migration-agent");
+    if (containsAny(text, keywordSets.integration)) supportingAgents.add("integration-broker");
+    supportingAgents.add("systems-synthesizer");
+  }
 
-  const requiredGates = buildRequiredGates(riskLevel, taskType, mission.command);
+  const requiredGates = [...buildRequiredGates(riskLevel, taskType, mission.command)];
+  if (taskType === "agent_profile_work" && isAgentProfileElevatedEdit(text)) {
+    if (!requiredGates.includes("approval")) requiredGates.push("approval");
+    if (!requiredGates.includes("security")) requiredGates.push("security");
+  }
   if (requiredGates.includes("qa")) supportingAgents.add("qa-agent");
   if (requiredGates.includes("security")) supportingAgents.add("security-auditor");
   if (requiredGates.includes("release")) supportingAgents.add("release-manager");
   if (taskType === "code_change" || taskType === "bug_fix" || taskType === "config") supportingAgents.add("code-reviewer");
-  supportingAgents.add("systems-synthesizer");
 
   const skippedAgents = installed.profiles
     .map((profile) => {
@@ -223,15 +361,20 @@ export function determineMissionRoute(installed: InstalledAgentProfileSet, missi
     })
     .filter((entry): entry is { agentId: string; reason: string } => Boolean(entry));
 
-  const confidenceBase = 0.72;
-  const confidence =
-    confidenceBase +
-    (requiredGates.length ? 0.08 : 0) +
-    (complexity === "complex" ? -0.08 : complexity === "moderate" ? -0.03 : 0) +
-    (primaryAgent === "code-implementer" ? 0.04 : 0);
+  const confidence = tier0RouteConfidence({ taskType, complexity, text, domainSpan });
+
+  const plannerScore = scorePlannerNeed({
+    complexity,
+    taskType,
+    domainSpan,
+    routeConfidence: confidence,
+    text
+  });
+  if (plannerScore.runFullPlanner) supportingAgents.add("planner-partitioner");
+  else if (plannerScore.runLightweightPlanner) supportingAgents.add("planner-partitioner");
 
   const routeId = `route-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
-  const providerLane = inferProviderLane(text);
+  const providerLane = inferProviderLane(text, complexity, riskLevel);
   const routeCore = {
     id: routeId,
     taskType,
@@ -241,32 +384,63 @@ export function determineMissionRoute(installed: InstalledAgentProfileSet, missi
     providerLane
   };
   const taskEnvelope = buildTaskEnvelope(mission, routeCore);
+  taskEnvelope.requiresPlanning = plannerScore.runFullPlanner || plannerScore.runLightweightPlanner;
   if (taskEnvelope.requiresRepoContext) {
     supportingAgents.add("context-minimizer");
   }
 
-  return {
+  let finalPrimary = primaryAgent;
+  let finalTaskType = taskType;
+  let finalSupporting = [...supportingAgents];
+  let routeReason = `Deterministic route selected from task type ${taskType}, risk ${riskLevel}, planner score ${plannerScore.score}.`;
+
+  if (taskType === "research") {
+    const research = refineResearchRoute(text, taskEnvelope);
+    finalPrimary = research.primaryAgentId;
+    finalTaskType = research.recommendedTaskType;
+    finalSupporting = [...new Set([...finalSupporting, ...research.supportingAgentIds])];
+    taskEnvelope.taskType = research.recommendedTaskType;
+    routeReason = `${routeReason} ${research.reason}`;
+    if (research.askHuman) {
+      taskEnvelope.notes.push("issue-intake-researcher: askHuman recommended for vague research prompt.");
+    }
+  }
+
+  const supportingSet = new Set(finalSupporting);
+  finalSupporting = finalSupporting.filter(
+    (agentId) => !shouldPruneSupportingAgent(agentId, finalPrimary, supportingSet)
+  );
+
+  const routeDraft: AgentRoutingDecisionRecord = {
     id: routeId,
     workspaceId: mission.workspaceId,
     missionId: mission.id,
     runId: mission.runId,
-    taskType,
+    taskType: finalTaskType,
     complexity,
     riskLevel,
-    selectedPrimaryAgentId: primaryAgent,
-    supportingAgentIds: [...supportingAgents],
+    selectedPrimaryAgentId: finalPrimary,
+    supportingAgentIds: finalSupporting,
     skippedAgents,
     requiredGates,
     providerLane,
-    routeConfidence: Number(Math.max(0.2, Math.min(0.99, confidence)).toFixed(2)),
-    reason: `Deterministic route selected from task type ${taskType}, risk ${riskLevel}, and domain keywords.`,
+    routeConfidence: confidence,
+    reason: routeReason,
     metadata: {
       taskEnvelope,
       providerLane,
-      requiredGates
+      requiredGates,
+      plannerScore,
+      classifierTier: "tier0"
     },
     createdAt: nowIso()
   };
+
+  const goalText = `${mission.title}\n${mission.objective}\n${mission.prompt}`;
+  const withCache = applyMissionRouteCacheHint(routeDraft, goalText, installed.rootDir);
+  recordMissionRouteCache(goalText, withCache, installed.rootDir);
+
+  return withCache;
 }
 
 export function parseConversationalIntent(input: string, context: ActiveIntentContext): ConversationalIntent {
@@ -359,6 +533,27 @@ export function parseConversationalIntent(input: string, context: ActiveIntentCo
 }
 
 export { buildContextPacket } from "./context-minimizer";
+export { shouldRunContextMinimizer, estimateTokensInScope } from "./context-triggers";
+export { isAppCreationRequest, parseBuildIntent } from "./intake";
+export { scorePlannerNeed } from "./planner-score";
+export {
+  refineClassificationTier1,
+  refineClassificationTier2,
+  refineClassificationTier2External,
+  shouldRunTier1Classifier,
+  shouldRunTier2Classifier,
+  tier0RouteConfidence,
+  type Tier0Classification,
+  type Tier1ClassificationPatch,
+  type Tier2ClassificationPatch
+} from "./task-classifier-tier";
+export {
+  applyMissionRouteCacheHint,
+  lookupSimilarMissionRoute,
+  recordMissionRouteCache,
+  semanticGoalSimilarity
+} from "./mission-cache";
+export { isVagueResearchPrompt, refineResearchRoute } from "./research-route";
 
 export const chooseAgentForMission = (_agents: unknown, mission: Pick<MissionRecord, "title" | "objective" | "command">) => {
   const text = `${mission.title}\n${mission.objective}\n${mission.command}`.toLowerCase();

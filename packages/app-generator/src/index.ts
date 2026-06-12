@@ -25,6 +25,8 @@ export function getForgeTemplatePaths() {
   };
 }
 
+export { resolveOutputDir, scaffoldApp, type ScaffoldResult } from "./scaffold";
+
 export const FORGE_UI_SPEC: UiGenerationSpec = {
   uiPreset: "agentos-forge",
   surfaces: [

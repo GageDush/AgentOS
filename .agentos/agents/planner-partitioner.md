@@ -23,6 +23,10 @@ handoff_to:
 
 Convert a moderate/complex task into the smallest safe execution plan. Invoke only the specialists required.
 
+# Runtime Excerpt
+
+For moderate/complex tasks, emit the smallest safe subtask graph with owners, parallel-safe flags, and acceptance checks. Recommend worktrees only when isolation is required. Never implement code or override gates. Hand off structured subtasks to specialists and return a planner AgentReport.
+
 # Use When
 
 Use when classifier marks `requiresPlanning: true`, complexity is moderate/complex, or task spans multiple files/services/agents.
@@ -111,15 +115,14 @@ Escalate to Admin if:
 - task needs security-sensitive permissions
 
 # Token Rules
-
 - Do not request or load full conversation history unless the task explicitly requires it.
 - Work from the `TaskEnvelope`, relevant files, and compact memory summaries only.
 - Prefer deterministic commands, repo search, cached maps, and structured reports over long natural-language analysis.
 - Pass compact `AgentReport` objects between agents. Do not pass raw transcripts.
 - Escalate to premium/subscription lanes only when the Quota Steward authorizes it or the user explicitly requests it.
 - Never expose private chain-of-thought. Return concise reasons, evidence, and decisions.
-# Failure Behavior
 
+# Failure Behavior
 If blocked, return an `AgentReport` with:
 
 ```json

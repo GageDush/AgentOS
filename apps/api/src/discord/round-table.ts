@@ -31,7 +31,7 @@ export async function runRoundTableBriefing(
   prompt: string,
   operatorId: string,
   operatorLabel: string,
-  options?: { agentIds?: string[]; maxAgents?: number }
+  options?: { agentIds?: string[]; maxAgents?: number; executedOnly?: boolean }
 ) {
   if (!isDiscordBotEnabled()) {
     return { ok: false as const, reason: "disabled" };
@@ -42,7 +42,11 @@ export async function runRoundTableBriefing(
     return { ok: false as const, reason: "no-round-table-webhook" };
   }
 
-  const agentIds = (options?.agentIds ?? ROUND_TABLE_AGENT_IDS).slice(0, options?.maxAgents ?? 6);
+  const defaultIds = options?.executedOnly && options.agentIds?.length ? options.agentIds : ROUND_TABLE_AGENT_IDS;
+  const agentIds = (options?.agentIds ?? defaultIds).slice(0, options?.maxAgents ?? 6);
+  if (options?.executedOnly && agentIds.length === 0) {
+    return { ok: false as const, reason: "no-executed-agents" };
+  }
   const provider = providers[getProviderId()];
   const transcript: string[] = [];
   const posts: Array<{ agentId: string; messageId: string }> = [];

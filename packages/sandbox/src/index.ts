@@ -24,9 +24,12 @@ export type CommandPolicyDecision = {
 const autoAllowedCommands = new Set([
   "git status",
   "git diff",
+  "git diff --name-only",
+  "git log",
   "pnpm test",
   "pnpm typecheck",
-  "pnpm lint"
+  "pnpm lint",
+  "pnpm build"
 ]);
 
 const approvalPatterns: Array<{ pattern: RegExp; permissionLevel: SandboxPermissionLevel; reason: string }> = [

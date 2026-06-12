@@ -3,20 +3,18 @@
 import { useEffect } from "react";
 import {
   AgentActivityFeed,
-  AgentPresenceCard,
-  ForgeStatCard,
-  GeneratedAppFrame,
+  AgentPresenceStrip,
+  CommandInput,
+  ForgeMetricStrip,
   MissionControlPanel,
   MissionTimeline,
   SandboxApprovalCenter,
   ScrollReveal,
-  StatusRail,
   type ForgeActivityEvent,
   type ForgeAgentPresence,
   type ForgeApprovalItem,
   type ForgeMissionControlData,
   type ForgeMissionStep,
-  type ForgeQuickAction,
   type ForgeStatCardData
 } from "@agentos/ui";
 
@@ -26,13 +24,14 @@ type ForgeDashboardViewProps = {
   agents: ForgeAgentPresence[];
   timeline: ForgeMissionStep[];
   approvals: ForgeApprovalItem[];
-  quickActions: ForgeQuickAction[];
   stats?: ForgeStatCardData[];
   onRunAgain?: () => void;
-  onQuickAction?: (id: string) => void;
+  onRunDemo?: () => void;
   onAllowOnce?: (id: string) => void;
   onAllowMission?: (id: string) => void;
   onDeny?: (id: string) => void;
+  onCommand?: (command: string) => void;
+  onSelectAgent?: (id: string) => void;
   busyId?: string;
 };
 
@@ -42,13 +41,14 @@ export function ForgeDashboardView({
   agents,
   timeline,
   approvals,
-  quickActions,
   stats = [],
   onRunAgain,
-  onQuickAction,
+  onRunDemo,
   onAllowOnce,
   onAllowMission,
   onDeny,
+  onCommand,
+  onSelectAgent,
   busyId
 }: ForgeDashboardViewProps) {
   useEffect(() => {
@@ -62,58 +62,61 @@ export function ForgeDashboardView({
   }, []);
 
   return (
-    <div className="forge-page-grid">
+    <div className="forge-dashboard-surface">
+      <div className="forge-ambient-orb forge-ambient-orb-a" aria-hidden="true" />
+      <div className="forge-ambient-orb forge-ambient-orb-b" aria-hidden="true" />
+
       {stats.length > 0 ? (
         <ScrollReveal staggerIndex={0}>
-          <div className="forge-page-grid-cards">
-            {stats.map((stat, index) => (
-              <ScrollReveal key={stat.id} staggerIndex={index} staggerMs={70}>
-                <ForgeStatCard
-                  label={stat.label}
-                  value={stat.value}
-                  caption={stat.caption}
-                  accent={stat.accent}
-                  featured={stat.featured}
-                />
-              </ScrollReveal>
-            ))}
-          </div>
+          <ForgeMetricStrip stats={stats} />
         </ScrollReveal>
       ) : null}
 
       <ScrollReveal staggerIndex={1}>
-        <div className="forge-page-grid-2col">
+        <div className="forge-zone-hero">
+          <div className="forge-hero-actions">
+            {onRunDemo ? (
+              <button type="button" className="forge-btn forge-btn-primary" onClick={onRunDemo}>
+                Run Platform Demo
+              </button>
+            ) : null}
+          </div>
           <MissionControlPanel data={missionControl} onRunAgain={onRunAgain} />
-          <AgentActivityFeed events={activity} />
-        </div>
-      </ScrollReveal>
-
-      <ScrollReveal staggerIndex={2}>
-        <div className="forge-page-grid-cards">
-          {agents.map((agent, index) => (
-            <ScrollReveal key={agent.id} staggerIndex={index} staggerMs={70}>
-              <AgentPresenceCard agent={agent} />
-            </ScrollReveal>
-          ))}
-        </div>
-      </ScrollReveal>
-
-      <ScrollReveal staggerIndex={3}>
-        <div className="forge-page-grid-main-rail">
-          <div className="forge-page-grid">
-            <MissionTimeline steps={timeline} />
+          <div className="forge-command-deck">
+            <p className="forge-command-deck-title forge-zone-label-case">Command input</p>
+            <CommandInput placeholder="Ask agent, run /slash command, or dispatch work…" onSubmit={onCommand} />
             {approvals.length > 0 ? (
               <SandboxApprovalCenter
-                approvals={approvals}
+                approvals={approvals.slice(0, 1)}
                 onAllowOnce={onAllowOnce}
                 onAllowMission={onAllowMission}
                 onDeny={onDeny}
                 busyId={busyId}
               />
             ) : null}
-            <GeneratedAppFrame />
+            <AgentActivityFeed events={activity} maxItems={12} />
           </div>
-          <StatusRail actions={quickActions} onAction={onQuickAction} busyId={busyId} />
+        </div>
+      </ScrollReveal>
+
+      {agents.length > 0 ? (
+        <ScrollReveal staggerIndex={2}>
+          <AgentPresenceStrip agents={agents} onSelectAgent={onSelectAgent} />
+        </ScrollReveal>
+      ) : null}
+
+      <ScrollReveal staggerIndex={3}>
+        <div className="forge-zone-lower forge-zone-lower-single">
+          <MissionTimeline steps={timeline} />
+          {approvals.length > 1 ? (
+            <SandboxApprovalCenter
+              approvals={approvals.slice(1)}
+              onAllowOnce={onAllowOnce}
+              onAllowMission={onAllowMission}
+              onDeny={onDeny}
+              busyId={busyId}
+            />
+          ) : null}
         </div>
       </ScrollReveal>
     </div>

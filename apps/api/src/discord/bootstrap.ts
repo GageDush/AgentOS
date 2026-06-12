@@ -42,6 +42,8 @@ export type DiscordGuildState = {
       | "approvals"
       | "missions"
       | "opsFeed"
+      | "operatorCommand"
+      | "cursor"
       | "general"
       | "roundTable"
       | "chatRoom1"
@@ -55,9 +57,35 @@ export type DiscordGuildState = {
   kickedBots?: { keepBotId: string; removed: string[]; skipped: string[] };
   bootstrappedAt: string;
   layoutVersion: number;
+  /** Pinned status embed in the default prompt channel (#cursor when configured). */
+  operatorLaneStatusMessageId?: string;
 };
 
-const LAYOUT_VERSION = 5;
+const LAYOUT_VERSION = 7;
+
+const PERM_VIEW_CHANNEL = "1024";
+const PERM_SEND_MESSAGES = "2048";
+const PERM_READ_HISTORY = "65536";
+const PERM_EMBED_LINKS = "16384";
+const PERM_ATTACH_FILES = "32768";
+const PERM_USE_EXTERNAL_EMOJIS = "262144";
+
+function operatorChannelPermissionOverwrites(guildId: string, ownerUserId: string, botUserId: string) {
+  const ownerAllow = String(
+    Number(PERM_VIEW_CHANNEL) +
+      Number(PERM_SEND_MESSAGES) +
+      Number(PERM_READ_HISTORY) +
+      Number(PERM_EMBED_LINKS) +
+      Number(PERM_ATTACH_FILES) +
+      Number(PERM_USE_EXTERNAL_EMOJIS)
+  );
+  const botAllow = ownerAllow;
+  return [
+    { id: guildId, type: 0, deny: PERM_VIEW_CHANNEL },
+    { id: ownerUserId, type: 1, allow: ownerAllow },
+    { id: botUserId, type: 1, allow: botAllow }
+  ];
+}
 
 function statePath() {
   return join(findRepoRoot(process.cwd()), ".agentos", "state", "discord-guild.json");
@@ -67,6 +95,12 @@ export function loadDiscordGuildState(): DiscordGuildState | null {
   const path = statePath();
   if (!existsSync(path)) return null;
   return JSON.parse(readFileSync(path, "utf8")) as DiscordGuildState;
+}
+
+export function patchDiscordGuildState(patch: Partial<DiscordGuildState>) {
+  const existing = loadDiscordGuildState();
+  if (!existing) return;
+  saveState({ ...existing, ...patch });
 }
 
 function saveState(state: DiscordGuildState) {
@@ -98,12 +132,46 @@ async function ensureCategory(client: DiscordRestClient, channels: DiscordChanne
   return created.id;
 }
 
+async function ensurePrivateOwnerChannel(
+  client: DiscordRestClient,
+  channels: DiscordChannel[],
+  categoryId: string,
+  guildId: string,
+  ownerUserId: string,
+  botUserId: string,
+  key: "operatorCommand" | "cursor"
+) {
+  const spec = STREAMLINED_LAYOUT[key];
+  const overwrites = operatorChannelPermissionOverwrites(guildId, ownerUserId, botUserId);
+  const existing = resolveByNames(channels, [spec.name, ...spec.legacyNames], spec.type);
+  if (existing) {
+    await client.patchChannel(existing.id, {
+      name: spec.name,
+      parent_id: categoryId,
+      topic: spec.topic,
+      permission_overwrites: overwrites
+    });
+    return existing.id;
+  }
+  const created = await client.createChannel({
+    name: spec.name,
+    type: spec.type,
+    parent_id: categoryId,
+    topic: spec.topic,
+    permission_overwrites: overwrites
+  });
+  return created.id;
+}
+
 async function ensureStreamlinedChannel(
   client: DiscordRestClient,
   channels: DiscordChannel[],
   key: AgentOsChannelKey,
   categoryIds: Record<"start" | "ops" | "briefing" | "lounge", string>
 ) {
+  if (key === "operatorCommand" || key === "cursor") {
+    throw new Error(`Use ensurePrivateOwnerChannel for ${key}.`);
+  }
   const spec = STREAMLINED_LAYOUT[key];
   const categoryId =
     spec.category === CATEGORY_START
@@ -174,7 +242,7 @@ function hubEmbed(publicAppUrl: string, apiBaseUrl: string) {
         value: "`#round-table` — full roster · `#chat-room-1` `#chat-room-2` `#chat-room-3` — focused 1–3 agent side chats",
         inline: false
       },
-      { name: "Chat", value: "`#general` for operator LLM chat · `/agentos chat` · `/agentos briefing`", inline: false },
+      { name: "Chat", value: "`#general` for operator LLM chat · `#operator-command` for private owner commands · `/agentos chat`", inline: false },
       { name: "Agent roster", value: ROSTER_PERSONAS.map((p) => personaDiscordName(p)).join("\n"), inline: false },
       { name: "Command Center", value: publicAppUrl, inline: false },
       { name: "API", value: apiBaseUrl, inline: false }
@@ -246,9 +314,29 @@ export async function restructureDiscordGuild(options?: { dryRun?: boolean }) {
     lounge: await ensureCategory(client, channels, CATEGORY_LOUNGE)
   };
 
+  const ownerUserId =
+    process.env.DISCORD_OWNER_USER_ID?.trim() || process.env.DISCORD_ADMIN_USER_ID?.trim();
+  const botUser = await client.getCurrentUser();
+
   channels = await client.listChannels();
   const channelIds = {} as Record<AgentOsChannelKey, string>;
   for (const key of Object.keys(STREAMLINED_LAYOUT) as AgentOsChannelKey[]) {
+    if (key === "operatorCommand" || key === "cursor") {
+      if (ownerUserId) {
+        channelIds[key] = await ensurePrivateOwnerChannel(
+          client,
+          channels,
+          categoryIds.ops,
+          guildId,
+          ownerUserId,
+          botUser.id,
+          key
+        );
+      } else {
+        channelIds[key] = await ensureStreamlinedChannel(client, channels, key, categoryIds);
+      }
+      continue;
+    }
     channelIds[key] = await ensureStreamlinedChannel(client, channels, key, categoryIds);
   }
 
@@ -276,6 +364,8 @@ export async function restructureDiscordGuild(options?: { dryRun?: boolean }) {
     approvals: await ensureWebhook(client, channelIds.approvals, "agentos-approvals"),
     missions: await ensureWebhook(client, channelIds.missions, "agentos-missions"),
     opsFeed: await ensureWebhook(client, channelIds.opsFeed, "agentos-ops-feed"),
+    operatorCommand: await ensureWebhook(client, channelIds.operatorCommand, "agentos-operator-command"),
+    cursor: await ensureWebhook(client, channelIds.cursor, "agentos-cursor-bridge"),
     general: await ensureWebhook(client, channelIds.general, "agentos-chat"),
     roundTable: await ensureWebhook(client, channelIds.roundTable, "agentos-round-table"),
     chatRoom1: await ensureWebhook(client, channelIds.chatRoom1, "agentos-chat-room-1"),
@@ -353,6 +443,186 @@ export async function syncDiscordCommands() {
   await client.putGlobalCommands(resolvedApplicationId, []);
   await client.putGuildCommands(resolvedApplicationId, [AGENTOS_ROOT_COMMAND]);
   return { applicationId: resolvedApplicationId, command: AGENTOS_ROOT_COMMAND.name };
+}
+
+export async function setupOperatorCommandChannel(options?: { ownerUserId?: string }) {
+  const token = process.env.DISCORD_BOT_TOKEN?.trim();
+  const guildId = process.env.DISCORD_GUILD_ID?.trim();
+  const ownerUserId =
+    options?.ownerUserId?.trim() ||
+    process.env.DISCORD_OWNER_USER_ID?.trim() ||
+    process.env.DISCORD_ADMIN_USER_ID?.trim();
+  if (!token || !guildId) {
+    throw new Error("DISCORD_BOT_TOKEN and DISCORD_GUILD_ID are required.");
+  }
+  if (!ownerUserId) {
+    throw new Error("DISCORD_OWNER_USER_ID or DISCORD_ADMIN_USER_ID is required (or pass --owner-id).");
+  }
+
+  const client = new DiscordRestClient(token, guildId);
+  const botUser = await client.getCurrentUser();
+  const channels = await client.listChannels();
+  const existingState = loadDiscordGuildState();
+  const opsCategoryId =
+    existingState?.categories?.ops ??
+    channels.find((channel) => channel.type === 4 && channel.name === CATEGORY_OPS)?.id;
+  if (!opsCategoryId) {
+    throw new Error("OPS category not found — run pnpm discord:bootstrap first.");
+  }
+
+  const channelId = await ensurePrivateOwnerChannel(
+    client,
+    channels,
+    opsCategoryId,
+    guildId,
+    ownerUserId,
+    botUser.id,
+    "operatorCommand"
+  );
+  const webhook = await ensureWebhook(client, channelId, "agentos-operator-command");
+
+  const state: DiscordGuildState = {
+    ...(existingState ?? {
+      guildId,
+      guildName: "AgentOS HQ",
+      applicationId: process.env.DISCORD_APPLICATION_ID?.trim() || "",
+      categories: { start: "", ops: opsCategoryId, briefing: "", lounge: "" },
+      channels: {} as Record<AgentOsChannelKey, string>,
+      roles: {},
+      personas: {},
+      webhooks: {},
+      emojis: {},
+      bootstrappedAt: new Date().toISOString(),
+      layoutVersion: LAYOUT_VERSION
+    }),
+    channels: {
+      ...(existingState?.channels ?? ({} as Record<AgentOsChannelKey, string>)),
+      operatorCommand: channelId
+    },
+    webhooks: {
+      ...(existingState?.webhooks ?? {}),
+      operatorCommand: webhook
+    },
+    layoutVersion: LAYOUT_VERSION,
+    bootstrappedAt: new Date().toISOString()
+  };
+  saveState(state);
+
+  const { postPersonaWebhookMessage } = await import("./webhook-post");
+  await postPersonaWebhookMessage(webhook, {
+    agentId: "admin-agent",
+    title: "Operator command lane online",
+    description: "This channel is private to you and AgentOS. Send `help` for commands, or chat naturally to control missions.",
+    tone: "success",
+    showPortrait: true,
+    fields: [
+      { name: "Owner", value: `<@${ownerUserId}>`, inline: true },
+      { name: "Examples", value: "`status` · `pulse` · `mission Demo run` · `approve`", inline: false },
+      {
+        name: "Ready / busy",
+        value: "Pinned **Operator lane status** + channel topic: 🟢 ready · 🟡 wait for Cursor.",
+        inline: false
+      }
+    ],
+    footerHint: "Owner command lane"
+  });
+
+  const { ensureOperatorLaneIndicator } = await import("./operator-lane-status");
+  await ensureOperatorLaneIndicator(channelId);
+
+  return { ok: true, channelId, ownerUserId, webhook };
+}
+
+export async function setupCursorChannel(options?: { ownerUserId?: string }) {
+  const token = process.env.DISCORD_BOT_TOKEN?.trim();
+  const guildId = process.env.DISCORD_GUILD_ID?.trim();
+  const ownerUserId =
+    options?.ownerUserId?.trim() ||
+    process.env.DISCORD_OWNER_USER_ID?.trim() ||
+    process.env.DISCORD_ADMIN_USER_ID?.trim();
+  if (!token || !guildId) {
+    throw new Error("DISCORD_BOT_TOKEN and DISCORD_GUILD_ID are required.");
+  }
+  if (!ownerUserId) {
+    throw new Error("DISCORD_OWNER_USER_ID or DISCORD_ADMIN_USER_ID is required (or pass --owner-id).");
+  }
+
+  const client = new DiscordRestClient(token, guildId);
+  const botUser = await client.getCurrentUser();
+  const channels = await client.listChannels();
+  const existingState = loadDiscordGuildState();
+  const opsCategoryId =
+    existingState?.categories?.ops ??
+    channels.find((channel) => channel.type === 4 && channel.name === CATEGORY_OPS)?.id;
+  if (!opsCategoryId) {
+    throw new Error("OPS category not found — run pnpm discord:bootstrap first.");
+  }
+
+  const channelId = await ensurePrivateOwnerChannel(
+    client,
+    channels,
+    opsCategoryId,
+    guildId,
+    ownerUserId,
+    botUser.id,
+    "cursor"
+  );
+  const webhook = await ensureWebhook(client, channelId, "agentos-cursor-bridge");
+
+  const state: DiscordGuildState = {
+    ...(existingState ?? {
+      guildId,
+      guildName: "AgentOS HQ",
+      applicationId: process.env.DISCORD_APPLICATION_ID?.trim() || "",
+      categories: { start: "", ops: opsCategoryId, briefing: "", lounge: "" },
+      channels: {} as Record<AgentOsChannelKey, string>,
+      roles: {},
+      personas: {},
+      webhooks: {},
+      emojis: {},
+      bootstrappedAt: new Date().toISOString(),
+      layoutVersion: LAYOUT_VERSION
+    }),
+    channels: {
+      ...(existingState?.channels ?? ({} as Record<AgentOsChannelKey, string>)),
+      cursor: channelId
+    },
+    webhooks: {
+      ...(existingState?.webhooks ?? {}),
+      cursor: webhook
+    },
+    layoutVersion: LAYOUT_VERSION,
+    bootstrappedAt: new Date().toISOString()
+  };
+  saveState(state);
+
+  const { postPersonaWebhookMessage } = await import("./webhook-post");
+  const bridgeStatus = (await import("../cursor-bridge")).getCursorBridgeStatus();
+  await postPersonaWebhookMessage(webhook, {
+    agentId: "agentos-operator",
+    title: "Cursor bridge online",
+    description:
+      "Send prompts here to run them in **Cursor** against your AgentOS repo. Replies post in this channel.",
+    tone: bridgeStatus.enabled ? "success" : "warning",
+    showPortrait: true,
+    fields: [
+      { name: "Owner", value: `<@${ownerUserId}>`, inline: true },
+      { name: "Repo", value: `\`${bridgeStatus.repoCwd}\``, inline: false },
+      {
+        name: "Setup",
+        value: bridgeStatus.enabled
+          ? "`status` · `reset` · send any Cursor prompt"
+          : "Set `CURSOR_API_KEY` in `.env` and restart `pnpm dev:api`.",
+        inline: false
+      }
+    ],
+    footerHint: "Discord ↔ Cursor"
+  });
+
+  const { ensureOperatorLaneIndicator } = await import("./operator-lane-status");
+  await ensureOperatorLaneIndicator(channelId);
+
+  return { ok: true, channelId, ownerUserId, webhook, bridge: bridgeStatus };
 }
 
 export async function bootstrapDiscordGuild(options?: { dryRun?: boolean }) {

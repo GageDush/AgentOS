@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@agentos/agents": "workspace:*",
+    "@agentos/app-generator": "workspace:*",
     "@agentos/orchestrator": "workspace:*",
     "@agentos/persistence": "workspace:*",
     "@agentos/sandbox": "workspace:*",

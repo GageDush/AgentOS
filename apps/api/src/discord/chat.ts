@@ -4,7 +4,7 @@ import { loadDiscordGuildState } from "./bootstrap";
 import { getDiscordRestClient, isDiscordBotEnabled, resolveAgentOsChannelId } from "./client";
 import { buildAgentEmbed } from "./embeds";
 import { embedInteractionResponse } from "./messenger";
-import { postPersonaWebhookMessage } from "./webhook-post";
+import { postPersonaRichMessage, postPersonaWebhookMessage } from "./webhook-post";
 import {
   isChatRoomChannelKey,
   parseRoomReservationIntent,
@@ -14,6 +14,16 @@ import {
 import type { AgentOsChannelKey } from "./layout";
 import { runRoundTableBriefing } from "./round-table";
 import { SEEN_EMOJI } from "./theme";
+import { getAuthorizedOperatorDiscordIds, isAuthorizedDiscordOperator } from "./operator-auth";
+import { handleOperatorCommandMessage } from "./operator-commands";
+import {
+  isOperatorLaneBypassCommand,
+  isOperatorLaneBusy,
+  operatorLaneTaskLabel,
+  replyOperatorLaneBusyNotice,
+  withOperatorLaneBusy
+} from "./operator-lane-status";
+import { handleCursorChannelMessage, resolveCursorChannelId } from "./cursor-channel";
 
 export async function runOperatorChat(prompt: string, operatorId: string, operatorLabel: string) {
   const provider = providers[getProviderId()];
@@ -51,18 +61,20 @@ export async function replyDiscordChatEmbed(
   const webhook = loadDiscordGuildState()?.webhooks?.general;
   if (!webhook) return { ok: false as const };
 
-  await postPersonaWebhookMessage(webhook, {
+  await postPersonaRichMessage(webhook, {
     agentId: "admin-agent",
-    title: "Operator chat",
-    description: response.slice(0, 3900),
-    tone: "info",
-    fields: [
-      { name: "You", value: prompt.slice(0, 900), inline: false },
-      { name: "Provider", value: provider, inline: true },
-      { name: "Model", value: model, inline: true },
-      { name: "Operator", value: operatorLabel, inline: true }
-    ],
-    footerHint: "Neural link active"
+    recipient: operatorLabel,
+    message: [
+      response.slice(0, 3200),
+      "",
+      `**Your prompt:** ${prompt.slice(0, 500)}`,
+      `**Provider:** \`${provider}\` · **Model:** \`${model}\``
+    ].join("\n"),
+    status: { label: "Response ready", routing: `${provider} · ${model}` },
+    cardChannel: "general",
+    operationalStatus: "ONLINE",
+    operatorRole: "HUMAN OPERATOR",
+    includeQuickActions: true
   });
   return { ok: true as const };
 }
@@ -222,6 +234,70 @@ export async function handleDiscordChannelMessage(
       }
       return { handled: true as const, error: true };
     }
+  }
+
+  const cursorChannelId = resolveCursorChannelId();
+  if (cursorChannelId && channelId === cursorChannelId && content.trim()) {
+    if (!isAuthorizedDiscordOperator(authorId)) {
+      const client = getDiscordRestClient();
+      if (client) {
+        await client.createMessage(channelId, {
+          embeds: [
+            buildAgentEmbed({
+              agentId: "agentos-operator",
+              title: "Unauthorized",
+              description: "This channel is restricted to the configured operator owner.",
+              tone: "warning"
+            })
+          ]
+        });
+      }
+      return { handled: true as const, unauthorized: true as const };
+    }
+    if (!isOperatorLaneBypassCommand(content) && isOperatorLaneBusy()) {
+      await replyOperatorLaneBusyNotice(channelId);
+      await markPromptSeen(channelId, messageId);
+      return { handled: true as const, cursor: true as const, busy: true as const };
+    }
+    await withOperatorLaneBusy(channelId, "cursor", () =>
+      handleCursorChannelMessage(channelId, content, authorId, authorLabel)
+    );
+    await markPromptSeen(channelId, messageId);
+    return { handled: true as const, cursor: true as const };
+  }
+
+  const operatorCommandChannelId = resolveAgentOsChannelId("operatorCommand");
+  if (operatorCommandChannelId && channelId === operatorCommandChannelId && content.trim()) {
+    if (!isAuthorizedDiscordOperator(authorId)) {
+      const client = getDiscordRestClient();
+      if (client) {
+        await client.createMessage(channelId, {
+          embeds: [
+            buildAgentEmbed({
+              agentId: "admin-agent",
+              title: "Unauthorized",
+              description:
+                getAuthorizedOperatorDiscordIds().length === 0
+                  ? "Set `DISCORD_OWNER_USER_ID` in `.env` and run `pnpm discord:setup-operator-channel`."
+                  : "This channel is restricted to the configured operator owner.",
+              tone: "warning"
+            })
+          ]
+        });
+      }
+      return { handled: true as const, unauthorized: true as const };
+    }
+    const operatorId = `discord-${authorId}`;
+    if (!isOperatorLaneBypassCommand(content) && isOperatorLaneBusy()) {
+      await replyOperatorLaneBusyNotice(channelId);
+      await markPromptSeen(channelId, messageId);
+      return { handled: true as const, operatorCommand: true as const, busy: true as const };
+    }
+    await withOperatorLaneBusy(channelId, operatorLaneTaskLabel(content), () =>
+      handleOperatorCommandMessage(channelId, content, operatorId, authorLabel)
+    );
+    await markPromptSeen(channelId, messageId);
+    return { handled: true as const, operatorCommand: true as const };
   }
 
   const chatChannelId = resolveAgentOsChannelId("general");

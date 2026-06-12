@@ -1,11 +1,8 @@
 import type { ApprovalRecord, AuditEvent, AgentTask } from "@agentos/shared";
-import { buildAgentDiscordEmbed } from "@agentos/shared";
 import { listPendingApprovals, store } from "../store";
-import { buildAgentRichMessageInput } from "./agent-profiles";
 import { loadDiscordGuildState } from "./bootstrap";
 import { isDiscordBotEnabled } from "./client";
-import { hasNotifiedApproval, markApprovalNotified, registerDiscordMessage } from "./registry";
-import { buildRichQuickActionRows } from "./rich-action-buttons";
+import { hasNotifiedApproval, markApprovalNotified } from "./registry";
 import { sendAgentMessage } from "./messenger";
 import { postPersonaRichMessage } from "./webhook-post";
 
@@ -53,18 +50,14 @@ export async function notifyApprovalGate(approval: ApprovalRecord) {
     status: { label: "Control gate request", routing: "AgentOS Local" as const },
     scope
   };
-  const richMessage = buildAgentRichMessageInput(richInput);
-  const embedSnapshot = buildAgentDiscordEmbed(richMessage).embeds[0];
-  const componentsSnapshot = buildRichQuickActionRows(scope, listPendingApprovals());
-
-  const message = await postPersonaRichMessage(webhook, richInput);
-
-  registerDiscordMessage(message.id, {
-    channelId: message.channel_id,
-    kind: "approval",
+  const message = await postPersonaRichMessage(webhook, {
+    ...richInput,
+    cardChannel: "approvals",
+    registryKind: "approval",
     entityId: approval.id,
-    embedSnapshot,
-    componentsSnapshot
+    operationalStatus: "GATE OPEN",
+    operatorRole: "HUMAN OPERATOR",
+    clearanceLevel: "LEVEL 4"
   });
 
   markApprovalNotified(approval.id);

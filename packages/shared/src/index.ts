@@ -1,3 +1,5 @@
+import { buildForgeAgentRoster } from "./agent-roster";
+
 export type AgentStatus =
   | "idle"
   | "thinking"
@@ -353,7 +355,8 @@ export type RouteTaskType =
   | "security"
   | "release"
   | "config"
-  | "agent_profile_work";
+  | "agent_profile_work"
+  | "app_creation";
 
 export type RouteComplexity = "trivial" | "simple" | "moderate" | "complex" | "unknown";
 export type RouteRiskLevel = "none" | "low" | "medium" | "high" | "critical";
@@ -450,6 +453,10 @@ export type ContextPacket = {
   memoryIncluded: ContextPacketMemory[];
   excludedContext: ContextPacketMemory[];
   notes: string[];
+  /** Wiki slugs included when FEATURE_MEMORY_WIKI is enabled. */
+  wikiSlugs?: string[];
+  wikiChars?: number;
+  wikiSectionCount?: number;
 };
 
 export type AgentReportStatus =
@@ -502,6 +509,8 @@ export type AgentRoutingDecisionRecord = {
   riskLevel: RouteRiskLevel;
   selectedPrimaryAgentId: string;
   supportingAgentIds: string[];
+  /** Agents that actually ran during the mission (subset of route); populated after execution. */
+  executedAgentIds?: string[];
   skippedAgents: Array<{ agentId: string; reason: string }>;
   requiredGates: RoutingGate[];
   providerLane: ProviderLane;
@@ -554,9 +563,13 @@ export type QuickActionType =
   | "details"
   | "run_qa"
   | "security_review"
+  | "code_review"
   | "retry"
   | "summarize"
-  | "release";
+  | "release"
+  | "approve_release"
+  | "approve_memory"
+  | "dismiss_memory";
 
 export type QuickActionRecord = {
   id: string;
@@ -583,6 +596,7 @@ export type ConversationalIntentType =
   | "resume_active"
   | "run_qa"
   | "security_review"
+  | "code_review"
   | "show_details"
   | "retry_last"
   | "summarize"
@@ -620,74 +634,7 @@ export const defaultOperator: OperatorRecord = {
   updatedAt: nowIso()
 };
 
-export const defaultAgents: AgentProfile[] = [
-  {
-    id: "agentos-operator",
-    name: "AgentOS Operator",
-    role: "Routes tasks, coordinates the team, and manages approvals.",
-    status: "thinking",
-    workload: 48,
-    currentTaskId: "task-command-center",
-    skills: ["routing", "planning", "risk triage"]
-  },
-  {
-    id: "product-agent",
-    name: "Product Agent",
-    role: "Turns ideas into specs and acceptance criteria.",
-    status: "idle",
-    workload: 24,
-    skills: ["prd", "requirements", "user stories"]
-  },
-  {
-    id: "architect-agent",
-    name: "Architect Agent",
-    role: "Designs system architecture, APIs, and data flow.",
-    status: "reviewing",
-    workload: 36,
-    skills: ["architecture", "schema", "interfaces"]
-  },
-  {
-    id: "builder-agent",
-    name: "Builder Agent",
-    role: "Implements code in supervised local runs.",
-    status: "working",
-    workload: 72,
-    currentTaskId: "task-command-center",
-    skills: ["implementation", "refactor", "debugging"]
-  },
-  {
-    id: "qa-agent",
-    name: "QA Agent",
-    role: "Runs tests and verification sweeps.",
-    status: "blocked",
-    workload: 58,
-    skills: ["test plans", "regression", "checks"]
-  },
-  {
-    id: "security-agent",
-    name: "Security Agent",
-    role: "Reviews approvals, secrets, and risky tools.",
-    status: "idle",
-    workload: 33,
-    skills: ["approval gates", "audit", "permissions"]
-  },
-  {
-    id: "reviewer-agent",
-    name: "Reviewer Agent",
-    role: "Reviews diffs and implementation quality.",
-    status: "idle",
-    workload: 18,
-    skills: ["review", "risk notes", "maintainability"]
-  },
-  {
-    id: "docs-agent",
-    name: "Docs Agent",
-    role: "Maintains docs, runbooks, and release notes.",
-    status: "done",
-    workload: 12,
-    skills: ["readme", "runbooks", "changelog"]
-  }
-];
+export const defaultAgents: AgentProfile[] = buildForgeAgentRoster();
 
 export const defaultTasks: AgentTask[] = [
   {
@@ -696,7 +643,7 @@ export const defaultTasks: AgentTask[] = [
     description: "Replace the office-first demo surface with a mission-first command center.",
     prompt: "Refactor AgentOS into a serious local-first developer operations hub.",
     status: "building",
-    assignedAgentId: "builder-agent",
+    assignedAgentId: "code-implementer",
     createdAt: nowIso(),
     updatedAt: nowIso()
   }
@@ -753,7 +700,7 @@ export const defaultUsageEvents: UsageEvent[] = [
     completionTokens: 360,
     totalTokens: 1560,
     estimatedCostUsd: 0,
-    agentId: "agentos-operator",
+    agentId: "admin-agent",
     taskId: "task-command-center",
     runId: "run-seed",
     createdAt: nowIso()
@@ -765,7 +712,7 @@ export const defaultApprovals: ApprovalRecord[] = [
     id: "approval-terminal-run",
     workspaceId: defaultWorkspace.id,
     requestedByOperatorId: defaultOperator.id,
-    agentId: "builder-agent",
+    agentId: "code-implementer",
     missionId: "mission-seed-local-checks",
     sessionId: "session-seed",
     runId: "mission-run-seed",
@@ -959,8 +906,16 @@ export const defaultChatMessages: ChatMessageRecord[] = [
 
 export const defaultQuickActions: QuickActionRecord[] = [];
 
+export * from "./agent-id-map";
+export * from "./agent-roster";
+export * from "./memory-update";
+export * from "./wiki-edit";
 export * from "./agent-rich-message";
 export * from "./agent-rich-action";
+export * from "./build-intent";
+export * from "./release";
+export * from "./tools";
+export * from "./gates";
 
 export const calculateUsageSummary = (events: UsageEvent[], budgets: UsageBudget[]) => {
   const today = new Date().toISOString().slice(0, 10);

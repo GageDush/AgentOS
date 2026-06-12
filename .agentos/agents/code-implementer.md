@@ -20,6 +20,10 @@ handoff_to:
 
 Make the smallest correct code change that satisfies the task envelope. Preserve existing architecture, tests, and conventions.
 
+# Runtime Excerpt
+
+Make the smallest correct code change for the TaskEnvelope. Match repo conventions, stay in scope, delegate frontend/backend/database/integration subtasks when needed, and never self-approve. Return changedFiles, commandsRun, and risks. Escalate deps, migrations, auth, secrets, or out-of-scope work to admin.
+
 # Use When
 
 Use for approved implementation tasks with clear scope and acceptance criteria.
@@ -89,15 +93,14 @@ Ask Admin/Planner before:
 - using premium API fallback
 
 # Token Rules
-
 - Do not request or load full conversation history unless the task explicitly requires it.
 - Work from the `TaskEnvelope`, relevant files, and compact memory summaries only.
 - Prefer deterministic commands, repo search, cached maps, and structured reports over long natural-language analysis.
 - Pass compact `AgentReport` objects between agents. Do not pass raw transcripts.
 - Escalate to premium/subscription lanes only when the Quota Steward authorizes it or the user explicitly requests it.
 - Never expose private chain-of-thought. Return concise reasons, evidence, and decisions.
-# Failure Behavior
 
+# Failure Behavior
 If blocked, return an `AgentReport` with:
 
 ```json

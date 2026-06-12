@@ -14,24 +14,24 @@ type ApprovalCardProps = {
 
 export function ApprovalCard({ approval, onAllowOnce, onAllowMission, onDeny, busy }: ApprovalCardProps) {
   return (
-    <ReactiveCard style={{ padding: "1rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", marginBottom: "0.75rem" }}>
+    <ReactiveCard className="forge-approval-card">
+      <div className="forge-approval-head">
         <div>
-          <p className="forge-mono" style={{ margin: 0, color: "var(--forge-accent)" }}>
+          <p className="forge-mono" style={{ margin: 0, color: "var(--forge-accent)", fontSize: "0.68rem" }}>
             Sandbox Approval
           </p>
           <strong>{approval.requestingAgent}</strong>
         </div>
         <span className="forge-chip forge-chip-active">{approval.riskLevel}</span>
       </div>
-      <p style={{ margin: "0 0 0.5rem", fontFamily: "var(--forge-mono)", fontSize: "0.82rem" }}>{approval.requestedAction}</p>
-      {approval.reason ? <p style={{ margin: "0 0 0.5rem", color: "var(--forge-muted)", fontSize: "0.82rem" }}>{approval.reason}</p> : null}
+      <p className="forge-approval-command">{approval.requestedAction}</p>
+      {approval.reason ? <p className="forge-approval-meta">{approval.reason}</p> : null}
       {approval.affectedScope ? (
         <p className="forge-mono" style={{ margin: "0 0 0.75rem", fontSize: "0.68rem", color: "var(--forge-soft)" }}>
           Scope: {approval.affectedScope}
         </p>
       ) : null}
-      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+      <div className="forge-approval-actions">
         <MagneticButton variant="primary" disabled={busy} onClick={() => onAllowOnce?.(approval.id)}>
           Allow Once
         </MagneticButton>

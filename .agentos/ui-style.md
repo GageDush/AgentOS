@@ -4,7 +4,7 @@ Use a dark agent-native software aesthetic:
 
 - **Background:** near-black with subtle radial gradient, optional noise/grid overlay.
 - **Typography:** clean sans for normal UI, compact mono for commands, labels, nav, status, and logs.
-- **Accent:** warm orange/amber for active states, attention, approvals, and command focus.
+- **Accent:** cool blue/violet (Halo-inspired) for active states, attention, approvals, and command focus.
 - **Layout:** dense but calm, with large negative space where appropriate.
 - **Panels:** translucent, thin bordered, terminal/workbench-inspired.
 - **Motion:** subtle fade/slide, cursor proximity response, hover stripe overlays, no bouncy effects.
@@ -33,7 +33,7 @@ Import from `@agentos/ui` and `@agentos/ui/styles/agentos-forge.css` unless a mi
 
 ### Layout & Section Primitives
 
-- `ForgeSectionHeader` — mono kicker, large title, optional amber accent word
+- `ForgeSectionHeader` — mono kicker, large title, optional accent word
 - `ForgeStatCard` — Halo-style stat pattern (label / value / divider / caption)
 - `ForgeSegmentedControl` — view-mode toggle
 - `ForgeFaqAccordion` — expandable FAQ rows

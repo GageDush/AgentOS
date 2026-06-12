@@ -8,7 +8,8 @@
 #>
 param(
   [switch]$NonInteractive,
-  [ValidateSet("Gui", "Menu", "Health", "Start", "StartWithTunnel", "Restart", "RestartWithTunnel", "Stop", "Backup", "RefreshDesktop")]
+  [switch]$IfNotRunning,
+  [ValidateSet("Gui", "Menu", "Health", "Start", "StartWithTunnel", "Restart", "RestartWithTunnel", "Stop", "Backup", "RefreshDesktop", "InstallAutostart", "UninstallAutostart")]
   [string]$Action = "Gui"
 )
 
@@ -117,8 +118,183 @@ function Get-CloudflaredPath() {
 function Test-TunnelConnection() {
   $cf = Get-CloudflaredPath
   if (-not $cf) { return $false }
-  $output = & $cf tunnel info agentos 2>&1 | Out-String
-  return $output -match "CONNECTOR ID" -and $output -notmatch "does not have any active connection"
+  $prevEap = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $output = & $cf tunnel info agentos 2>&1 | ForEach-Object { "$_" } | Out-String
+    return $output -match "CONNECTOR ID" -and $output -notmatch "does not have any active connection"
+  } finally {
+    $ErrorActionPreference = $prevEap
+  }
+}
+
+function Get-StackLogDir() {
+  $dir = Join-Path $RepoRoot ".agentos\logs"
+  New-Item -ItemType Directory -Force -Path $dir | Out-Null
+  return $dir
+}
+
+function Get-StackStateDir() {
+  $dir = Join-Path $RepoRoot ".agentos\state"
+  New-Item -ItemType Directory -Force -Path $dir | Out-Null
+  return $dir
+}
+
+function Get-LauncherPidFile() {
+  return Join-Path (Get-StackStateDir) "stack-launcher.pids"
+}
+
+function Register-LauncherPid([int]$ProcessId) {
+  if ($ProcessId -le 0) { return }
+  Add-Content -Path (Get-LauncherPidFile) -Value $ProcessId -Encoding ASCII
+}
+
+function Stop-HiddenStackLaunchers() {
+  $pidFile = Get-LauncherPidFile
+  if (Test-Path $pidFile) {
+    foreach ($launcherPid in Get-Content $pidFile -ErrorAction SilentlyContinue) {
+      $parsed = 0
+      if ([int]::TryParse("$launcherPid".Trim(), [ref]$parsed) -and $parsed -gt 0) {
+        Stop-Process -Id $parsed -Force -ErrorAction SilentlyContinue
+        Write-Ok "Stopped hidden launcher cmd.exe (pid $parsed)."
+      }
+    }
+    Remove-Item $pidFile -Force -ErrorAction SilentlyContinue
+  }
+
+  $repoPattern = [regex]::Escape($RepoRoot)
+  $launchers = Get-CimInstance Win32_Process -Filter "Name = 'cmd.exe'" -ErrorAction SilentlyContinue |
+    Where-Object {
+      $_.CommandLine -and
+      $_.CommandLine -match $repoPattern -and
+      $_.CommandLine -match 'pnpm (dev:full|dev:api|dev:stack)'
+    }
+  foreach ($proc in @($launchers)) {
+    Stop-Process -Id $proc.ProcessId -Force -ErrorAction SilentlyContinue
+    Write-Ok "Stopped repo launcher cmd.exe pid $($proc.ProcessId)."
+  }
+}
+
+function Start-HiddenPnpm([string]$Label, [string]$PnpmCommand) {
+  $logDir = Get-StackLogDir
+  $logFile = Join-Path $logDir "$Label.log"
+  $header = "`n===== $Label started $(Get-Date -Format o) =====`n"
+  Add-Content -Path $logFile -Value $header -Encoding UTF8
+
+  $inner = "cd /d `"$RepoRoot`" && pnpm $PnpmCommand >> `"$logFile`" 2>&1"
+  $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $inner -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru
+  Register-LauncherPid $proc.Id
+  Write-Ok "Started $Label in background (no terminal window). Log: $logFile"
+  return $true
+}
+
+function Test-StackRunning() {
+  return [bool](Get-ListenPid $ApiPort -or Get-ListenPid $UiPort -or Get-ListenPid $GatewayPort)
+}
+
+function Install-AutostartTask() {
+  $taskName = "AgentOS Background Stack"
+  $scriptPath = Join-Path $RepoRoot "scripts\agentos-background.ps1"
+  $arg = "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$scriptPath`" -Action Start -IfNotRunning"
+  $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument $arg
+  $trigger = New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME
+  $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 2 -RestartInterval (New-TimeSpan -Minutes 2)
+  Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Description "Starts AgentOS stack in the background at Windows logon (no terminal windows)." -Force | Out-Null
+  Write-Ok "Registered scheduled task '$taskName' (runs at logon)."
+  Write-Info "Logs: $(Join-Path $RepoRoot '.agentos\logs')"
+}
+
+function Uninstall-AutostartTask() {
+  $taskName = "AgentOS Background Stack"
+  Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+  Write-Ok "Removed scheduled task '$taskName' (if it existed)."
+}
+
+function Wait-ApiHealth([int]$TimeoutSec = 90) {
+  $deadline = (Get-Date).AddSeconds($TimeoutSec)
+  while ((Get-Date) -lt $deadline) {
+    $health = Test-HttpOk "http://127.0.0.1:$ApiPort/health"
+    if ($health.Ok) {
+      Write-Ok "API healthy on port $ApiPort."
+      return $true
+    }
+    Start-Sleep -Seconds 2
+  }
+  Write-Bad "API did not become healthy within ${TimeoutSec}s."
+  return $false
+}
+
+function Start-ApiDedicated() {
+  if (Get-ListenPid $ApiPort) {
+    Write-Info "API already listening on port $ApiPort."
+    return $true
+  }
+
+  if (-not (Start-HiddenPnpm "dev-api" "dev:api")) {
+    return $false
+  }
+  return Wait-ApiHealth
+}
+
+function Start-StackServices() {
+  $uiUp = [bool](Get-ListenPid $UiPort)
+  $gwUp = [bool](Get-ListenPid $GatewayPort)
+  if ($uiUp -and $gwUp) {
+    Write-Info "Command Center and Gateway already listening."
+    return
+  }
+  Start-HiddenPnpm "dev-stack" "dev:stack" | Out-Null
+}
+
+function Test-StackHealthy() {
+  $apiHealthy = (Test-HttpOk "http://127.0.0.1:$ApiPort/health").Ok
+  $uiUp = [bool](Get-ListenPid $UiPort)
+  $gwUp = [bool](Get-ListenPid $GatewayPort)
+  return $apiHealthy -and $uiUp -and $gwUp
+}
+
+function Start-StackSequential() {
+  param([switch]$IncludeTunnel)
+
+  if (-not (Get-ListenPid $ApiPort)) {
+    if (-not (Start-ApiDedicated)) {
+      Write-Bad "API failed to start."
+      return $false
+    }
+  } elseif (-not (Test-HttpOk "http://127.0.0.1:$ApiPort/health").Ok) {
+    Write-Warn "API port is bound but unhealthy - restarting API."
+    Stop-Port $ApiPort "API" | Out-Null
+    Wait-PortFree $ApiPort 12 | Out-Null
+    if (-not (Start-ApiDedicated)) {
+      Write-Bad "API failed to restart."
+      return $false
+    }
+  } else {
+    Write-Info "API already healthy on port $ApiPort."
+  }
+
+  Start-StackServices
+  Start-Sleep -Seconds 2
+  return Wait-ForStack -IncludeTunnel:$IncludeTunnel
+}
+
+function Invoke-DiscordSmoke {
+  param([switch]$Full)
+
+  if (-not (Get-ListenPid $ApiPort)) {
+    Write-Bad "API is not running - cannot run Discord smoke test."
+    return $false
+  }
+
+  $label = if ($Full) { "discord:smoke:full" } else { "discord:smoke" }
+  try {
+    Invoke-Repo "Running $label" @($(if ($Full) { "discord:smoke:full" } else { "discord:smoke" }))
+    Write-Ok "$label passed."
+    return $true
+  } catch {
+    Write-Bad "$label failed: $($_.Exception.Message)"
+    return $false
+  }
 }
 
 function Start-CloudflaredTunnel() {
@@ -270,45 +446,51 @@ function Show-Health {
 }
 
 function Start-Stack {
-  param([switch]$IncludeTunnel)
+  param(
+    [switch]$IncludeTunnel,
+    [switch]$RunDiscordSmoke
+  )
 
-  Write-Title "Starting AgentOS stack"
+  Write-Title "Starting AgentOS stack (background, hot-reload)"
 
-  if (Get-ListenPid $ApiPort) {
-    Write-Warn "API already running. Use Restart API or Stop all first."
+  if ($IfNotRunning -and (Test-StackHealthy)) {
+    Write-Info "Stack already healthy - skipping start."
+    Show-Health
     return
+  }
+  if ($IfNotRunning -and (Test-StackRunning)) {
+    Write-Info "Stack partially running - repairing missing services."
   }
 
   if ($IncludeTunnel) {
     Start-CloudflaredTunnel | Out-Null
   }
 
-  $devCmd = "Set-Location -LiteralPath '$RepoRoot'; Write-Host 'AgentOS dev stack' -ForegroundColor Cyan; pnpm dev"
-  Start-Process powershell -ArgumentList "-NoExit", "-NoProfile", "-Command", $devCmd
-  Write-Ok "Opened dev terminal (pnpm dev)."
-  Write-Info "Waiting for API..."
-  Start-Sleep -Seconds 6
+  $ready = Start-StackSequential -IncludeTunnel:$IncludeTunnel
   Show-Health
+
+  if ($RunDiscordSmoke -and $ready) {
+    Invoke-DiscordSmoke -Full | Out-Null
+  }
 }
 
 function Restart-Api {
   Write-Title "Restarting API"
   Stop-Port $ApiPort "API"
+  Wait-PortFree $ApiPort 10 | Out-Null
   Start-Sleep -Seconds 1
 
-  $indexPath = Join-Path $RepoRoot "apps\api\src\index.ts"
-  if (Test-Path $indexPath) {
-    (Get-Item $indexPath).LastWriteTime = Get-Date
-    Write-Ok "Triggered tsx watch reload via index.ts touch."
-    Start-Sleep -Seconds 4
-  } else {
-    Write-Warn "index.ts not found - start the full stack manually."
+  if (-not (Start-ApiDedicated)) {
+    Write-Bad "API restart failed."
+    return $false
   }
   Show-Health
+  return $true
 }
 
 function Stop-Stack {
   Write-Title "Stopping AgentOS processes"
+  Stop-HiddenStackLaunchers
   Stop-Port $ApiPort "API" | Out-Null
   Stop-Port $UiPort "Command Center" | Out-Null
   Stop-Port $GatewayPort "Gateway" | Out-Null
@@ -346,7 +528,7 @@ function Wait-ForStack {
     $checks += @(
       @{ Label = "cloudflared process"; ProcessName = "cloudflared"; Required = $true },
       @{ Label = "Tunnel API"; Url = "https://api.flous.dev/health"; Required = $false; TimeoutSec = 10 },
-      @{ Label = "Tunnel app (flous.dev)"; Url = "https://flous.dev"; Required = $false; TimeoutSec = 12 },
+      @{ Label = "Tunnel app (flous.dev)"; Url = "https://flous.dev"; Required = $false; TimeoutSec = 12 }
     )
   }
 
@@ -410,9 +592,12 @@ function Wait-ForStack {
 }
 
 function Restart-Stack {
-  param([switch]$IncludeTunnel)
+  param(
+    [switch]$IncludeTunnel,
+    [switch]$RunDiscordSmoke
+  )
 
-  Write-Title "Restarting AgentOS (shutdown -> startup -> verify)"
+  Write-Title "Restarting AgentOS (shutdown -> API first -> stack -> verify)"
   Stop-Stack
   Start-Sleep -Seconds 2
 
@@ -420,12 +605,17 @@ function Restart-Stack {
     Start-CloudflaredTunnel | Out-Null
   }
 
-  $devCmd = "Set-Location -LiteralPath '$RepoRoot'; Write-Host 'AgentOS dev stack' -ForegroundColor Cyan; pnpm dev"
-  Start-Process powershell -ArgumentList "-NoExit", "-NoProfile", "-Command", $devCmd
-  Write-Ok "Opened dev terminal (pnpm dev)."
-
-  $ready = Wait-ForStack -IncludeTunnel:$IncludeTunnel
+  $ready = Start-StackSequential -IncludeTunnel:$IncludeTunnel
   Show-Health
+
+  if ($ready -and $RunDiscordSmoke) {
+    Write-Info "Running full Discord server smoke test..."
+    $smokeOk = Invoke-DiscordSmoke -Full
+    if (-not $smokeOk) {
+      $ready = $false
+    }
+  }
+
   if ($ready) {
     Write-Host ""
     Write-Ok "Restart complete - stack is up."
@@ -692,7 +882,9 @@ function Show-ControlGui {
     return $button
   }
 
-  New-ActionButton "Start stack" { Invoke-GuiAction "Starting stack" { Start-Stack } } | Out-Null
+  New-ActionButton "Start stack" { Invoke-GuiAction "Starting stack (background)" { Start-Stack } } | Out-Null
+  New-ActionButton "Start at logon" { Invoke-GuiAction "Installing autostart" { Install-AutostartTask } } | Out-Null
+  New-ActionButton "Remove logon start" { Invoke-GuiAction "Removing autostart" { Uninstall-AutostartTask } } | Out-Null
   New-ActionButton "Start + tunnel" { Invoke-GuiAction "Starting stack with tunnel" { Start-Stack -IncludeTunnel } } | Out-Null
   New-ActionButton "Restart all" { Invoke-GuiAction "Restarting stack" { Restart-Stack | Out-Null } } | Out-Null
   New-ActionButton "Restart + tunnel" { Invoke-GuiAction "Restarting stack with tunnel" { Restart-Stack -IncludeTunnel | Out-Null } } | Out-Null
@@ -788,7 +980,8 @@ function Show-Menu {
   Write-Host "  5) Restart API only" -ForegroundColor White
   Write-Host "  6) Stop API / UI / gateway / tunnel" -ForegroundColor White
   Write-Host "  7) Health and status report" -ForegroundColor White
-  Write-Host "  8) Discord smoke test" -ForegroundColor White
+  Write-Host "  8) Discord smoke test (basic)" -ForegroundColor White
+  Write-Host "  8b) Discord smoke test (full server)" -ForegroundColor White
   Write-Host "  9) Post Discord pulse" -ForegroundColor White
   Write-Host " 10) Sync Discord commands" -ForegroundColor White
   Write-Host " 11) Sync Discord roles" -ForegroundColor White
@@ -797,11 +990,13 @@ function Show-Menu {
   Write-Host " 14) New PowerShell in project" -ForegroundColor White
   Write-Host " 15) Backup AgentOS data" -ForegroundColor White
   Write-Host " 16) Refresh desktop launchers" -ForegroundColor White
+  Write-Host " 17) Install start-at-logon (no windows)" -ForegroundColor White
+  Write-Host " 18) Remove start-at-logon" -ForegroundColor White
   Write-Host "  0) Exit" -ForegroundColor DarkGray
   Write-Host ""
 }
 
-if ($NonInteractive) {
+if ($NonInteractive -and $Action -in @("Gui", "Menu")) {
   $Action = "Health"
 }
 
@@ -836,7 +1031,7 @@ switch ($Action) {
     exit $(if ($ok) { 0 } else { 1 })
   }
   "RestartWithTunnel" {
-    $ok = Restart-Stack -IncludeTunnel
+    $ok = Restart-Stack -IncludeTunnel -RunDiscordSmoke
     exit $(if ($ok) { 0 } else { 1 })
   }
   "Stop" {
@@ -847,6 +1042,25 @@ switch ($Action) {
     Install-DesktopLauncher
     exit 0
   }
+  "InstallAutostart" {
+    Install-AutostartTask
+    exit 0
+  }
+  "UninstallAutostart" {
+    Uninstall-AutostartTask
+    exit 0
+  }
+  "Menu" {
+    break
+  }
+  default {
+    Write-Bad "Unknown action: $Action"
+    exit 1
+  }
+}
+
+if ($Action -ne "Menu") {
+  exit 0
 }
 
 Install-DesktopLauncher | Out-Null
@@ -858,11 +1072,12 @@ while ($true) {
     "1" { Start-Stack }
     "2" { Start-Stack -IncludeTunnel }
     "3" { Restart-Stack | Out-Null }
-    "4" { Restart-Stack -IncludeTunnel | Out-Null }
+    "4" { Restart-Stack -IncludeTunnel -RunDiscordSmoke | Out-Null }
     "5" { Restart-Api }
     "6" { Stop-Stack }
     "7" { Show-Health }
-    "8" { try { Invoke-Repo "Running discord:smoke" @("discord:smoke") } catch { Write-Bad $_.Exception.Message } }
+    "8" { Invoke-DiscordSmoke | Out-Null }
+    "8b" { Invoke-DiscordSmoke -Full | Out-Null }
     "9" {
       try {
         $pulse = Invoke-RestMethod -Uri "http://127.0.0.1:$ApiPort/discord/pulse" -Method POST -ContentType "application/json" -Body "{}" -TimeoutSec 20
@@ -881,6 +1096,8 @@ while ($true) {
     }
     "15" { Backup-AgentOS -StopServicesFirst -OpenFolder | Out-Null }
     "16" { Install-DesktopLauncher }
+    "17" { Install-AutostartTask }
+    "18" { Uninstall-AutostartTask }
     "0" { exit 0 }
     default { Write-Warn "Unknown option." }
   }

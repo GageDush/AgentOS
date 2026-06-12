@@ -10,9 +10,9 @@ describe("discord embeds", () => {
       description: "Requesting approval.",
       fields: [{ name: "Tool", value: "terminal.run" }]
     });
-    expect(embed.title).toBe("▸ Control gate");
+    expect(embed.title).toBe("Control gate");
     expect(embed.author?.name).toContain("[Admin] Ash");
-    expect(embed.footer?.text).toContain("Awaiting operator response");
+    expect(embed.footer?.text).toContain("AgentOS");
   });
 
   it("marks embed as seen with eye indicator", () => {

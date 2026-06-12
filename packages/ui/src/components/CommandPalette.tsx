@@ -10,10 +10,21 @@ type CommandPaletteProps = {
   onOpenChange?: (open: boolean) => void;
 };
 
+const CATEGORY_ORDER: ForgeCommandItem["category"][] = ["recent", "suggested", "slash", "agent", "integration"];
+const CATEGORY_LABELS: Record<ForgeCommandItem["category"], string> = {
+  recent: "Recent",
+  suggested: "Suggested",
+  slash: "Slash Commands",
+  agent: "Agents",
+  integration: "Integrations"
+};
+
 export function CommandPalette({ commands, onExecute, open: controlledOpen, onOpenChange }: CommandPaletteProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [rendered, setRendered] = useState(false);
+  const [closing, setClosing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const open = controlledOpen ?? internalOpen;
@@ -30,11 +41,39 @@ export function CommandPalette({ commands, onExecute, open: controlledOpen, onOp
     );
   }, [commands, query]);
 
+  const grouped = useMemo(() => {
+    if (query.trim()) {
+      return [{ category: "results" as const, items: filtered }];
+    }
+    return CATEGORY_ORDER.map((category) => ({
+      category,
+      items: filtered.filter((cmd) => cmd.category === category)
+    })).filter((group) => group.items.length > 0);
+  }, [filtered, query]);
+
+  const flatItems = useMemo(
+    () => grouped.flatMap((group) => group.items),
+    [grouped]
+  );
+
   const close = useCallback(() => {
-    setOpen(false);
-    setQuery("");
-    setActiveIndex(0);
-  }, [setOpen]);
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(() => {
+      setOpen(false);
+      setQuery("");
+      setActiveIndex(0);
+      setRendered(false);
+      setClosing(false);
+    }, 160);
+  }, [closing, setOpen]);
+
+  useEffect(() => {
+    if (open) {
+      setRendered(true);
+      setClosing(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -43,58 +82,50 @@ export function CommandPalette({ commands, onExecute, open: controlledOpen, onOp
         setOpen(true);
         return;
       }
-      if (!open) return;
+      if (!rendered || closing) return;
       if (event.key === "Escape") {
         event.preventDefault();
         close();
       }
       if (event.key === "ArrowDown") {
         event.preventDefault();
-        setActiveIndex((i) => Math.min(i + 1, Math.max(0, filtered.length - 1)));
+        setActiveIndex((i) => Math.min(i + 1, Math.max(0, flatItems.length - 1)));
       }
       if (event.key === "ArrowUp") {
         event.preventDefault();
         setActiveIndex((i) => Math.max(i - 1, 0));
       }
-      if (event.key === "Enter" && filtered[activeIndex]) {
+      if (event.key === "Enter" && flatItems[activeIndex]) {
         event.preventDefault();
-        onExecute?.(filtered[activeIndex]);
+        onExecute?.(flatItems[activeIndex]);
         close();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, filtered, activeIndex, onExecute, close, setOpen]);
+  }, [rendered, closing, flatItems, activeIndex, onExecute, close, setOpen]);
 
   useEffect(() => {
-    if (open) {
+    if (rendered && !closing) {
       setActiveIndex(0);
       requestAnimationFrame(() => inputRef.current?.focus());
     }
-  }, [open]);
+  }, [rendered, closing]);
 
-  if (!open) return null;
+  if (!rendered) return null;
+
+  let runningIndex = 0;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Command palette"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        paddingTop: "12vh",
-        background: "rgba(0,0,0,0.55)"
-      }}
+      className={`forge-palette-backdrop ${closing ? "forge-palette-backdrop-closing" : ""}`.trim()}
       onClick={close}
     >
       <div
-        className="forge-panel"
-        style={{ width: "min(640px, 92vw)", padding: "0.75rem" }}
+        className={`forge-panel forge-palette-panel ${closing ? "forge-palette-panel-closing" : ""}`.trim()}
         onClick={(e) => e.stopPropagation()}
       >
         <input
@@ -106,47 +137,57 @@ export function CommandPalette({ commands, onExecute, open: controlledOpen, onOp
             setActiveIndex(0);
           }}
           placeholder="Search commands, /slash, @agents…"
-          aria-activedescendant={filtered[activeIndex] ? `cmd-${filtered[activeIndex].id}` : undefined}
+          aria-activedescendant={flatItems[activeIndex] ? `cmd-${flatItems[activeIndex].id}` : undefined}
         />
-        <ul
-          role="listbox"
-          style={{ listStyle: "none", margin: "0.5rem 0 0", padding: 0, maxHeight: 320, overflow: "auto" }}
-        >
-          {filtered.length === 0 ? (
-            <li style={{ padding: "0.65rem", color: "var(--forge-muted)" }}>No matching commands.</li>
-          ) : (
-            filtered.map((cmd, index) => (
-              <li
-                key={cmd.id}
-                id={`cmd-${cmd.id}`}
-                role="option"
-                aria-selected={index === activeIndex}
-                onMouseEnter={() => setActiveIndex(index)}
-                onClick={() => {
-                  onExecute?.(cmd);
-                  close();
-                }}
-                style={{
-                  padding: "0.55rem 0.65rem",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  background: index === activeIndex ? "var(--forge-accent-dim)" : "transparent",
-                  border: index === activeIndex ? "1px solid var(--forge-border-strong)" : "1px solid transparent"
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
-                  <strong style={{ fontSize: "0.85rem" }}>{cmd.label}</strong>
-                  <span className="forge-mono" style={{ fontSize: "0.6rem", color: "var(--forge-muted)" }}>
-                    {cmd.category}
-                  </span>
-                </div>
-                {cmd.description ? (
-                  <p style={{ margin: "0.2rem 0 0", fontSize: "0.78rem", color: "var(--forge-muted)" }}>{cmd.description}</p>
-                ) : null}
-              </li>
-            ))
-          )}
-        </ul>
+
+        {flatItems.length === 0 ? (
+          <p className="forge-palette-empty">
+            {query.trim() ? `No commands match “${query.trim()}”.` : "No commands available yet."}
+          </p>
+        ) : (
+          grouped.map((group) => {
+            const groupStart = runningIndex;
+            const section = (
+              <div key={group.category} className="forge-palette-group">
+                <p className="forge-palette-group-label">
+                  {group.category === "results" ? "Results" : CATEGORY_LABELS[group.category]}
+                </p>
+                <ul role="listbox" className="forge-palette-list">
+                  {group.items.map((cmd, indexInGroup) => {
+                    const index = groupStart + indexInGroup;
+                    return (
+                      <li
+                        key={cmd.id}
+                        id={`cmd-${cmd.id}`}
+                        role="option"
+                        aria-selected={index === activeIndex}
+                        className={`forge-palette-item ${index === activeIndex ? "forge-palette-item-active" : ""}`.trim()}
+                        onMouseEnter={() => setActiveIndex(index)}
+                        onClick={() => {
+                          onExecute?.(cmd);
+                          close();
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+                          <strong style={{ fontSize: "0.85rem" }}>{cmd.label}</strong>
+                          <span className="forge-mono" style={{ fontSize: "0.6rem", color: "var(--forge-muted)" }}>
+                            {cmd.category}
+                          </span>
+                        </div>
+                        {cmd.description ? (
+                          <p style={{ margin: "0.2rem 0 0", fontSize: "0.78rem", color: "var(--forge-muted)" }}>{cmd.description}</p>
+                        ) : null}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+            runningIndex += group.items.length;
+            return section;
+          })
+        )}
+
         <p className="forge-mono" style={{ margin: "0.5rem 0 0", fontSize: "0.6rem", color: "var(--forge-soft)" }}>
           ↑↓ navigate · Enter run · Esc close · ⌘K / Ctrl+K
         </p>

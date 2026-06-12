@@ -1,0 +1,76 @@
+{
+  "version": "1",
+  "missions": [
+    {
+      "id": "answer-readme",
+      "title": "Explain README",
+      "prompt": "What does the README say about mock mode?",
+      "command": "answer",
+      "expectPrimary": "admin-agent",
+      "maxSupporting": 4,
+      "requiredGates": []
+    },
+    {
+      "id": "typo-fix",
+      "title": "README typo",
+      "prompt": "Fix a typo in README only",
+      "command": "pnpm typecheck",
+      "expectPrimary": "code-implementer",
+      "maxSupporting": 8,
+      "requiredGates": ["qa"]
+    },
+    {
+      "id": "security-auth",
+      "title": "Auth change",
+      "prompt": "Update API auth middleware and secret handling",
+      "command": "git diff",
+      "expectPrimary": "security-auditor",
+      "maxSupporting": 8,
+      "requiredGates": ["security", "approval"]
+    },
+    {
+      "id": "backend-api-route",
+      "title": "API route",
+      "prompt": "Add a new API route for user profile pagination",
+      "command": "git diff apps/api",
+      "expectPrimary": "backend-service-agent",
+      "maxSupporting": 8,
+      "requiredGates": ["qa"]
+    },
+    {
+      "id": "security-over-backend",
+      "title": "Auth plus routes",
+      "prompt": "Update API auth middleware, secrets, and route handlers",
+      "command": "git diff apps/api",
+      "expectPrimary": "security-auditor",
+      "maxSupporting": 9,
+      "requiredGates": ["security", "approval"]
+    },
+    {
+      "id": "release-commit",
+      "title": "Ship release",
+      "prompt": "Prepare git commit and release notes",
+      "command": "git commit",
+      "expectPrimary": "release-manager",
+      "maxSupporting": 8,
+      "requiredGates": ["release", "approval"]
+    },
+    {
+      "id": "vague-intake",
+      "title": "Vague Discord ask",
+      "prompt": "make it better",
+      "command": "research",
+      "expectPrimary": "issue-intake-researcher",
+      "maxSupporting": 6
+    },
+    {
+      "id": "docs-only",
+      "title": "Docs update",
+      "prompt": "Update operator guide documentation only",
+      "command": "docs",
+      "expectPrimary": "docs-agent",
+      "maxSupporting": 7,
+      "requiredGates": []
+    }
+  ]
+}

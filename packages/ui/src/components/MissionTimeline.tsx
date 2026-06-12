@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { ForgeMissionStep } from "../adapters/types";
 import { TerminalWindow } from "./TerminalWindow";
 
@@ -8,70 +8,86 @@ type MissionTimelineProps = {
   steps: ForgeMissionStep[];
 };
 
+function stepNodeClass(status: ForgeMissionStep["status"]) {
+  if (status === "active") return "forge-stepper-node forge-stepper-node-active";
+  if (status === "complete") return "forge-stepper-node forge-stepper-node-complete";
+  if (status === "error") return "forge-stepper-node forge-stepper-node-error";
+  return "forge-stepper-node";
+}
+
 export function MissionTimeline({ steps }: MissionTimelineProps) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const activeStep = useMemo(() => steps.find((step) => step.status === "active"), [steps]);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+  const displayStep = steps.find((step) => step.id === focusedId) ?? activeStep;
+
+  const completedCount = steps.filter((step) => step.status === "complete").length;
+  const progress = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
 
   return (
-    <TerminalWindow title="Mission Timeline" subtitle="Run phases and operator checkpoints">
-      <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-        {steps.map((step) => {
-          const isActive = step.status === "active";
-          const isError = step.status === "error";
-          const isComplete = step.status === "complete";
+    <TerminalWindow title="Mission timeline" subtitle="Production phases — select the active step for live context">
+      <div className="forge-stepper">
+        <div className="forge-stepper-track" aria-hidden="true">
+          <span className="forge-stepper-track-fill" style={{ width: `${progress}%` }} />
+        </div>
+        <ol className="forge-stepper-nodes">
+          {steps.map((step, index) => {
+            const isActive = step.status === "active";
+            const isFocused = displayStep?.id === step.id;
 
-          return (
-            <li
-              key={step.id}
-              className={isActive ? "forge-timeline-step-active" : undefined}
-              style={{
-                borderLeft: `2px solid ${
-                  isError ? "var(--forge-red)" : isComplete ? "var(--forge-green)" : isActive ? "var(--forge-accent)" : "var(--forge-border)"
-                }`,
-                paddingLeft: "0.75rem"
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => setExpanded(expanded === step.id ? null : step.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "inherit",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  width: "100%",
-                  padding: 0
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
-                  <span className="forge-mono" style={{ color: isActive ? "var(--forge-accent)" : "var(--forge-muted)", fontSize: "0.68rem" }}>
-                    {step.label}
-                  </span>
-                  <span className="forge-chip">{step.status}</span>
-                </div>
-                {step.timestamp ? (
-                  <span className="forge-mono" style={{ fontSize: "0.6rem", color: "var(--forge-soft)" }}>
-                    {new Date(step.timestamp).toLocaleString()}
-                    {step.agentName ? ` · ${step.agentName}` : ""}
+            return (
+              <li key={step.id} className="forge-stepper-item">
+                <button
+                  type="button"
+                  className={`${stepNodeClass(step.status)} ${isFocused ? "forge-stepper-node-focused" : ""}`.trim()}
+                  onClick={() => setFocusedId(step.id)}
+                  aria-current={isActive ? "step" : undefined}
+                  title={step.label}
+                >
+                  <span className="forge-stepper-index">{index + 1}</span>
+                </button>
+                <span className={`forge-stepper-label ${isActive ? "forge-stepper-label-active" : ""}`.trim()}>{step.label}</span>
+                {step.gateChips?.length ? (
+                  <span className="forge-stepper-gates">
+                    {step.gateChips.map((chip) => (
+                      <span key={`${step.id}-${chip.gateId}`} className={`forge-chip forge-chip-gate forge-chip-gate-${chip.status}`}>
+                        {chip.label ?? chip.gateId}: {chip.status}
+                      </span>
+                    ))}
                   </span>
                 ) : null}
-              </button>
-              {expanded === step.id && step.details ? (
-                <p style={{ margin: "0.35rem 0 0", fontSize: "0.78rem", color: "var(--forge-muted)" }}>{step.details}</p>
-              ) : null}
-              {expanded === step.id && step.artifactLinks?.length ? (
-                <div style={{ marginTop: "0.35rem", display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                  {step.artifactLinks.map((link) => (
-                    <a key={link.href} href={link.href} className="forge-chip forge-chip-active">
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
-              ) : null}
-            </li>
-          );
-        })}
-      </ol>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+
+      {displayStep ? (
+        <div className="forge-stepper-detail">
+          <div className="forge-stepper-detail-head">
+            <strong>{displayStep.label}</strong>
+            <span className="forge-chip">{displayStep.status}</span>
+          </div>
+          {displayStep.timestamp ? (
+            <p className="forge-mono forge-stepper-meta">
+              {new Date(displayStep.timestamp).toLocaleString()}
+              {displayStep.agentName ? ` · ${displayStep.agentName}` : ""}
+            </p>
+          ) : null}
+          {displayStep.details ? <p className="forge-stepper-detail-copy">{displayStep.details}</p> : null}
+          {!displayStep.details && displayStep.status === "active" ? (
+            <p className="forge-stepper-detail-copy">This phase is in progress. Logs and approvals will surface here as the run advances.</p>
+          ) : null}
+          {displayStep.artifactLinks?.length ? (
+            <div className="forge-stepper-artifacts">
+              {displayStep.artifactLinks.map((link) => (
+                <a key={link.href} href={link.href} className="forge-chip forge-chip-active">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </TerminalWindow>
   );
 }

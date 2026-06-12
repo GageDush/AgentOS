@@ -7,7 +7,7 @@ AgentOS Forge draws conceptual inspiration from polished agent command centers:
 - Dark terminal shell with mission-control framing
 - Live agent presence and run visibility
 - Mono labels for status, logs, and navigation
-- Warm orange/amber active states
+- Cool blue/violet active states (Halo-inspired palette)
 - Subtle hover motion and cursor-reactive microinteractions
 - Translucent panels with thin borders
 - Sandbox approval UX with clear risk and scope
@@ -49,16 +49,28 @@ Wrap the app in `AppShell` or `ProximityProvider` for cursor-reactive behavior.
 ## Layout Patterns
 
 - `.forge-dashboard-layout` — main + sidebar grid (collapses on tablet)
-- `.forge-page-grid-2col` — mission control + activity split
+- `.forge-zone-hero` — mission console + command deck centerpiece
+- `.forge-stats-strip` — top metric row on dashboard
+- `.forge-command-deck` — primary command input rail under mission hero
 - `.forge-page-grid-cards` — responsive stat/presence card grid
 - `.forge-page-grid-main-rail` — timeline column + status rail
 - `ForgeSectionHeader` for page kickers; `TerminalWindow` / `ReactiveCard` for panels
-- `ScrollReveal` with 60–80ms stagger for dashboard sections
+- `ScrollReveal` with 60–80ms stagger for dashboard and Control Gate sections
+
+## Entry Flow
+
+First visit to `/` or `/dashboard` runs a three-phase intro before the dashboard:
+
+1. **Boot** — `ForgeBootLoader` asset/status sequence (~2.4s minimum)
+2. **Landing** — `ForgeLandingZone` with typing `> Run Everything` prompt (click or Enter)
+3. **Launch** — `ForgeLaunchTransition` flash into the dashboard shell
+
+Repeat visits in the same tab skip the intro via `sessionStorage` key `agentos-forge-entered`. Clear it to replay: `sessionStorage.removeItem('agentos-forge-entered')`.
 
 ## TopNav Behavior
 
 - Sticky floating pill with blur on scroll
-- `pendingApprovals` prop drives amber badge
+- `pendingApprovals` prop drives accent badge
 - Command button shows ⌘K hint; wires to `CommandPalette`
 - Mobile: hamburger drawer for overflow nav links
 

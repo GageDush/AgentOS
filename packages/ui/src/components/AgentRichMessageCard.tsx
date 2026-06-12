@@ -38,12 +38,20 @@ export function AgentRichMessageCard({
 
   return (
     <ReactiveCard style={{ padding: "1rem", display: "grid", gap: "0.85rem" }}>
-      <div style={{ display: "flex", gap: "0.85rem", alignItems: "flex-start" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: "0.85rem", alignItems: "flex-start" }}>
+        <div style={{ minWidth: 0 }}>
+          <p className="forge-mono" style={{ margin: 0, color: "var(--forge-accent)", fontSize: "0.72rem" }}>
+            🛡️ AGENT INTERACTION RESPONSE
+          </p>
+          <p className="forge-mono" style={{ margin: "0.2rem 0 0", color: "var(--forge-soft)", fontSize: "0.68rem" }}>
+            AgentOS HQ • {profile.fullLabel}
+          </p>
+        </div>
         <div
           aria-hidden="true"
           style={{
-            width: "3rem",
-            height: "3rem",
+            width: "4.5rem",
+            height: "4.5rem",
             borderRadius: "0.75rem",
             border: "1px solid var(--forge-border)",
             background: previewAvatar
@@ -52,37 +60,43 @@ export function AgentRichMessageCard({
             flexShrink: 0
           }}
         />
-        <div style={{ minWidth: 0 }}>
-          <p className="forge-mono" style={{ margin: 0, color: "var(--forge-accent)", fontSize: "0.72rem" }}>
-            {profile.fullLabel}
+      </div>
+
+      <div style={{ display: "grid", gap: "0.35rem" }}>
+        <p style={{ margin: 0 }}>Hey <strong>{message.recipient}</strong>,</p>
+        <p style={{ margin: 0, lineHeight: 1.55 }}>{message.message}</p>
+        <p className="forge-mono" style={{ margin: 0, fontSize: "0.68rem", color: "var(--forge-soft)" }}>
+          Destination: {destination}
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "0.5rem" }}>
+        <div className="forge-panel" style={{ padding: "0.65rem" }}>
+          <p className="forge-mono" style={{ margin: 0, fontSize: "0.68rem", color: "var(--forge-soft)" }}>
+            🟢 ONLINE
           </p>
-          <strong style={{ fontSize: "1.15rem" }}>{profile.displayName}</strong>
-          <p style={{ margin: "0.15rem 0 0", color: "var(--forge-muted)", fontSize: "0.85rem" }}>
-            {profile.jobTitle} • {profile.role}
+          <strong>OPERATIONAL</strong>
+        </div>
+        <div className="forge-panel" style={{ padding: "0.65rem" }}>
+          <p className="forge-mono" style={{ margin: 0, fontSize: "0.68rem", color: "var(--forge-soft)" }}>
+            👤 ROLE
           </p>
+          <strong>HUMAN OPERATOR</strong>
+        </div>
+        <div className="forge-panel" style={{ padding: "0.65rem" }}>
+          <p className="forge-mono" style={{ margin: 0, fontSize: "0.68rem", color: "var(--forge-soft)" }}>
+            🛡️ CLEARANCE
+          </p>
+          <strong>LEVEL 4</strong>
         </div>
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
         {profile.capabilities.map((capability) => (
-          <span key={capability} className="forge-chip">
-            {capability}
+          <span key={capability} className="forge-chip forge-chip-active">
+            ▸ {capability.toUpperCase()}
           </span>
         ))}
-      </div>
-
-      <div
-        style={{
-          borderLeft: "3px solid var(--forge-accent)",
-          paddingLeft: "0.75rem",
-          display: "grid",
-          gap: "0.35rem"
-        }}
-      >
-        <p className="forge-mono" style={{ margin: 0, fontSize: "0.72rem", color: "var(--forge-soft)" }}>
-          Destination: {destination}
-        </p>
-        <p style={{ margin: 0, lineHeight: 1.5 }}>&ldquo;{message.message}&rdquo;</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "0.5rem" }}>
@@ -102,7 +116,7 @@ export function AgentRichMessageCard({
 
       <div>
         <p className="forge-mono" style={{ margin: "0 0 0.45rem", fontSize: "0.68rem", color: "var(--forge-soft)" }}>
-          Available Responses
+          Quick Commands
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
           {AGENT_RICH_QUICK_ACTIONS.map((action) => {

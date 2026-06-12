@@ -45,7 +45,27 @@ export type AgentRichMessage = {
   scope?: AgentRichMessageScope;
   avatarUrl?: string;
   timestamp?: string | Date;
+  responseId?: string;
+  operationalStatus?: string;
+  operatorRole?: string;
+  clearanceLevel?: string;
 };
+
+export type DiscordCardReactionSpec = {
+  emoji: string;
+  command: string;
+  label: string;
+};
+
+export const CURSOR_CARD_REACTIONS: DiscordCardReactionSpec[] = [
+  { emoji: "✅", command: "ack", label: "Acknowledge" },
+  { emoji: "📊", command: "status", label: "Status" },
+  { emoji: "🔄", command: "reset", label: "Reset session" },
+  { emoji: "❓", command: "help", label: "Help" },
+  { emoji: "💬", command: "prompt", label: "Free-text reply" }
+];
+
+export const FREE_TEXT_REPLY_EMOJI = "💬";
 
 export type DiscordEmbedAuthor = {
   name: string;
@@ -64,6 +84,7 @@ export type DiscordEmbed = {
   title?: string;
   description?: string;
   fields?: DiscordEmbedField[];
+  thumbnail?: { url: string };
   footer?: { text: string; icon_url?: string };
   timestamp?: string;
 };
@@ -126,9 +147,25 @@ const DEFAULT_STATUS: AgentRichMessageStatus = {
   routing: "AgentOS Local"
 };
 
+const RESPONSE_ID_PREFIX: Record<string, string> = {
+  "admin-agent": "ASH",
+  "agentos-operator": "OPS",
+  "builder-agent": "BRK",
+  "qa-agent": "QA",
+  "security-auditor": "SEC",
+  "security-agent": "SEC",
+  "release-manager": "REL"
+};
+
 function resolveTimestamp(input?: string | Date) {
   if (!input) return new Date().toISOString();
   return typeof input === "string" ? input : input.toISOString();
+}
+
+export function formatAgentResponseId(agentId: string, seed = Date.now()) {
+  const prefix = RESPONSE_ID_PREFIX[agentId] ?? agentId.slice(0, 3).toUpperCase();
+  const suffix = String(seed % 1000).padStart(3, "0");
+  return `${prefix}-${suffix}`;
 }
 
 export function buildAgentDestination(sourceDisplayName: string, recipient: string) {
@@ -159,49 +196,67 @@ export function buildAgentRichEmbed(input: AgentRichMessage): DiscordEmbed {
   const profile = input.profile;
   const status = input.status ?? DEFAULT_STATUS;
   const quickActions = input.quickActions ?? AGENT_RICH_QUICK_ACTIONS;
-  const destination = buildAgentDestination(profile.displayName, input.recipient);
-  const capabilityLine = profile.capabilities.join(" • ");
+  const responseId = input.responseId ?? formatAgentResponseId(profile.agentId);
+  const avatarUrl = input.avatarUrl?.startsWith("http") ? input.avatarUrl : undefined;
+  const operational = input.operationalStatus ?? "OPERATIONAL";
+  const operatorRole = input.operatorRole ?? "HUMAN OPERATOR";
+  const clearance = input.clearanceLevel ?? "LEVEL 4";
+  const modules = profile.capabilities
+    .slice(0, 6)
+    .map((capability) => `\`▸ ${capability.toUpperCase()}\``)
+    .join("  ");
 
   const description = [
-    `**${profile.jobTitle}**`,
-    `${profile.role} • ${capabilityLine}`,
+    `Hey **${input.recipient}**,`,
     "",
-    `**Destination:** \`${destination}\``,
-    `> "${input.message.trim()}"`
+    input.message.trim(),
+    "",
+    "_Reply with free text in this channel, use the buttons, or react below._"
   ].join("\n");
 
   return {
     color: profile.color,
     author: {
-      name: profile.fullLabel,
-      ...(input.avatarUrl?.startsWith("http") ? { icon_url: input.avatarUrl } : {})
+      name: `AgentOS HQ • ${profile.fullLabel}`,
+      ...(avatarUrl ? { icon_url: avatarUrl } : {})
     },
-    title: profile.displayName,
+    title: "🛡️ AGENT INTERACTION RESPONSE",
+    thumbnail: avatarUrl ? { url: avatarUrl } : undefined,
     description,
     fields: [
       {
-        name: "Profile",
-        value: formatAgentRichProfileTags(profile),
+        name: "🟢 ONLINE",
+        value: operational,
+        inline: true
+      },
+      {
+        name: "👤 ROLE",
+        value: operatorRole,
+        inline: true
+      },
+      {
+        name: "🛡️ CLEARANCE",
+        value: clearance,
+        inline: true
+      },
+      {
+        name: "STATUS",
+        value: `\`${status.label}\` • \`${status.routing ?? "AgentOS Local"}\``,
         inline: false
       },
       {
-        name: "Status",
-        value: `\`${status.label}\``,
-        inline: true
+        name: "ACTIVE MODULES",
+        value: modules || "`▸ MISSION CONTROL`",
+        inline: false
       },
       {
-        name: "Routing",
-        value: `\`${status.routing ?? "AgentOS Local"}\``,
-        inline: true
-      },
-      {
-        name: "Available Responses",
-        value: formatAgentRichQuickActions(quickActions),
+        name: "QUICK COMMANDS",
+        value: `${formatAgentRichQuickActions(quickActions)}\n${FREE_TEXT_REPLY_EMOJI} Type a message in-channel for free text`,
         inline: false
       }
     ],
     footer: {
-      text: `AgentOS • ${profile.jobTitle} Control Message`
+      text: `SECURE. COORDINATE. DEPLOY. • RESPONSE ID: ${responseId} • AgentOS`
     },
     timestamp: resolveTimestamp(input.timestamp)
   };
@@ -214,18 +269,19 @@ export function buildAgentDiscordEmbed(input: AgentRichMessage): DiscordEmbedPay
 export function buildAgentPlainTextMessage(input: AgentRichMessage): string {
   const profile = input.profile;
   const quickActions = input.quickActions ?? AGENT_RICH_QUICK_ACTIONS;
-  const destination = buildAgentDestination(profile.displayName, input.recipient);
+  const responseId = input.responseId ?? formatAgentResponseId(profile.agentId);
 
   return [
-    `**${profile.fullLabel}**`,
-    `*${profile.jobTitle} • ${profile.role}*`,
-    formatAgentRichCapabilities(profile),
+    `**🛡️ AGENT INTERACTION RESPONSE**`,
+    `**${profile.fullLabel}** • ${profile.jobTitle}`,
     "",
-    `**Destination:** \`${destination}\``,
-    `> "${input.message.trim()}"`,
+    `Hey **${input.recipient}**,`,
+    input.message.trim(),
     "",
-    "**Respond:**",
-    formatAgentRichQuickActions(quickActions)
+    `**Quick commands:** ${formatAgentRichQuickActions(quickActions)}`,
+    `${FREE_TEXT_REPLY_EMOJI} Reply in-channel for free text`,
+    "",
+    `RESPONSE ID: ${responseId}`
   ].join("\n");
 }
 

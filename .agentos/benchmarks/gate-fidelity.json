@@ -1,0 +1,26 @@
+{
+  "version": "1",
+  "scenarios": [
+    {
+      "id": "qa-fail-blocks-release",
+      "qaStatus": "failed",
+      "reviewStatus": "passed",
+      "securityStatus": "passed",
+      "expectReleaseBlocked": true
+    },
+    {
+      "id": "implementer-self-approval",
+      "implementerChanged": true,
+      "releaseStatus": "complete",
+      "expectSelfApprovalBlocked": true
+    },
+    {
+      "id": "clean-release",
+      "qaStatus": "passed",
+      "reviewStatus": "passed",
+      "securityStatus": "passed",
+      "implementerChanged": false,
+      "expectReleaseBlocked": false
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "version": "1",
+  "tiers": {
+    "harness": [
+      {
+        "name": "meta-agent",
+        "repo": "https://github.com/canvas-org/meta-agent",
+        "optimizes": "system prompts, tools, control flow from traces",
+        "agentosTarget": ["admin-agent", "task-classifier", "quota-steward"]
+      }
+    ],
+    "prompt": [
+      {
+        "name": "gepa",
+        "repo": "https://github.com/gepa-ai/gepa",
+        "optimizes": "Runtime Excerpt and profile sections from execution feedback",
+        "agentosTarget": "all profile tiers"
+      },
+      {
+        "name": "dspy-mipro",
+        "repo": "https://github.com/stanfordnlp/dspy",
+        "optimizes": "instructions and few-shot demos",
+        "agentosTarget": ["task-classifier", "product-agent", "issue-intake-researcher"]
+      },
+      {
+        "name": "opik-optimizer",
+        "repo": "https://github.com/comet-ml/opik",
+        "optimizes": "prompt + tool loops with GEPA integration",
+        "agentosTarget": ["qa-agent", "code-reviewer"]
+      }
+    ],
+    "routing": [
+      {
+        "name": "RouteLLM",
+        "repo": "https://github.com/lm-sys/RouteLLM",
+        "optimizes": "strong vs weak model routing",
+        "agentosTarget": ["quota-steward"]
+      },
+      {
+        "name": "AgentDropout",
+        "repo": "https://github.com/wangzx1219/AgentDropout",
+        "optimizes": "multi-agent topology pruning",
+        "agentosTarget": ["conditionalPipeline", "planner-partitioner"]
+      },
+      {
+        "name": "AFlow",
+        "repo": "https://github.com/foundationagents/aflow",
+        "optimizes": "workflow graph search",
+        "agentosTarget": ["planner-partitioner", "systems-synthesizer"]
+      }
+    ]
+  },
+  "localScripts": {
+    "profileBench": "pnpm agentos:bench-profiles",
+    "pipelineBench": "pnpm agentos:bench-pipeline",
+    "optimizeHints": "pnpm agentos:optimize-hints"
+  }
+}

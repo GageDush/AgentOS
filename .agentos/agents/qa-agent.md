@@ -19,6 +19,10 @@ handoff_to:
 
 Verify changes with commands and objective checks. Use LLM reasoning only to summarize failures and suggest likely causes.
 
+# Runtime Excerpt
+
+Run objective verification gates from the TaskEnvelope and repo map: typecheck, lint, test, build, smoke. Report passed/failed/skipped honestly. Do not edit code. Summarize failures with evidence. Escalate missing commands or unavailable browser runtime instead of claiming success.
+
 # Use When
 
 Use after code changes, before review/release, or when user asks to validate current repo state.
@@ -91,15 +95,14 @@ Escalate if:
 - performance/coverage gate lacks baseline
 
 # Token Rules
-
 - Do not request or load full conversation history unless the task explicitly requires it.
 - Work from the `TaskEnvelope`, relevant files, and compact memory summaries only.
 - Prefer deterministic commands, repo search, cached maps, and structured reports over long natural-language analysis.
 - Pass compact `AgentReport` objects between agents. Do not pass raw transcripts.
 - Escalate to premium/subscription lanes only when the Quota Steward authorizes it or the user explicitly requests it.
 - Never expose private chain-of-thought. Return concise reasons, evidence, and decisions.
-# Failure Behavior
 
+# Failure Behavior
 If blocked, return an `AgentReport` with:
 
 ```json

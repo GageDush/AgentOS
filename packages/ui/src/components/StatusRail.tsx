@@ -2,6 +2,7 @@
 
 import type { ForgeQuickAction } from "../adapters/types";
 import { QuickActionButton } from "./QuickActionButton";
+import { ReactiveCard } from "../motion/ReactiveCard";
 
 type StatusRailProps = {
   title?: string;
@@ -12,8 +13,8 @@ type StatusRailProps = {
 
 export function StatusRail({ title = "Quick Actions", actions, onAction, busyId }: StatusRailProps) {
   return (
-    <aside className="forge-panel" data-forge-proximity="true" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", padding: "1rem" }}>
-      <h3 className="forge-mono" style={{ margin: 0, color: "var(--forge-accent)" }}>
+    <ReactiveCard className="forge-status-rail" data-forge-proximity="true">
+      <h3 className="forge-zone-label" style={{ margin: 0 }}>
         {title}
       </h3>
       {actions.map((action) => (
@@ -21,10 +22,11 @@ export function StatusRail({ title = "Quick Actions", actions, onAction, busyId 
           key={action.id}
           label={action.label}
           description={action.description}
+          importance={action.importance}
           onClick={() => onAction?.(action.id)}
           disabled={busyId === action.id}
         />
       ))}
-    </aside>
+    </ReactiveCard>
   );
 }

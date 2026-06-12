@@ -1,10 +1,12 @@
 import {
   ASH_ADMIN_PROFILE,
   type AgentProfileCard,
+  type AgentQuickAction,
   type AgentRichMessage,
   type AgentRichMessageScope,
   type AgentRichMessageStatus
 } from "@agentos/shared";
+import { resolveHttpAgentAvatarUrl } from "./agent-avatars";
 import { resolvePersona, personaDiscordName, type AgentPersona } from "./personas";
 
 const DEFAULT_CAPABILITIES: Record<string, string[]> = {
@@ -56,6 +58,11 @@ export function buildAgentRichMessageInput(input: {
   scope?: AgentRichMessageScope;
   avatarUrl?: string;
   timestamp?: string | Date;
+  responseId?: string;
+  operationalStatus?: string;
+  operatorRole?: string;
+  clearanceLevel?: string;
+  quickActions?: AgentQuickAction[];
 }): AgentRichMessage {
   return {
     profile: buildAgentProfileCardFromId(input.agentId),
@@ -63,7 +70,12 @@ export function buildAgentRichMessageInput(input: {
     message: input.message,
     status: input.status,
     scope: input.scope,
-    avatarUrl: input.avatarUrl,
-    timestamp: input.timestamp
+    avatarUrl: input.avatarUrl ?? resolveHttpAgentAvatarUrl(input.agentId),
+    timestamp: input.timestamp,
+    responseId: input.responseId,
+    operationalStatus: input.operationalStatus,
+    operatorRole: input.operatorRole,
+    clearanceLevel: input.clearanceLevel,
+    quickActions: input.quickActions
   };
 }

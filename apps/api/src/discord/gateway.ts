@@ -2,9 +2,12 @@ import { isDiscordBotEnabled } from "./client";
 import { loadDiscordGuildState } from "./bootstrap";
 import { dispatchDiscordInteraction, type DiscordInteraction } from "./interactions";
 import { handleDiscordChannelMessage } from "./chat";
+import { isAuthorizedDiscordOperator, resolveOperatorCommandChannelId } from "./operator-auth";
+import { resolveCursorChannelId } from "./cursor-channel";
+import { handleDiscordReactionAdd } from "./reaction-handlers";
 
 const DISCORD_API = "https://discord.com/api/v10";
-const GATEWAY_INTENTS = 33281; // GUILDS + GUILD_MESSAGES + MESSAGE_CONTENT
+const GATEWAY_INTENTS = 34305; // GUILDS + GUILD_MESSAGES + GUILD_MESSAGE_REACTIONS + MESSAGE_CONTENT
 
 type GatewayPayload = {
   op: number;
@@ -18,6 +21,14 @@ type GatewayMessage = {
   channel_id: string;
   content: string;
   author?: { id: string; bot?: boolean; username?: string; global_name?: string | null };
+};
+
+type GatewayReaction = {
+  user_id: string;
+  channel_id: string;
+  message_id: string;
+  emoji: { name?: string; id?: string };
+  member?: { user?: { bot?: boolean } };
 };
 
 let socket: WebSocket | undefined;
@@ -63,8 +74,31 @@ function handleDispatch(event: string, data: unknown) {
     const content = message.content?.trim() ?? "";
     if (!content || content.startsWith("/") || content.startsWith("!")) return;
 
+    const operatorCommandChannelId = resolveOperatorCommandChannelId();
+    const cursorChannelId = resolveCursorChannelId();
+    if (
+      (operatorCommandChannelId && message.channel_id === operatorCommandChannelId) ||
+      (cursorChannelId && message.channel_id === cursorChannelId)
+    ) {
+      if (!isAuthorizedDiscordOperator(message.author?.id)) return;
+    }
+
     const label = message.author?.global_name || message.author?.username || message.author?.id || "operator";
     void handleDiscordChannelMessage(message.channel_id, message.id, content, message.author?.id ?? "unknown", label);
+    return;
+  }
+
+  if (event === "MESSAGE_REACTION_ADD") {
+    const reaction = data as GatewayReaction;
+    if (reaction.member?.user?.bot) return;
+    const label = reaction.user_id;
+    void handleDiscordReactionAdd(
+      reaction.channel_id,
+      reaction.message_id,
+      reaction.emoji,
+      reaction.user_id,
+      label
+    );
   }
 }
 

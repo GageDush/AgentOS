@@ -1,0 +1,15 @@
+rules:
+  - id: agentos-no-env-commit
+    message: Do not commit .env files
+    severity: ERROR
+    languages: [generic]
+    patterns:
+      - pattern: $X
+    paths:
+      include:
+        - "**/.env"
+  - id: agentos-eval
+    message: Avoid eval in application code
+    severity: WARNING
+    languages: [javascript, typescript]
+    pattern: eval(...)

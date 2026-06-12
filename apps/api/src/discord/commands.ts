@@ -16,6 +16,7 @@ import { optionValue, parseAgentOsCommand, type ParsedAgentOsCommand } from "./p
 import { notifyTaskCreated } from "./notify";
 import { personaDiscordName, ROSTER_PERSONAS } from "./personas";
 import { reserveChatRoom, type ChatRoomNumber } from "./chat-rooms";
+import { lastExecutedAgentIdsFromAudit } from "./mission-briefing";
 import { runRoundTableBriefing } from "./round-table";
 
 export async function handleSlashCommand(
@@ -110,7 +111,11 @@ async function handleAgentOsSubcommand(
         });
       }
       try {
-        const result = await runRoundTableBriefing(topic, operatorId, operatorLabel);
+        const executedAgentIds = lastExecutedAgentIdsFromAudit();
+        const result = await runRoundTableBriefing(topic, operatorId, operatorLabel, {
+          agentIds: executedAgentIds,
+          executedOnly: executedAgentIds.length > 0
+        });
         if (!result.ok) {
           return embedInteractionResponse({
             title: "Briefing unavailable",

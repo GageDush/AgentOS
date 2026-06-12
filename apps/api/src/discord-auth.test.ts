@@ -18,4 +18,11 @@ describe("discord oauth", () => {
     process.env.AGENTOS_API_PORT = "8787";
     expect(getDiscordOAuthRedirectUri()).toBe("http://127.0.0.1:8787/auth/discord/callback");
   });
+
+  it("uses production redirect URI for flous.dev host", () => {
+    process.env.DISCORD_OAUTH_REDIRECT_URI = "http://127.0.0.1:8787/auth/discord/callback";
+    process.env.DISCORD_OAUTH_REDIRECT_URI_PROD = "https://api.flous.dev/auth/discord/callback";
+    expect(getDiscordOAuthRedirectUri("api.flous.dev")).toBe("https://api.flous.dev/auth/discord/callback");
+    expect(getDiscordOAuthRedirectUri("127.0.0.1:8787")).toBe("http://127.0.0.1:8787/auth/discord/callback");
+  });
 });

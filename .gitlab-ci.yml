@@ -1,0 +1,26 @@
+# GitLab CI mirror of GitHub checks (P5/P8)
+stages:
+  - verify
+
+variables:
+  PNPM_VERSION: "9.15.4"
+
+agentos:checks:
+  stage: verify
+  image: node:22-bookworm
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@${PNPM_VERSION} --activate
+    - pnpm install --frozen-lockfile
+    - apt-get update && apt-get install -y python3-pip
+    - pip install semgrep
+  script:
+    - pnpm sanitize:check
+    - pnpm agentos:validate-profiles
+    - pnpm env:check
+    - pnpm typecheck
+    - AGENTOS_SEMGREP_GATE=false pnpm test
+    - pnpm discord:test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

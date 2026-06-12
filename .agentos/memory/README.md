@@ -1,15 +1,20 @@
-# AgentOS repo memory cache
+# AgentOS repo memory
 
-Deterministic context files used by `context-minimizer` before LLM retrieval.
+## Memory wiki (preferred)
 
-## Files
+Linked articles live under **`wiki/`** — start at [[wiki/index.md]].
 
-| File | Purpose |
+- Browse via API: `GET /memory/wiki`, `GET /memory/wiki/article?slug=flows/test-commands`
+- Migrate legacy flat files: `pnpm memory:migrate-wiki`
+
+## Legacy flat files (deprecated)
+
+These dated-append files remain for backward compatibility until PR2 moves all writes to the wiki:
+
+| File | Wiki successor |
 | --- | --- |
-| `repo-map.md` | High-level app/package layout |
-| `test-commands.md` | Canonical verification commands |
-| `dependency-graph.md` | Workspace package relationships |
-| `code-ownership-map.md` | Area → owner hints |
-| `risk-areas.md` | Sensitive paths and policies |
+| `test-commands.md` | `wiki/flows/test-commands.md` |
+| `risk-areas.md` | `wiki/areas/risk-areas.md` |
+| `code-ownership-map.md` | `wiki/areas/code-ownership.md` |
 
-Populate these during downtime or via `repo-cartographer`. The context minimizer reads only what exists and keeps packets compact.
+The context minimizer still reads legacy files when `FEATURE_MEMORY_WIKI=false`.

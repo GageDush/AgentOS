@@ -37,7 +37,7 @@ export default function AgentOSForgeGeneratedPage() {
             { id: "integrations", label: "Integrations", href: "/loadout" },
             { id: "settings", label: "Settings", href: "/settings" }
           ]}
-          statusChips={[
+          healthMetrics={[
             { id: "local", label: "Local", value: "online", status: "ok" },
             { id: "api", label: "API", value: "online", status: "ok" },
             { id: "sandbox", label: "Sandbox", value: "gated", status: "ok" }

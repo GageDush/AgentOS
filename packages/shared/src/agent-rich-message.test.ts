@@ -17,23 +17,24 @@ describe("agent rich message builder", () => {
   it("generates Admin Ash embed payload", () => {
     const payload = buildAgentDiscordEmbed(sample);
     expect(payload.embeds).toHaveLength(1);
-    expect(payload.embeds[0]?.author?.name).toBe("[Admin] Ash");
-    expect(payload.embeds[0]?.title).toBe("Ash");
+    expect(payload.embeds[0]?.author?.name).toContain("Ash");
+    expect(payload.embeds[0]?.title).toBe("🛡️ AGENT INTERACTION RESPONSE");
   });
 
-  it("includes job title, destination, and message body", () => {
+  it("includes greeting and message body", () => {
     const embed = buildAgentRichEmbed(sample);
-    expect(embed.description).toContain("**Admin**");
-    expect(embed.description).toContain("**Destination:** `[Ash -> Gage]`");
-    expect(embed.description).toContain('> "Message Context/Request"');
+    expect(embed.description).toContain("Hey **Gage**");
+    expect(embed.description).toContain("Message Context/Request");
+    expect(embed.description).toContain("free text");
   });
 
-  it("includes profile, status, routing, and response fields", () => {
+  it("includes status overview, modules, and quick commands", () => {
     const embed = buildAgentRichEmbed(sample);
     const names = embed.fields?.map((field) => field.name) ?? [];
-    expect(names).toEqual(["Profile", "Status", "Routing", "Available Responses"]);
-    expect(embed.fields?.find((field) => field.name === "Status")?.value).toBe("`Awaiting response`");
-    expect(embed.fields?.find((field) => field.name === "Routing")?.value).toBe("`AgentOS Local`");
+    expect(names).toContain("🟢 ONLINE");
+    expect(names).toContain("ACTIVE MODULES");
+    expect(names).toContain("QUICK COMMANDS");
+    expect(embed.footer?.text).toContain("RESPONSE ID:");
   });
 
   it("includes all required quick-action emojis", () => {
@@ -59,10 +60,9 @@ describe("agent rich message builder", () => {
 
   it("formats plain-text fallback with the same core information", () => {
     const plain = buildAgentPlainTextMessage(sample);
-    expect(plain).toContain("**[Admin] Ash**");
-    expect(plain).toContain("*Admin • AgentOS Control Layer*");
-    expect(plain).toContain("**Destination:** `[Ash -> Gage]`");
-    expect(plain).toContain('> "Message Context/Request"');
+    expect(plain).toContain("AGENT INTERACTION RESPONSE");
+    expect(plain).toContain("Hey **Gage**");
+    expect(plain).toContain("Message Context/Request");
     expect(plain).toContain("✅ Yes");
     expect(plain).toContain("🏁 Task Complete");
   });

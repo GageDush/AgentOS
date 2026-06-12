@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CommandPalette } from "./CommandPalette";
 
@@ -20,7 +20,7 @@ describe("CommandPalette", () => {
     expect(onExecute).toHaveBeenCalled();
   });
 
-  it("closes on Escape", () => {
+  it("closes on Escape", async () => {
     const onOpenChange = vi.fn();
     render(
       <CommandPalette
@@ -30,7 +30,8 @@ describe("CommandPalette", () => {
       />
     );
 
+    await waitFor(() => expect(screen.getByRole("dialog")).toBeTruthy());
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(onOpenChange).toHaveBeenCalledWith(false);
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false), { timeout: 500 });
   });
 });

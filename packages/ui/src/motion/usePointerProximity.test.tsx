@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { ProximityProvider } from "./ProximityProvider";
 
 beforeAll(() => {
@@ -17,12 +17,16 @@ beforeAll(() => {
 afterEach(() => cleanup());
 
 describe("ProximityProvider", () => {
-  it("sets reduced motion dataset from media query", () => {
+  it("sets reduced motion dataset from media query", async () => {
     render(
       <ProximityProvider>
         <div>child</div>
       </ProximityProvider>
     );
-    expect(document.documentElement.dataset.reducedMotion).toBeDefined();
+    await waitFor(() => {
+      expect(document.documentElement.dataset.reducedMotion === "true" || document.documentElement.dataset.reducedMotion === "false").toBe(
+        true
+      );
+    });
   });
 });

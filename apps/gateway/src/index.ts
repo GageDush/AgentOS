@@ -1,16 +1,25 @@
 import { spawn } from "node:child_process";
 import Fastify from "fastify";
 import { assessCommandPolicy } from "@agentos/sandbox";
-import type { GatewayExecutionRequest, GatewayExecutionResult } from "@agentos/shared";
+import type { GatewayExecutionRequest, GatewayExecutionResult, ToolRequest } from "@agentos/shared";
+import { invokeGatewayTool } from "./tools.js";
+import { resolveGatewayRepoRoot } from "./repo-root.js";
 
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_GATEWAY_PORT ?? 8790);
-const repoRoot = process.env.AGENTOS_REPO_ROOT ?? process.cwd();
+const repoRoot = resolveGatewayRepoRoot();
 const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
 const commandAliases: Record<string, { file: string; args: string[] }> = {
   "git status": { file: "git", args: ["status"] },
+  "git status --short": { file: "git", args: ["status", "--short"] },
   "git diff": { file: "git", args: ["diff"] },
+  "git diff --stat": { file: "git", args: ["diff", "--stat"] },
+  "git diff --name-only": { file: "git", args: ["diff", "--name-only"] },
+  "semgrep --config .semgrep.yml --error --quiet": {
+    file: "semgrep",
+    args: ["--config", ".semgrep.yml", "--error", "--quiet"]
+  },
   "pnpm test": { file: pnpmBin, args: ["test"] },
   "pnpm typecheck": { file: pnpmBin, args: ["typecheck"] },
   "pnpm lint": { file: pnpmBin, args: ["lint"] }
@@ -100,6 +109,34 @@ app.post("/execute", async (request, reply) => {
     decision,
     result
   };
+});
+
+app.post("/tools/invoke", async (request, reply) => {
+  const body = request.body as ToolRequest;
+  if (!body?.id) {
+    return reply.code(400).send({ ok: false, error: "ToolRequest.id is required" });
+  }
+  if (body.id === "shell" && body.command) {
+    const decision = assessCommandPolicy(body.command);
+    if (decision.policy !== "auto_allowed") {
+      return reply.code(decision.policy === "denied" ? 403 : 409).send({
+        ok: false,
+        id: body.id,
+        error: decision.reason,
+        decision
+      });
+    }
+  }
+  const result = await invokeGatewayTool(repoRoot, body, async (command) => {
+    const exec = await executeAllowedCommand(command);
+    return {
+      ok: exec.ok,
+      stdout: exec.stdout,
+      stderr: exec.stderr,
+      exitCode: exec.exitCode
+    };
+  });
+  return result;
 });
 
 await app.listen({ port, host: "0.0.0.0" });

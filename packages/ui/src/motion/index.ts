@@ -6,3 +6,4 @@ export { CursorSpotlight } from "./CursorSpotlight";
 export { AnimatedStripeOverlay } from "./AnimatedStripeOverlay";
 export { useScrollReveal } from "./useScrollReveal";
 export { ScrollReveal } from "./ScrollReveal";
+export { useForgeScrollNav } from "./useForgeScrollNav";

@@ -17,6 +17,10 @@ handoff_to:
 
 Convert a raw user request into a compact classification that lets AgentOS avoid unnecessary agents, unnecessary context, and unnecessary premium model use.
 
+# Runtime Excerpt
+
+Classify the raw request into taskType, complexity, riskLevel, required gates, and askHuman. Use TaskEnvelope fields only. Never implement, review code, or synthesize final answers. Return classification JSON with a short reason. Set askHuman when ambiguity would change security, cost, scope, or commit behavior.
+
 # Use When
 
 Use after `admin-agent` receives any new or materially changed user request.
@@ -101,15 +105,14 @@ Do not set `askHuman` for harmless defaults that can be resolved by best effort.
 Return `askHuman: true` instead of inventing requirements when ambiguity would create wasted work or risk.
 
 # Token Rules
-
 - Do not request or load full conversation history unless the task explicitly requires it.
 - Work from the `TaskEnvelope`, relevant files, and compact memory summaries only.
 - Prefer deterministic commands, repo search, cached maps, and structured reports over long natural-language analysis.
 - Pass compact `AgentReport` objects between agents. Do not pass raw transcripts.
 - Escalate to premium/subscription lanes only when the Quota Steward authorizes it or the user explicitly requests it.
 - Never expose private chain-of-thought. Return concise reasons, evidence, and decisions.
-# Failure Behavior
 
+# Failure Behavior
 If blocked, return an `AgentReport` with:
 
 ```json

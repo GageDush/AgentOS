@@ -58,6 +58,96 @@ describe("deterministic routing", () => {
     expect(route.supportingAgentIds).toContain("context-minimizer");
   });
 
+  it("routes answer-only prompts to admin-agent without QA gates", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-answer",
+      workspaceId: "workspace-local",
+      title: "Explain routing",
+      objective: "Explain how agent routing works.",
+      prompt: "What is the AgentOS conditional pipeline?",
+      command: "echo explain"
+    });
+    expect(route.selectedPrimaryAgentId).toBe("admin-agent");
+    expect(route.taskType).toBe("answer_only");
+    const envelope = route.metadata?.taskEnvelope as TaskEnvelope | undefined;
+    expect(envelope?.requiresQa).toBe(false);
+    expect(envelope?.requiresCodeReview).toBe(false);
+  });
+
+  it("routes typo-fix missions to code-implementer even when verification command mentions typecheck", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-typo",
+      workspaceId: "workspace-local",
+      title: "README typo",
+      objective: "Fix a typo in README only",
+      prompt: "Fix a typo in README only",
+      command: "pnpm typecheck"
+    });
+    expect(route.selectedPrimaryAgentId).toBe("code-implementer");
+    expect(route.taskType).toBe("bug_fix");
+    expect(route.requiredGates).toContain("qa");
+  });
+
+  it("routes backend API work to backend-service-agent without security keywords", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-backend",
+      workspaceId: "workspace-local",
+      title: "API route",
+      objective: "Add a new API route for user profile pagination",
+      prompt: "Add a new API route for user profile pagination",
+      command: "git diff apps/api"
+    });
+    expect(route.selectedPrimaryAgentId).toBe("backend-service-agent");
+    expect(route.taskType).toBe("code_change");
+    expect(route.requiredGates).toContain("qa");
+  });
+
+  it("prefers security-auditor when auth and secrets appear with backend keywords", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-security-mix",
+      workspaceId: "workspace-local",
+      title: "Auth plus routes",
+      objective: "Update API auth middleware, secrets, and route handlers",
+      prompt: "Update API auth middleware, secrets, and route handlers",
+      command: "git diff apps/api"
+    });
+    expect(route.selectedPrimaryAgentId).toBe("security-auditor");
+    expect(route.taskType).toBe("security");
+    expect(route.requiredGates).toContain("security");
+  });
+
+  it("routes documentation-only missions to docs-agent", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-docs",
+      workspaceId: "workspace-local",
+      title: "Docs update",
+      objective: "Update operator guide documentation only",
+      prompt: "Update operator guide documentation only",
+      command: "docs"
+    });
+    expect(route.selectedPrimaryAgentId).toBe("docs-agent");
+    expect(route.taskType).toBe("code_change");
+  });
+
+  it("routes research missions to issue-intake-researcher", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-research",
+      workspaceId: "workspace-local",
+      title: "Research auth options",
+      objective: "Compare auth approaches.",
+      prompt: "Research how we should handle auth for the API.",
+      command: "echo research"
+    });
+    expect(route.selectedPrimaryAgentId).toBe("issue-intake-researcher");
+    expect(route.supportingAgentIds).toContain("repo-cartographer");
+  });
+
   it("asks for clarification when approval intent is ambiguous", () => {
     const intent = parseConversationalIntent("approve that", {
       pendingApprovalIds: ["a-1", "a-2"]

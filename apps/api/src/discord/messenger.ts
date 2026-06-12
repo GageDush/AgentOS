@@ -22,6 +22,8 @@ type FeedWebhookKey =
   | "approvals"
   | "missions"
   | "opsFeed"
+  | "operatorCommand"
+  | "cursor"
   | "general"
   | "roundTable"
   | "chatRoom1"

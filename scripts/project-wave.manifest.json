@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "scopingDoc": "docs/demo/SCOPING_RESPONSE.md",
+  "chainPromptTemplate": "Great, Start {id} and give me a summary of what was done and what wasn't done",
+  "projects": [
+    {
+      "id": "P1",
+      "title": "Implementer Realism",
+      "summary": "Tool broker, fix-verify loop, gateway + Cursor dispatch (steps 141–150)"
+    },
+    {
+      "id": "P2",
+      "title": "Quality Gates",
+      "summary": "QA, security, code review, timeline chips, Discord cards (151–160)"
+    },
+    {
+      "id": "P3",
+      "title": "Release Execution",
+      "summary": "Git commit/push, autopilot PR, Release panel (161–170)"
+    },
+    {
+      "id": "P4",
+      "title": "Live Dev UX",
+      "summary": "WebSocket /events, live Blackbox, Forge polish (21–22, 185–186)"
+    },
+    {
+      "id": "P5",
+      "title": "Discord Test Parity + CI",
+      "summary": "D-04–D-17 tests, GitLab + GitHub CI jobs"
+    },
+    {
+      "id": "P6",
+      "title": "Hosted Scale",
+      "summary": "Postgres writes, 4 workers, BullMQ, docker compose (171–174)"
+    },
+    {
+      "id": "P7",
+      "title": "Memory Curator",
+      "summary": "Keyword search, curator queue, pgvector stub (178–180)"
+    },
+    {
+      "id": "P8",
+      "title": "Ship",
+      "summary": "CI E2E, docker prod, tag agentos-V1 (187–190)"
+    },
+    {
+      "id": "P9",
+      "title": "App Intake Polish",
+      "summary": "iframe preview, feedback regen — no full visual editor in V1 (step 123)"
+    },
+    {
+      "id": "P10",
+      "title": "Integration & V1 Readiness",
+      "summary": "Cross-project verification, acceptance:gate, gap report, update SCOPING_RESPONSE"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import { AgentOSLocalApp } from "../../components/local/AgentOSLocalApp";
+import { DashboardHome } from "../../components/forge/DashboardHome";
 
 export default function DashboardPage() {
-  return <AgentOSLocalApp section="dashboard" />;
+  return <DashboardHome />;
 }

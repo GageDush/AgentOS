@@ -4,21 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev --turbo -p 3000",
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@agentos/game-schema": "workspace:*",
     "@agentos/shared": "workspace:*",
     "@agentos/ui": "workspace:*",
     "@agentos/app-generator": "workspace:*",
     "next": "^15.1.6",
-    "phaser": "^3.87.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "zustand": "^5.0.3"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

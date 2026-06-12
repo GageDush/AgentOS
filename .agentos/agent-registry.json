@@ -1,15 +1,18 @@
 {
   "version": "0.1-test",
-  "memoryCuratorStatus": "excluded_for_later_design",
+  "memoryCuratorStatus": "active",
   "coreAgents": [
     "admin-agent",
     "task-classifier",
     "context-minimizer",
     "quota-steward",
     "planner-partitioner",
+    "product-agent",
+    "architect-agent",
     "repo-cartographer",
     "code-implementer",
     "systems-synthesizer",
+    "memory-curator",
     "qa-agent",
     "code-reviewer",
     "security-auditor",
@@ -19,7 +22,9 @@
   ],
   "addonAgents": [
     "database-migration-agent",
-    "integration-broker"
+    "integration-broker",
+    "docs-agent",
+    "issue-intake-researcher"
   ],
   "conditionalPipeline": [
     "admin-agent",
@@ -43,5 +48,45 @@
     "no_agent_self_approval",
     "memory_is_curated_not_dumped",
     "compact_agent_reports_only"
-  ]
+  ],
+  "profileTierPolicy": {
+    "min-maxed": {
+      "lineCeiling": 130,
+      "scoreFloor": 78,
+      "summary": "Narrow-scope agents: dense Runtime Excerpt, compact policy, minimal token burn."
+    },
+    "competitive": {
+      "lineCeiling": 140,
+      "scoreFloor": 76,
+      "summary": "Gate and specialist agents: richer escalation/checklists without control-plane bulk."
+    },
+    "control-plane": {
+      "lineCeiling": 165,
+      "scoreFloor": 78,
+      "summary": "High-auth routing and release agents: fuller policy docs; runtime still uses Runtime Excerpt."
+    }
+  },
+  "profileTiers": {
+    "admin-agent": "control-plane",
+    "task-classifier": "competitive",
+    "context-minimizer": "competitive",
+    "quota-steward": "control-plane",
+    "planner-partitioner": "control-plane",
+    "product-agent": "min-maxed",
+    "architect-agent": "min-maxed",
+    "repo-cartographer": "competitive",
+    "code-implementer": "competitive",
+    "systems-synthesizer": "min-maxed",
+    "memory-curator": "min-maxed",
+    "qa-agent": "competitive",
+    "code-reviewer": "competitive",
+    "security-auditor": "competitive",
+    "release-manager": "control-plane",
+    "frontend-ui-agent": "min-maxed",
+    "backend-service-agent": "min-maxed",
+    "database-migration-agent": "competitive",
+    "integration-broker": "competitive",
+    "docs-agent": "min-maxed",
+    "issue-intake-researcher": "min-maxed"
+  }
 }

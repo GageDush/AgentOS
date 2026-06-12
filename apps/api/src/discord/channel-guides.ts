@@ -149,6 +149,34 @@ export const CHANNEL_GUIDES: Partial<Record<AgentOsChannelKey, ChannelGuide>> = 
     ],
     footerHint: "Chat room 3"
   },
+  cursor: {
+    agentId: "agentos-operator",
+    title: "Channel guide: #cursor",
+    description: "Discord ↔ Cursor bridge — run prompts from Discord; Cursor replies here.",
+    fields: [
+      { name: "Access", value: "Only `DISCORD_OWNER_USER_ID` can view and post here.", inline: false },
+      { name: "Usage", value: "Send any prompt — it runs in Cursor against the AgentOS repo on this machine.", inline: false },
+      { name: "Commands", value: "`help` · `status` · `reset`", inline: false },
+      { name: "Requires", value: "`CURSOR_API_KEY` in `.env` · `pnpm dev:api` with Discord gateway", inline: false }
+    ],
+    footerHint: "Cursor bridge"
+  },
+  operatorCommand: {
+    agentId: "admin-agent",
+    title: "Channel guide: #operator-command",
+    description: "Private command lane for the server owner and AgentOS bot.",
+    fields: [
+      { name: "Access", value: "Only `DISCORD_OWNER_USER_ID` can view and post here.", inline: false },
+      { name: "Commands", value: "`help` · `status` · `pulse` · `mission <title>` · `approve` / `deny` / `pause` / `resume`", inline: false },
+      { name: "Chat", value: "Any other message routes to the Admin Agent LLM with mission context.", inline: false },
+      {
+        name: "Ready / busy",
+        value: "Pinned **Operator lane status** + channel topic: 🟢 ready to send, 🟡 wait while Cursor is processing.",
+        inline: false
+      }
+    ],
+    footerHint: "Owner command lane"
+  },
   general: {
     agentId: "admin-agent",
     title: "Channel guide: #general",
@@ -258,6 +286,8 @@ export async function postChannelGuides(options?: { includeZoneMap?: boolean }) 
         "approvals",
         "missions",
         "opsFeed",
+        "operatorCommand",
+        "cursor",
         "general",
         "roundTable",
         "chatRoom1",

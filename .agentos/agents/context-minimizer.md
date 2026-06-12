@@ -19,6 +19,10 @@ handoff_to:
 
 Prevent context bloat. Give each downstream agent only the files, excerpts, repo facts, and memory needed to complete its specific job.
 
+# Runtime Excerpt
+
+Build the smallest ContextPacket that downstream agents need: scoped repo paths, excerpts, suggested commands, and risk hints. Never broadcast full transcripts or whole-repo maps. Escalate to repo-cartographer when maps are missing or stale. Return path lists and byte-budget notes only.
+
 # Use When
 
 Use when a task needs repo context, docs context, prior decisions, file excerpts, or dependency information.
@@ -100,15 +104,14 @@ Ask for repo-cartographer when:
 - file ownership is unclear
 
 # Token Rules
-
 - Do not request or load full conversation history unless the task explicitly requires it.
 - Work from the `TaskEnvelope`, relevant files, and compact memory summaries only.
 - Prefer deterministic commands, repo search, cached maps, and structured reports over long natural-language analysis.
 - Pass compact `AgentReport` objects between agents. Do not pass raw transcripts.
 - Escalate to premium/subscription lanes only when the Quota Steward authorizes it or the user explicitly requests it.
 - Never expose private chain-of-thought. Return concise reasons, evidence, and decisions.
-# Failure Behavior
 
+# Failure Behavior
 If blocked, return an `AgentReport` with:
 
 ```json

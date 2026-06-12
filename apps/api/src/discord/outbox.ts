@@ -2,7 +2,7 @@ import type { AuditEvent, UsageEvent } from "@agentos/shared";
 import { loadDiscordGuildState } from "./bootstrap";
 import { isDiscordBotEnabled } from "./client";
 import { hasNotifiedOutbox, markNotifiedOutbox } from "./registry";
-import { resolvePersona } from "./personas";
+import { resolveMissionMessageAgentId } from "./message-attribution";
 import { postPersonaWebhookMessage } from "./webhook-post";
 
 function opsFeedWebhook() {
@@ -20,6 +20,10 @@ function actorToAgentId(actor: string, eventName: string) {
   return "admin-agent";
 }
 
+function isGateFailureEvent(eventName: string) {
+  return /^gate\.[a-z_]+_failed$/.test(eventName);
+}
+
 export async function dispatchAuditToDiscord(event: AuditEvent) {
   if (!isDiscordBotEnabled()) return { ok: false, reason: "disabled" };
   if (hasNotifiedOutbox("audit", event.id)) return { ok: false, reason: "duplicate" };
@@ -27,12 +31,22 @@ export async function dispatchAuditToDiscord(event: AuditEvent) {
   const webhook = opsFeedWebhook();
   if (!webhook) return { ok: false, reason: "no-webhook" };
 
-  const agentId = actorToAgentId(event.actor, event.event);
+  const gateFailed = isGateFailureEvent(event.event);
+  const metadata = event.metadata as { executedAgentIds?: string[]; report?: { agent?: string } } | undefined;
+  const agentId =
+    event.event === "route.agents_executed"
+      ? resolveMissionMessageAgentId({
+          executedAgentIds: metadata?.executedAgentIds,
+          preferSynthesizer: true
+        })
+      : event.event === "agent.step_executed" && metadata?.report?.agent
+        ? metadata.report.agent
+        : actorToAgentId(event.actor, event.event);
   await postPersonaWebhookMessage(webhook, {
     agentId,
-    title: "Audit signal",
+    title: gateFailed ? "Gate failed" : "Audit signal",
     description: event.summary,
-    tone: "info",
+    tone: gateFailed ? "danger" : "info",
     fields: [
       { name: "Event", value: event.event, inline: true },
       { name: "Actor", value: event.actor, inline: true },

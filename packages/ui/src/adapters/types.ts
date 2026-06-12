@@ -20,6 +20,12 @@ export type ForgeMissionStepKind =
   | "complete"
   | "error";
 
+export type ForgeGateChip = {
+  gateId: string;
+  status: "pass" | "warn" | "fail" | "pending" | "skipped";
+  label?: string;
+};
+
 export type ForgeMissionStep = {
   id: string;
   kind: ForgeMissionStepKind;
@@ -29,6 +35,7 @@ export type ForgeMissionStep = {
   agentName?: string;
   details?: string;
   artifactLinks?: Array<{ label: string; href: string }>;
+  gateChips?: ForgeGateChip[];
 };
 
 export type ForgeActivityEvent = {
@@ -45,6 +52,8 @@ export type ForgeAgentPresence = {
   name: string;
   role: string;
   state: ForgeAgentPresenceState;
+  avatarUrl?: string;
+  accentColor?: string;
   currentTask?: string;
   activeTool?: string;
   lastAction?: string;
@@ -75,6 +84,7 @@ export type ForgeQuickAction = {
   label: string;
   description?: string;
   icon?: string;
+  importance?: "primary" | "secondary" | "default";
 };
 
 export type ForgeNavItem = {
@@ -118,10 +128,19 @@ export type ForgeIntegrationItem = {
 export type ForgeMissionControlData = {
   missionTitle?: string;
   missionObjective?: string;
+  command?: string;
   runId?: string;
   runStatus?: string;
   phase?: string;
   progress?: number;
+  primaryAgentName?: string;
+  supportingAgentNames?: string[];
+  provider?: string;
+  model?: string;
+  sandboxLevel?: string;
+  startedAt?: string;
+  elapsedMs?: number;
+  requiredGates?: string[];
   activeTools?: string[];
   commandOutput?: string;
   artifacts?: Array<{ label: string; href?: string }>;

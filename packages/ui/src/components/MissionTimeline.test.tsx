@@ -16,8 +16,7 @@ describe("MissionTimeline", () => {
     );
 
     expect(screen.getByText("Queued")).toBeTruthy();
-    expect(screen.getByText("Planning")).toBeTruthy();
-    expect(screen.getAllByText("complete").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Planning").length).toBeGreaterThan(0);
     expect(screen.getByText("active")).toBeTruthy();
   });
 });

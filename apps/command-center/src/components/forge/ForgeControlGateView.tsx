@@ -1,6 +1,6 @@
 "use client";
 
-import { AgentRichMessageCard, SandboxApprovalCenter, type ForgeApprovalItem } from "@agentos/ui";
+import { AgentRichMessageCard, SandboxApprovalCenter, ScrollReveal, type ForgeApprovalItem } from "@agentos/ui";
 import {
   buildAshAdminRichMessage,
   type AgentRichMessage,
@@ -19,8 +19,10 @@ type ForgeControlGateViewProps = {
   onAllowOnce?: (id: string) => void;
   onAllowMission?: (id: string) => void;
   onDeny?: (id: string) => void;
+  onApproveAll?: () => void;
   onRichAction?: (actionType: AgentRichQuickActionType, scope?: AgentRichMessageScope) => void | Promise<void>;
   busyId?: string;
+  busyBulk?: boolean;
   busyRichAction?: AgentRichQuickActionType;
 };
 
@@ -33,8 +35,10 @@ export function ForgeControlGateView({
   onAllowOnce,
   onAllowMission,
   onDeny,
+  onApproveAll,
   onRichAction,
   busyId,
+  busyBulk,
   busyRichAction
 }: ForgeControlGateViewProps) {
   const primaryApproval = pendingApprovals[0];
@@ -63,20 +67,26 @@ export function ForgeControlGateView({
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       {cardMessage ? (
-        <AgentRichMessageCard
-          message={cardMessage}
-          pendingApprovals={pendingScope}
-          busyActionType={busyRichAction}
-          onExecuteAction={onRichAction}
-        />
+        <ScrollReveal staggerIndex={0}>
+          <AgentRichMessageCard
+            message={cardMessage}
+            pendingApprovals={pendingScope}
+            busyActionType={busyRichAction}
+            onExecuteAction={onRichAction}
+          />
+        </ScrollReveal>
       ) : null}
-      <SandboxApprovalCenter
-        approvals={approvals}
-        onAllowOnce={onAllowOnce}
-        onAllowMission={onAllowMission}
-        onDeny={onDeny}
-        busyId={busyId}
-      />
+      <ScrollReveal staggerIndex={1} staggerMs={70}>
+        <SandboxApprovalCenter
+          approvals={approvals}
+          onAllowOnce={onAllowOnce}
+          onAllowMission={onAllowMission}
+          onDeny={onDeny}
+          onApproveAll={onApproveAll}
+          busyId={busyId}
+          busyBulk={busyBulk}
+        />
+      </ScrollReveal>
     </div>
   );
 }

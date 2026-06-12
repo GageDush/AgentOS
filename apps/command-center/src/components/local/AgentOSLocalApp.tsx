@@ -2,34 +2,42 @@
 
 import { useRouter } from "next/navigation";
 import { startTransition, useEffect, useMemo, useState } from "react";
+import { ForgeBootLoader } from "../forge/ForgeBootLoader";
+import { ForgeChatDock } from "../forge/ForgeChatDock";
+import { AgentOSEventsProvider, useAgentOSEventsContext } from "../../lib/agentos-events-context";
 import { ForgeDashboardShell } from "../forge/ForgeDashboardShell";
 import { ForgeDashboardView } from "../forge/ForgeDashboardView";
 import { ForgeControlGateView } from "../forge/ForgeControlGateView";
+import { ForgeInspectorSidebar } from "../forge/ForgeInspectorSidebar";
+import { ForgeMemoryQueuePanel } from "../forge/ForgeMemoryQueuePanel";
 import {
   buildCommandPaletteItems,
-  buildDefaultQuickActions,
   toActivityFeed,
   toAgentPresences,
   toApprovalItems,
   toDashboardStats,
   toHealthMetrics,
   toMissionControlData,
-  toMissionTimeline,
-  toQuickActions
+  toMissionTimeline
 } from "../forge/dashboard-adapters";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import {
+  ApprovalCard,
   ForgeFaqAccordion,
   ForgeSectionHeader,
   ForgeSegmentedControl,
   ForgeStatCard,
+  GeneratedAppFrame,
+  MagneticButton,
   TerminalWindow,
   type ForgeFaqItem
 } from "@agentos/ui";
 import {
   apiGet,
+  apiGetResult,
   apiPost,
   discordLoginUrl,
+  fetchApiHealth,
   fetchAuthSession,
   logoutOperator,
   type OperatorAuthSession
@@ -54,7 +62,8 @@ import type {
   SandboxPermissionLevel,
   SessionRecord,
   WorkspaceRecord,
-  OperatorRecord
+  OperatorRecord,
+  BuildIntent
 } from "@agentos/shared";
 
 type SectionKey =
@@ -169,6 +178,17 @@ const defaultDraft: MissionDraft = {
   createGitHubIssue: false
 };
 
+const appBuildDraft: MissionDraft = {
+  title: "Build a Nebraska news reader",
+  objective: "Create a standalone news hub with read-aloud support.",
+  prompt: "Build me a standalone app that aggregates Nebraska news with text-to-speech.",
+  command: "echo app-scaffold",
+  sandboxLevel: "workspace_write",
+  provider: "mock",
+  model: "mock-agentos-local",
+  createGitHubIssue: false
+};
+
 const defaultRoutineDraft: RoutineDraft = {
   title: "Nightly quality gate",
   objective: "Run a recurring local quality check with a clear approval posture.",
@@ -181,6 +201,15 @@ const defaultRoutineDraft: RoutineDraft = {
 };
 
 export function AgentOSLocalApp({ section }: { section: SectionKey }) {
+  return (
+    <AgentOSEventsProvider>
+      <AgentOSLocalAppInner section={section} />
+    </AgentOSEventsProvider>
+  );
+}
+
+function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
+  const { mode: eventsMode, lastSnapshot } = useAgentOSEventsContext();
   const router = useRouter();
   const [data, setData] = useState<DashboardPayload | null>(null);
   const [draft, setDraft] = useState<MissionDraft>(defaultDraft);
@@ -193,7 +222,9 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   const [busyRichAction, setBusyRichAction] = useState<AgentRichQuickActionType>();
   const [chatDraft, setChatDraft] = useState("show details");
   const [error, setError] = useState("");
+  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
   const [operatorAuth, setOperatorAuth] = useState<OperatorAuthSession | null>(null);
+  const [activeGateResults, setActiveGateResults] = useState<Array<{ gateId: string; status: "pass" | "fail"; summary?: string }>>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -211,54 +242,45 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   }, []);
 
   useEffect(() => {
+    if (!lastSnapshot) return;
+    const payload = lastSnapshot as DashboardPayload;
+    setApiOnline(true);
+    startTransition(() => {
+      setData(payload);
+      setActiveRunId((current) => current ?? payload.runs[0]?.id);
+    });
+  }, [lastSnapshot]);
+
+  useEffect(() => {
     let mounted = true;
+    const pollMs = eventsMode === "live" ? 12_000 : 2500;
     const refresh = async () => {
-      const nextData = await apiGet<DashboardPayload>("/dashboard", {
-        workspaces: [],
-        operators: [],
-        agents: [],
-        missions: [],
-        runs: [],
-        approvals: [],
-        audit: [],
-        archive: [],
-        routines: [],
-        loadout: [],
-        sessions: [],
-        quickActions: [],
-        chatThreads: [],
-        chatMessages: [],
-        routingDecisions: [],
-        usage: {
-          dailySpend: 0,
-          monthlySpend: 0,
-          dailyLimit: 0,
-          monthlyLimit: 0,
-          warningThresholdPercent: 80,
-          totalTokens: 0
-        },
-        system: {
-          api: "offline",
-          worker: "offline",
-          gateway: "offline",
-          discordMode: "mock",
-          providerMode: "mock"
-        }
-      });
+      const healthOk = await fetchApiHealth();
       if (!mounted) return;
+      if (!healthOk) {
+        setApiOnline(false);
+        return;
+      }
+      const result = await apiGetResult<DashboardPayload>("/dashboard");
+      if (!mounted) return;
+      if (!result.ok) {
+        setApiOnline(false);
+        return;
+      }
+      setApiOnline(true);
       startTransition(() => {
-        setData(nextData);
-        setActiveRunId((current) => current ?? nextData.runs[0]?.id);
+        setData(result.data);
+        setActiveRunId((current) => current ?? result.data.runs[0]?.id);
       });
     };
 
     void refresh();
-    const interval = setInterval(refresh, 2500);
+    const interval = setInterval(refresh, pollMs);
     return () => {
       mounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [eventsMode]);
 
   useEffect(() => {
     let mounted = true;
@@ -277,6 +299,33 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
       clearInterval(interval);
     };
   }, [activeRunId]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!activeRunId) {
+      setActiveGateResults([]);
+      return;
+    }
+    const refreshGates = async () => {
+      const result = await apiGetResult<{
+        results?: Array<{ gateId: string; status: "pass" | "fail"; summary?: string }>;
+      }>(`/runs/${activeRunId}/gates`);
+      if (!mounted || !result.ok) return;
+      setActiveGateResults(
+        (result.data.results ?? []).map((gate) => ({
+          gateId: gate.gateId,
+          status: gate.status,
+          summary: gate.summary
+        }))
+      );
+    };
+    void refreshGates();
+    const interval = setInterval(refreshGates, eventsMode === "live" ? 5000 : 3000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [activeRunId, eventsMode]);
 
   useEffect(() => {
     let mounted = true;
@@ -336,11 +385,32 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
   );
 
   async function refreshDashboard() {
-    const nextData = await apiGet<DashboardPayload>("/dashboard", data as DashboardPayload);
+    const result = await apiGetResult<DashboardPayload>("/dashboard");
+    if (!result.ok) {
+      setApiOnline(false);
+      return;
+    }
+    setApiOnline(true);
     startTransition(() => {
-      setData(nextData);
-      if (!activeRunId) setActiveRunId(nextData.runs[0]?.id);
+      setData(result.data);
+      if (!activeRunId) setActiveRunId(result.data.runs[0]?.id);
     });
+  }
+
+  async function runPlatformDemo() {
+    setBusyAction("run-demo");
+    setError("");
+    try {
+      const payload = await apiPost<{ run?: MissionRun; mission?: MissionRecord; result?: { summary?: string } }>(
+        "/mission/demo/run"
+      );
+      if (payload.run?.id) setActiveRunId(payload.run.id);
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Demo mission failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
   }
 
   async function createMissionAndRun() {
@@ -396,6 +466,29 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
       await refreshDashboard();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Approval action failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function bulkApproveAllAction() {
+    setBusyAction("bulk-approve-all");
+    setError("");
+    try {
+      const result = await apiPost<{
+        ok: boolean;
+        total: number;
+        approved: number;
+        failures?: Array<{ approvalId: string; summary: string }>;
+      }>("/approvals/bulk/approve-once");
+      if (!result.ok && result.failures?.length) {
+        setError(
+          `Approved ${result.approved}/${result.total}. ${result.failures.length} failed: ${result.failures[0]?.summary ?? "unknown error"}`
+        );
+      }
+      await refreshDashboard();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Bulk approval failed.");
     } finally {
       setBusyAction(undefined);
     }
@@ -553,41 +646,34 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
     [data]
   );
 
-  const forgeQuickActions = useMemo(() => {
-    const fromApi = data ? toQuickActions(activeQuickActions) : [];
-    return fromApi.length > 0 ? fromApi : buildDefaultQuickActions();
-  }, [data, activeQuickActions]);
+  const loadingHealth = useMemo(
+    () =>
+      toHealthMetrics({
+        system: { api: "offline", worker: "offline", gateway: "offline", discordMode: "mock", providerMode: "mock" },
+        agents: [],
+        runs: [],
+        pendingApprovals: 0
+      }),
+    []
+  );
 
-  async function handleForgeQuickAction(actionId: string) {
-    if (actionId === "open-approvals") {
-      router.push("/control-gate");
-      return;
-    }
-    if (actionId === "start-mission" || actionId === "run-tests") {
-      router.push("/missions");
-      return;
-    }
-    if (actionId === "sync-memory") {
-      router.push("/archive");
-      return;
-    }
-    if (actionId === "inspect-server") {
-      router.push("/settings");
-      return;
-    }
-    if (actionId === "generate-ui") {
-      router.push("/preview/forge");
-      return;
-    }
-    const match = activeQuickActions.find((a) => a.id === actionId);
-    if (match) await consumeQuickAction(actionId);
+  if (apiOnline === false) {
+    return (
+      <ForgeDashboardShell section={section} healthMetrics={loadingHealth} commandItems={[]} pendingApprovals={0}>
+        <div className="alert error-alert">
+          AgentOS API is offline. Start the stack with <code>pnpm control -Action RestartWithTunnel</code> or{" "}
+          <code>pnpm dev:api</code>, then reload this page.
+        </div>
+        <ForgeBootLoader compact inline />
+      </ForgeDashboardShell>
+    );
   }
 
   if (!data) {
     return (
-      <main className="forge-root" style={{ minHeight: "100vh", display: "grid", placeItems: "center" }}>
-        <div className="loading-state">Loading AgentOS Forge...</div>
-      </main>
+      <ForgeDashboardShell section={section} healthMetrics={loadingHealth} commandItems={[]} pendingApprovals={0}>
+        <ForgeBootLoader compact inline />
+      </ForgeDashboardShell>
     );
   }
 
@@ -602,7 +688,9 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
         <ForgeSectionHeader
           kicker={labelForSection(section)}
           title={titleForSection(section)}
-          accentWord={section === "control-gate" ? "Approval" : undefined}
+          accentWord={
+            section === "control-gate" ? "Approval" : section === "dashboard" ? "mission" : undefined
+          }
           copy={descriptionForSection(section)}
           actions={
             <OperatorAuthCard
@@ -616,6 +704,11 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
         />
 
         {error ? <div className="alert error-alert">{error}</div> : null}
+        {apiOnline !== true ? (
+          <div className="alert error-alert" role="status">
+            API offline — showing last known state. Start the stack with <code>pnpm stack:background</code> or check the tunnel.
+          </div>
+        ) : null}
 
         {section === "dashboard" ? (
           <ForgeDashboardView
@@ -630,15 +723,17 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
               run: activeRun,
               route: activeRoute,
               logs: activeLogs,
-              tools: data.loadout.map((item) => item.name)
+              tools: data.loadout.map((item) => item.name),
+              agents: data.agents,
+              audits: data.audit
             })}
             activity={toActivityFeed(data.audit, activeLogs)}
-            agents={toAgentPresences(data.agents, activeRun, activeRoute)}
-            timeline={toMissionTimeline(activeRun, activeLogs)}
+            agents={toAgentPresences(data.agents, activeRun, activeRoute, data.audit)}
+            timeline={toMissionTimeline(activeRun, activeLogs, activeGateResults)}
             approvals={toApprovalItems(pendingApprovals)}
-            quickActions={forgeQuickActions}
             onRunAgain={activeMission ? () => void runMission(activeMission.id) : undefined}
-            onQuickAction={(id) => void handleForgeQuickAction(id)}
+            onRunDemo={() => void runPlatformDemo()}
+            onSelectAgent={() => router.push("/operators")}
             onAllowOnce={(id) => {
               const approval = pendingApprovals.find((a) => a.id === id);
               if (approval) void resolveApprovalAction(approval, "approve-once");
@@ -650,6 +745,10 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
             onDeny={(id) => {
               const approval = pendingApprovals.find((a) => a.id === id);
               if (approval) void resolveApprovalAction(approval, "deny");
+            }}
+            onCommand={(command) => {
+              setDraft((current) => ({ ...current, objective: command }));
+              router.push("/missions");
             }}
             busyId={busyAction}
           />
@@ -666,6 +765,9 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
                 onCreateMissionAndRun={createMissionAndRun}
                 onRunMission={runMission}
                 onSelectRun={setActiveRunId}
+                onRefresh={refreshDashboard}
+                setBusyAction={setBusyAction}
+                setError={setError}
               />
             ) : null}
             {section === "routines" ? (
@@ -708,38 +810,43 @@ export function AgentOSLocalApp({ section }: { section: SectionKey }) {
               const approval = pendingApprovals.find((a) => a.id === id);
               if (approval) void resolveApprovalAction(approval, "deny");
             }}
+            onApproveAll={() => void bulkApproveAllAction()}
+            busyBulk={busyAction === "bulk-approve-all"}
           />
         ) : null}
-        {section === "blackbox" ? <BlackboxView audit={data.audit} activeLogs={activeLogs} /> : null}
+        {section === "blackbox" ? <BlackboxView audit={data.audit} activeLogs={activeLogs} activeRunId={activeRunId} /> : null}
         {section === "archive" ? <ArchiveView archive={data.archive} /> : null}
         {section === "loadout" ? <LoadoutView loadout={data.loadout} providerStatus={providerStatus} /> : null}
         {section === "settings" ? <SettingsView data={data} providerStatus={providerStatus} /> : null}
       </section>
 
-      <aside className="forge-sidebar-panel">
-            <RunInspector
-              mission={activeMission}
-              run={activeRun}
-              route={activeRoute}
-              logs={activeLogs}
-              approvals={pendingApprovals}
-              quickActions={activeQuickActions}
-              onResolveApproval={resolveApprovalAction}
-              onConsumeQuickAction={consumeQuickAction}
-              busyAction={busyAction}
-            />
-            <ConversationPanel
-              thread={activeThread}
-              messages={data.chatMessages}
-              quickActions={activeQuickActions}
-              chatDraft={chatDraft}
-              setChatDraft={setChatDraft}
-              busyAction={busyAction}
-              onSendChat={sendChatMessage}
-              onConsumeQuickAction={consumeQuickAction}
-            />
-        <RecentHistory runs={data.runs} missions={data.missions} onSelectRun={setActiveRunId} activeRunId={activeRunId} />
-      </aside>
+      <ForgeInspectorSidebar collapsedDefault={section === "dashboard"} mission={activeMission} run={activeRun}>
+        <RunInspector
+          mission={activeMission}
+          run={activeRun}
+          route={activeRoute}
+          logs={activeLogs}
+          approvals={pendingApprovals}
+          quickActions={activeQuickActions}
+          onResolveApproval={resolveApprovalAction}
+          onConsumeQuickAction={consumeQuickAction}
+          busyAction={busyAction}
+        />
+        {section !== "dashboard" ? (
+          <RecentHistory runs={data.runs} missions={data.missions} onSelectRun={setActiveRunId} activeRunId={activeRunId} />
+        ) : null}
+      </ForgeInspectorSidebar>
+
+      <ForgeChatDock
+        thread={activeThread}
+        messages={data.chatMessages}
+        chatDraft={chatDraft}
+        setChatDraft={setChatDraft}
+        busyAction={busyAction}
+        onSendChat={sendChatMessage}
+        quickActions={activeQuickActions}
+        onConsumeQuickAction={consumeQuickAction}
+      />
     </ForgeDashboardShell>
   );
 }
@@ -753,7 +860,7 @@ function labelForSection(section: SectionKey) {
 function titleForSection(section: SectionKey) {
   switch (section) {
     case "dashboard":
-      return "Local-first mission control";
+      return "Your local agent mission control";
     case "missions":
       return "Create and supervise mission runs";
     case "routines":
@@ -776,7 +883,7 @@ function titleForSection(section: SectionKey) {
 function descriptionForSection(section: SectionKey) {
   switch (section) {
     case "dashboard":
-      return "Create a mission, pause at Control Gate when needed, execute a safe command, and keep the result in history.";
+      return "Track live runs, approve sandbox actions, and dispatch work from one calm operator surface.";
     case "missions":
       return "Mission records now drive the app instead of the deprecated office scene.";
     case "control-gate":
@@ -833,6 +940,23 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
   );
 }
 
+type MissionFilter = "all" | "active" | "complete" | "app";
+
+function missionOutputDir(mission: MissionRecord) {
+  return (mission.metadata as { outputDir?: string } | undefined)?.outputDir;
+}
+
+function missionBuildIntent(mission: MissionRecord): BuildIntent | undefined {
+  return (mission.metadata as { buildIntent?: BuildIntent } | undefined)?.buildIntent;
+}
+
+function isAppCreationMission(mission: MissionRecord) {
+  const intent = missionBuildIntent(mission);
+  if (intent?.taskType === "app_creation") return true;
+  const text = `${mission.prompt} ${mission.objective}`.toLowerCase();
+  return /\b(build|create|make)\b.*\b(app|application)\b/.test(text);
+}
+
 function MissionsView({
   data,
   draft,
@@ -843,7 +967,10 @@ function MissionsView({
   activeRunId,
   onCreateMissionAndRun,
   onRunMission,
-  onSelectRun
+  onSelectRun,
+  onRefresh,
+  setBusyAction,
+  setError
 }: {
   data: DashboardPayload;
   draft: MissionDraft;
@@ -855,11 +982,110 @@ function MissionsView({
   onCreateMissionAndRun: () => Promise<void>;
   onRunMission: (missionId: string) => Promise<void>;
   onSelectRun: (runId: string) => void;
+  onRefresh: () => Promise<void>;
+  setBusyAction: Dispatch<SetStateAction<string | undefined>>;
+  setError: Dispatch<SetStateAction<string>>;
 }) {
+  const [missionFilter, setMissionFilter] = useState<MissionFilter>("all");
+  const [questionnaireMissionId, setQuestionnaireMissionId] = useState<string>();
+  const [questionnaireAnswers, setQuestionnaireAnswers] = useState<Record<string, string>>({});
+  const [previewMissionId, setPreviewMissionId] = useState<string>();
+  const [previewContent, setPreviewContent] = useState<ReactNode>(null);
+
+  const filteredMissions = useMemo(() => {
+    return data.missions.filter((mission) => {
+      if (missionFilter === "active") {
+        return mission.status === "running" || mission.status === "queued" || mission.status === "awaiting_approval";
+      }
+      if (missionFilter === "complete") return mission.status === "completed";
+      if (missionFilter === "app") return isAppCreationMission(mission) || Boolean(missionOutputDir(mission));
+      return true;
+    });
+  }, [data.missions, missionFilter]);
+
+  const questionnaireMission = data.missions.find((mission) => mission.id === questionnaireMissionId);
+  const questionnaireIntent = questionnaireMission ? missionBuildIntent(questionnaireMission) : undefined;
+
+  async function loadGeneratedPreview(missionId: string) {
+    setBusyAction(`preview-${missionId}`);
+    setError("");
+    try {
+      const preview = await apiGetResult<{
+        outputDir: string;
+        readme: string;
+        pageSource: string;
+        files: string[];
+      }>(`/missions/${missionId}/generated-app/preview`);
+      if (!preview.ok) {
+        setError("No generated app preview available for this mission yet.");
+        return;
+      }
+      setPreviewMissionId(missionId);
+      setPreviewContent(
+        <div>
+          <p className="forge-mono" style={{ fontSize: "0.72rem", marginBottom: "0.75rem" }}>
+            {preview.data.outputDir}
+          </p>
+          <pre style={{ whiteSpace: "pre-wrap", fontSize: "0.75rem", margin: 0 }}>{preview.data.readme || preview.data.pageSource}</pre>
+        </div>
+      );
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Preview load failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function generateQuestionnaire(missionId: string) {
+    setBusyAction(`questionnaire-${missionId}`);
+    setError("");
+    try {
+      const mission = data.missions.find((item) => item.id === missionId);
+      await apiPost(`/missions/${missionId}/questionnaire/generate`, {
+        description: mission?.prompt ?? mission?.objective
+      });
+      setQuestionnaireMissionId(missionId);
+      await onRefresh();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Questionnaire generation failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function submitQuestionnaire(missionId: string) {
+    setBusyAction(`submit-q-${missionId}`);
+    setError("");
+    try {
+      await apiPost(`/missions/${missionId}/questionnaire/submit`, { answers: questionnaireAnswers });
+      await onRefresh();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Questionnaire submit failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
+  async function submitFeedbackAndRegen(missionId: string, feedback: string) {
+    setBusyAction(`regen-${missionId}`);
+    setError("");
+    try {
+      await apiPost(`/missions/${missionId}/feedback`, { text: feedback, kind: "functional" });
+      const payload = await apiPost<{ run: MissionRun }>(`/missions/${missionId}/regen`, { feedback, scope: "scoped" });
+      onSelectRun(payload.run.id);
+      await onRefresh();
+      await loadGeneratedPreview(missionId);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Regeneration failed.");
+    } finally {
+      setBusyAction(undefined);
+    }
+  }
+
   return (
     <>
       <Panel title="Compose Mission" subtitle="Defaulted to a gated safe-command run so the full flow is visible.">
-        <div className="form-grid">
+        <div className="form-grid forge-form-grid">
           <label>
             <span>Title</span>
             <input value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} />
@@ -897,14 +1123,14 @@ function MissionsView({
             <span>Model</span>
             <input value={draft.model} onChange={(event) => setDraft((current) => ({ ...current, model: event.target.value }))} />
           </label>
-          <label className="wide-field checkbox-field">
+          <label className="wide-field checkbox-field forge-checkbox-field">
             <span>GitHub issue (opt-in)</span>
             <input
               type="checkbox"
               checked={draft.createGitHubIssue}
               onChange={(event) => setDraft((current) => ({ ...current, createGitHubIssue: event.target.checked }))}
             />
-            <p className="field-hint">Creates a triage issue on GageDush/AgentOS when the mission is saved.</p>
+            <p className="field-hint forge-field-hint">Creates a triage issue on GageDush/AgentOS when the mission is saved.</p>
           </label>
         </div>
         <div className="forge-page-grid-cards">
@@ -922,26 +1148,58 @@ function MissionsView({
             copy={draft.provider === "ollama" ? "Uses local Ollama when available and falls back gracefully for planning." : "Uses the always-ready mock planner."}
           />
         </div>
-        <div className="button-row">
+        <div className="button-row forge-button-row">
+          <button className="secondary-button" type="button" onClick={() => setDraft(appBuildDraft)}>
+            Use app-build preset
+          </button>
           <button className="primary-button" disabled={busyAction === "create-mission"} onClick={() => void onCreateMissionAndRun()}>
             {busyAction === "create-mission" ? "Creating..." : "Create Mission and Run"}
           </button>
         </div>
       </Panel>
-      <Panel title="Mission Queue" subtitle="Select a run to inspect live logs on the right.">
-        <div className="table-list">
-          {data.missions.map((mission) => (
-            <div className="table-row" key={mission.id}>
+      <Panel title="Mission Queue" subtitle="Filter missions and open generated app previews when available.">
+        <ForgeSegmentedControl
+          value={missionFilter}
+          onChange={(value) => setMissionFilter(value as MissionFilter)}
+          options={[
+            { id: "all", label: "All" },
+            { id: "active", label: "Active" },
+            { id: "complete", label: "Complete" },
+            { id: "app", label: "App builds" }
+          ]}
+        />
+        <div className="table-list forge-table-list">
+          {filteredMissions.map((mission) => (
+            <div className="table-row forge-table-row" key={mission.id}>
               <div>
                 <strong>{mission.title}</strong>
                 <p>{mission.objective}</p>
                 <p className="command-line">{mission.command}</p>
+                {isAppCreationMission(mission) ? <span className="forge-chip forge-chip-active">app_creation</span> : null}
               </div>
               <div className="row-actions">
                 <span className={`status-chip status-chip-${mission.status}`}>{mission.status}</span>
+                {isAppCreationMission(mission) ? (
+                  <button
+                    className="ghost-button"
+                    disabled={busyAction === `questionnaire-${mission.id}`}
+                    onClick={() => void generateQuestionnaire(mission.id)}
+                  >
+                    Questionnaire
+                  </button>
+                ) : null}
                 <button className="secondary-button" disabled={busyAction === `run-${mission.id}`} onClick={() => void onRunMission(mission.id)}>
                   {busyAction === `run-${mission.id}` ? "Running..." : "Run"}
                 </button>
+                {missionOutputDir(mission) ? (
+                  <button
+                    className="ghost-button"
+                    disabled={busyAction === `preview-${mission.id}`}
+                    onClick={() => void loadGeneratedPreview(mission.id)}
+                  >
+                    Preview
+                  </button>
+                ) : null}
                 {mission.latestRunId ? (
                   <button className={`ghost-button ${activeRunId === mission.latestRunId ? "ghost-button-active" : ""}`} onClick={() => onSelectRun(mission.latestRunId!)}>
                     Inspect
@@ -952,6 +1210,45 @@ function MissionsView({
           ))}
         </div>
       </Panel>
+      {questionnaireMission && questionnaireIntent ? (
+        <Panel title="Build questionnaire" subtitle="Answer essentials before running an app_creation mission.">
+          <div className="form-grid forge-form-grid">
+            {questionnaireIntent.questionnaire.map((item) => (
+              <label className="wide-field" key={item.id}>
+                <span>{item.prompt}</span>
+                <input
+                  value={questionnaireAnswers[item.id] ?? ""}
+                  onChange={(event) =>
+                    setQuestionnaireAnswers((current) => ({ ...current, [item.id]: event.target.value }))
+                  }
+                />
+              </label>
+            ))}
+          </div>
+          <div className="button-row forge-button-row">
+            <button
+              className="primary-button"
+              disabled={busyAction === `submit-q-${questionnaireMission.id}`}
+              onClick={() => void submitQuestionnaire(questionnaireMission.id)}
+            >
+              {busyAction === `submit-q-${questionnaireMission.id}` ? "Saving..." : "Save answers"}
+            </button>
+            <button className="secondary-button" onClick={() => void onRunMission(questionnaireMission.id)}>
+              Run after save
+            </button>
+          </div>
+        </Panel>
+      ) : null}
+      {previewMissionId && previewContent ? (
+        <GeneratedAppFrame
+          title="Generated user app"
+          previewContent={previewContent}
+          onInspectSubmit={(selection) => {
+            const feedback = selection.userInstruction?.trim();
+            if (feedback) void submitFeedbackAndRegen(previewMissionId, feedback);
+          }}
+        />
+      ) : null}
     </>
   );
 }
@@ -976,7 +1273,7 @@ function RoutinesView({
   return (
     <>
       <Panel title="Create Routine" subtitle="Save a recurring mission recipe, then run it on demand or keep it scheduled.">
-        <div className="form-grid">
+        <div className="form-grid forge-form-grid">
           <label>
             <span>Title</span>
             <input value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} />
@@ -1000,16 +1297,16 @@ function RoutinesView({
             <input value={draft.command} onChange={(event) => setDraft((current) => ({ ...current, command: event.target.value }))} />
           </label>
         </div>
-        <div className="button-row">
+        <div className="button-row forge-button-row">
           <button className="primary-button" disabled={busyAction === "create-routine"} onClick={() => void onCreateRoutine()}>
             {busyAction === "create-routine" ? "Creating..." : "Create Routine"}
           </button>
         </div>
       </Panel>
       <Panel title="Routines" subtitle="Scheduled automations stay mock-first but can run now for review.">
-        <div className="table-list">
+        <div className="table-list forge-table-list">
           {routines.map((routine) => (
-            <div className="table-row" key={routine.id}>
+            <div className="table-row forge-table-row" key={routine.id}>
               <div>
                 <strong>{routine.title}</strong>
                 <p>{routine.objective}</p>
@@ -1049,9 +1346,9 @@ function OperatorsView({
   return (
     <>
       <Panel title="Operators" subtitle="Agent roster reused from the existing mock team.">
-        <div className="table-list">
+        <div className="table-list forge-table-list">
           {agents.map((agent) => (
-            <div className="table-row" key={agent.id}>
+            <div className="table-row forge-table-row" key={agent.id}>
               <div>
                 <strong>{agent.name}</strong>
                 <p>{agent.role}</p>
@@ -1065,9 +1362,9 @@ function OperatorsView({
         </div>
       </Panel>
       <Panel title="Sessions" subtitle="Resumable long-running work.">
-        <div className="table-list">
+        <div className="table-list forge-table-list">
           {sessions.map((session) => (
-            <div className="table-row" key={session.id}>
+            <div className="table-row forge-table-row" key={session.id}>
               <div>
                 <strong>{session.title}</strong>
                 <p>{session.summary}</p>
@@ -1093,9 +1390,59 @@ function OperatorsView({
   );
 }
 
-function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: MissionRunLog[] }) {
+type RunGateStatus = {
+  runId: string;
+  missionId?: string;
+  required: string[];
+  passed: string[];
+  pending: string[];
+  releasePrepared: boolean;
+  results?: Array<{ gateId: string; status: "pass" | "fail"; summary?: string }>;
+};
+
+function BlackboxView({
+  audit,
+  activeLogs,
+  activeRunId
+}: {
+  audit: AuditEvent[];
+  activeLogs: MissionRunLog[];
+  activeRunId?: string;
+}) {
   const [query, setQuery] = useState("");
   const [eventFilter, setEventFilter] = useState<"all" | MissionRunLog["level"]>("all");
+  const [gateStatus, setGateStatus] = useState<RunGateStatus | null>(null);
+  const [gateBusy, setGateBusy] = useState<string>();
+
+  useEffect(() => {
+    let mounted = true;
+    if (!activeRunId) {
+      setGateStatus(null);
+      return;
+    }
+    const load = async () => {
+      const result = await apiGetResult<RunGateStatus>(`/runs/${activeRunId}/gates`);
+      if (mounted && result.ok) setGateStatus(result.data);
+    };
+    void load();
+    const interval = setInterval(load, 3000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [activeRunId]);
+
+  async function runGateAction(action: "prepare" | "approve") {
+    if (!activeRunId) return;
+    setGateBusy(action);
+    try {
+      await apiPost(`/runs/${activeRunId}/gates/release/${action}`);
+      const result = await apiGetResult<RunGateStatus>(`/runs/${activeRunId}/gates`);
+      if (result.ok) setGateStatus(result.data);
+    } finally {
+      setGateBusy(undefined);
+    }
+  }
   const filteredLogs = activeLogs.filter((log) => {
     const matchesQuery = !query || log.message.toLowerCase().includes(query.toLowerCase());
     const matchesFilter = eventFilter === "all" || eventFilter === log.level;
@@ -1108,8 +1455,44 @@ function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: 
 
   return (
     <>
+      {gateStatus && gateStatus.required.length > 0 ? (
+        <Panel title="Completion gates" subtitle="QA, security, and release gates for the active run.">
+          <div className="forge-page-grid-cards">
+            {gateStatus.required.map((gate) => {
+              const result = gateStatus.results?.find((entry) => entry.gateId === gate);
+              const failed = result?.status === "fail";
+              const passed = gateStatus.passed.includes(gate);
+              return (
+                <Snapshot
+                  key={gate}
+                  label={gate}
+                  value={failed ? "failed" : passed ? "passed" : "pending"}
+                  copy={
+                    failed
+                      ? (result?.summary ?? `Gate ${gate} failed.`)
+                      : gate === "release" && gateStatus.releasePrepared
+                        ? "Release checklist prepared."
+                        : `Gate ${gate} for run ${gateStatus.runId}.`
+                  }
+                  accent={gateStatus.pending.includes(gate) || failed}
+                />
+              );
+            })}
+          </div>
+          {gateStatus.pending.includes("release") ? (
+            <div className="button-row forge-button-row">
+              <button className="secondary-button" disabled={gateBusy === "prepare"} onClick={() => void runGateAction("prepare")}>
+                {gateBusy === "prepare" ? "Preparing..." : "Prepare release"}
+              </button>
+              <button className="primary-button" disabled={gateBusy === "approve"} onClick={() => void runGateAction("approve")}>
+                {gateBusy === "approve" ? "Approving..." : "Approve release"}
+              </button>
+            </div>
+          ) : null}
+        </Panel>
+      ) : null}
       <Panel title="Search Blackbox" subtitle="Filter live logs and audit events by keyword or signal.">
-        <div className="form-grid">
+        <div className="form-grid forge-form-grid">
           <label className="wide-field">
             <span>Search</span>
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="approval, typecheck, ollama, failed..." />
@@ -1138,9 +1521,9 @@ function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: 
         </div>
       </Panel>
       <Panel title="Audit Trail" subtitle="Blackbox records every decision and completion event.">
-        <div className="table-list">
+        <div className="table-list forge-table-list">
           {filteredAudit.slice(0, 30).map((event) => (
-            <div className="table-row" key={event.id}>
+            <div className="table-row forge-table-row" key={event.id}>
               <div>
                 <strong>{event.event}</strong>
                 <p>{event.summary}</p>
@@ -1159,9 +1542,9 @@ function BlackboxView({ audit, activeLogs }: { audit: AuditEvent[]; activeLogs: 
 function ArchiveView({ archive }: { archive: MemoryRecord[] }) {
   return (
     <Panel title="Archive" subtitle="Mission output, memory, and operator notes.">
-      <div className="table-list">
+      <div className="table-list forge-table-list">
         {archive.map((memory) => (
-          <div className="table-row" key={memory.id}>
+          <div className="table-row forge-table-row" key={memory.id}>
             <div>
               <strong>{memory.title}</strong>
               <p>{memory.content}</p>
@@ -1179,9 +1562,9 @@ function ArchiveView({ archive }: { archive: MemoryRecord[] }) {
 function LoadoutView({ loadout, providerStatus }: { loadout: LoadoutItem[]; providerStatus?: ProviderStatus }) {
   return (
     <Panel title="Loadout" subtitle="Local model posture, policies, and tooling integrations.">
-      <div className="table-list">
+      <div className="table-list forge-table-list">
         {loadout.map((item) => (
-          <div className="table-row" key={item.id}>
+          <div className="table-row forge-table-row" key={item.id}>
             <div>
               <strong>{item.name}</strong>
               <p>{item.summary}</p>
@@ -1192,7 +1575,7 @@ function LoadoutView({ loadout, providerStatus }: { loadout: LoadoutItem[]; prov
             </div>
           </div>
         ))}
-        <div className="table-row">
+        <div className="table-row forge-table-row">
           <div>
             <strong>Ollama Readiness</strong>
             <p>{providerStatus?.ollama.message ?? "Checking local provider reachability."}</p>
@@ -1313,12 +1696,14 @@ function RunInspector({
   const latestStdout = [...logs].reverse().find((log) => log.level === "stdout");
   const latestStderr = [...logs].reverse().find((log) => log.level === "stderr");
 
+  const approvalItem = approval ? toApprovalItems([approval])[0] : undefined;
+
   return (
     <>
       <Panel title="Run Inspector" subtitle={run ? run.id : "No run selected"}>
         {mission && run ? (
-          <div className="inspector-stack">
-            <div className="table-row">
+          <div className="inspector-stack forge-inspector-stack">
+            <div className="table-row forge-table-row">
               <div>
                 <strong>{mission.title}</strong>
                 <p>{mission.objective}</p>
@@ -1335,74 +1720,75 @@ function RunInspector({
               <Snapshot label="Result" value={run.resultSummary ? "saved" : run.error ? "error" : "pending"} copy={run.resultSummary ?? run.error ?? "Still running"} />
             </div>
             {route ? (
-              <div className="mini-log">
-                <div className="log-line">
+              <div className="mini-log forge-mini-log">
+                <div className="log-line forge-log-line">
                   <span className="log-level log-level-plan">route</span>
                   <span>
-                    {`${route.selectedPrimaryAgentId} -> ${route.supportingAgentIds.join(", ")} | gates: ${route.requiredGates.join(", ") || "none"}`}
+                    {`executed: ${(Array.isArray(route.executedAgentIds)
+                      ? route.executedAgentIds
+                      : Array.isArray(route.metadata?.executedAgentIds)
+                        ? route.metadata.executedAgentIds
+                        : [route.selectedPrimaryAgentId]
+                    ).join(", ")} | gates: ${route.requiredGates.join(", ") || "none"}`}
                   </span>
                 </div>
               </div>
             ) : null}
             {latestStdout ? (
-              <div className="mini-log">
-                <div className="log-line">
+              <div className="mini-log forge-mini-log">
+                <div className="log-line forge-log-line">
                   <span className="log-level log-level-stdout">stdout</span>
                   <span>{latestStdout.message}</span>
                 </div>
               </div>
             ) : null}
             {latestStderr ? (
-              <div className="mini-log">
-                <div className="log-line">
+              <div className="mini-log forge-mini-log">
+                <div className="log-line forge-log-line">
                   <span className="log-level log-level-stderr">stderr</span>
                   <span>{latestStderr.message}</span>
                 </div>
               </div>
             ) : null}
-            <div className="mini-log">
+            <div className="mini-log forge-mini-log">
               {logs.slice(-6).map((log) => (
-                <div className="log-line" key={log.id}>
+                <div className="log-line forge-log-line" key={log.id}>
                   <span className={`log-level log-level-${log.level}`}>{log.level}</span>
                   <span>{log.message}</span>
                 </div>
               ))}
             </div>
             {quickActions.length > 0 ? (
-              <div className="button-row">
+              <div className="button-row forge-button-row">
                 {quickActions.slice(0, 6).map((action) => (
-                  <button
-                    className="ghost-button"
+                  <MagneticButton
                     disabled={busyAction === `quick-${action.id}`}
                     key={action.id}
                     onClick={() => void onConsumeQuickAction(action.id)}
                   >
                     {action.emoji} {action.label}
-                  </button>
+                  </MagneticButton>
                 ))}
               </div>
             ) : null}
+            <ForgeMemoryQueuePanel runId={run.id} />
           </div>
         ) : (
           <div className="empty-state">Pick a mission run from the history list.</div>
         )}
       </Panel>
-      {approval ? (
-        <Panel title="Pending Decision" subtitle="The active run is paused at Control Gate.">
-          <p>{approval.inputSummary}</p>
-          {approval.command ? <p className="command-line">{approval.command}</p> : null}
-          <div className="button-row">
-            <button className="primary-button" disabled={busyAction === `approve-once-${approval.id}`} onClick={() => void onResolveApproval(approval, "approve-once")}>
-              Approve Once
-            </button>
-            <button className="secondary-button" disabled={busyAction === `approve-for-mission-${approval.id}`} onClick={() => void onResolveApproval(approval, "approve-for-mission")}>
-              Approve for Mission
-            </button>
-            <button className="danger-button" disabled={busyAction === `deny-${approval.id}`} onClick={() => void onResolveApproval(approval, "deny")}>
-              Deny
-            </button>
-          </div>
-        </Panel>
+      {approvalItem ? (
+        <ApprovalCard
+          approval={approvalItem}
+          busy={
+            busyAction === `approve-once-${approvalItem.id}` ||
+            busyAction === `approve-for-mission-${approvalItem.id}` ||
+            busyAction === `deny-${approvalItem.id}`
+          }
+          onAllowOnce={() => void onResolveApproval(approval!, "approve-once")}
+          onAllowMission={() => void onResolveApproval(approval!, "approve-for-mission")}
+          onDeny={() => void onResolveApproval(approval!, "deny")}
+        />
       ) : null}
     </>
   );
@@ -1430,9 +1816,9 @@ function ConversationPanel({
   const visibleMessages = thread ? messages.filter((message) => message.threadId === thread.id) : messages;
   return (
     <Panel title="Conversational Control" subtitle={thread ? thread.title : "No active thread"}>
-      <div className="mini-log">
+      <div className="mini-log forge-mini-log">
         {visibleMessages.slice(-6).map((message) => (
-          <div className="log-line" key={message.id}>
+          <div className="log-line forge-log-line" key={message.id}>
             <span className={`log-level log-level-${message.role === "assistant" ? "result" : message.role === "system" ? "system" : "plan"}`}>
               {message.role}
             </span>
@@ -1441,22 +1827,27 @@ function ConversationPanel({
         ))}
       </div>
       <label className="wide-field">
-        <span>Message</span>
-        <textarea rows={3} value={chatDraft} onChange={(event) => setChatDraft(event.target.value)} placeholder='Try "approve that", "pause it", "run QA", or "show details".' />
+        <span className="forge-field-label">Message</span>
+        <textarea
+          className="forge-textarea"
+          rows={3}
+          value={chatDraft}
+          onChange={(event) => setChatDraft(event.target.value)}
+          placeholder='Try "approve that", "pause it", "run QA", or "show details".'
+        />
       </label>
-      <div className="button-row">
-        <button className="primary-button" disabled={busyAction === "send-chat" || !thread} onClick={() => void onSendChat()}>
+      <div className="button-row forge-button-row">
+        <MagneticButton variant="primary" disabled={busyAction === "send-chat" || !thread} onClick={() => void onSendChat()}>
           {busyAction === "send-chat" ? "Sending..." : "Send"}
-        </button>
+        </MagneticButton>
         {quickActions.slice(0, 4).map((action) => (
-          <button
-            className="ghost-button"
+          <MagneticButton
             disabled={busyAction === `quick-${action.id}`}
             key={action.id}
             onClick={() => void onConsumeQuickAction(action.id)}
           >
             {action.emoji} {action.label}
-          </button>
+          </MagneticButton>
         ))}
       </div>
     </Panel>
@@ -1476,11 +1867,15 @@ function RecentHistory({
 }) {
   return (
     <Panel title="Run History" subtitle="Completed, blocked, and live mission runs.">
-      <div className="table-list">
+      <div className="table-list forge-table-list">
         {runs.map((run) => {
           const mission = missions.find((item) => item.id === run.missionId);
           return (
-            <button className={`history-button ${activeRunId === run.id ? "history-button-active" : ""}`} key={run.id} onClick={() => onSelectRun(run.id)}>
+            <button
+              className={`history-button forge-history-button ${activeRunId === run.id ? "history-button-active forge-history-button-active" : ""}`.trim()}
+              key={run.id}
+              onClick={() => onSelectRun(run.id)}
+            >
               <div>
                 <strong>{mission?.title ?? run.missionId}</strong>
                 <p>{run.requestedCommand ?? "No command recorded"}</p>

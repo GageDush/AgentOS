@@ -124,6 +124,17 @@ export class DiscordRestClient {
     return this.request("PATCH", `/channels/${channelId}/messages/${messageId}`, body);
   }
 
+  getPinnedMessages(channelId: string) {
+    return this.request<Array<{ id: string; embeds?: Array<{ title?: string }> }>>(
+      "GET",
+      `/channels/${channelId}/pins`
+    );
+  }
+
+  pinMessage(channelId: string, messageId: string) {
+    return this.request("PUT", `/channels/${channelId}/pins/${messageId}`);
+  }
+
   addReaction(channelId: string, messageId: string, emoji: string) {
     const encoded = encodeURIComponent(emoji);
     return this.request("PUT", `/channels/${channelId}/messages/${messageId}/reactions/${encoded}/@me`);

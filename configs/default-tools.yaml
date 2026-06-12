@@ -1,4 +1,14 @@
 tools:
+  - id: read
+    approvalRequired: false
+  - id: grep
+    approvalRequired: false
+  - id: glob.list
+    approvalRequired: false
+  - id: shell
+    approvalRequired: true
+  - id: patch.apply
+    approvalRequired: true
   - id: memory.search
     approvalRequired: false
   - id: usage.record

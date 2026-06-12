@@ -8,6 +8,12 @@ import type {
   MissionRunLog,
   QuickActionRecord
 } from "@agentos/shared";
+import {
+  listExecutedAgentIdsFromAudits,
+  listExecutedAgentIdsFromMetadata,
+  resolveAgentDisplayName,
+  resolveCanonicalAgentId
+} from "@agentos/shared";
 import type {
   ForgeActivityEvent,
   ForgeAgentPresence,
@@ -21,6 +27,7 @@ import type {
   ForgeQuickAction,
   ForgeStatCardData
 } from "@agentos/ui";
+import { agentAccentColor, agentAvatarUrl } from "../../lib/agent-avatars";
 
 type DashboardSystem = {
   api: string;
@@ -63,13 +70,43 @@ export function toHealthMetrics(input: {
   ];
 }
 
+function resolveAgentName(agents: AgentProfile[] | undefined, id?: string) {
+  if (!id) return undefined;
+  const canonical = resolveCanonicalAgentId(id);
+  const fromList =
+    agents?.find((agent) => agent.id === id)?.name ??
+    agents?.find((agent) => agent.id === canonical)?.name;
+  return fromList ?? resolveAgentDisplayName(id);
+}
+
+export function resolveExecutedAgentIds(input: {
+  route?: AgentRoutingDecisionRecord;
+  audits?: AuditEvent[];
+  runId?: string;
+}): string[] {
+  const fromRoute = input.route?.executedAgentIds ?? listExecutedAgentIdsFromMetadata(input.route?.metadata);
+  if (fromRoute.length > 0) return fromRoute;
+  if (input.audits?.length && input.runId) {
+    return listExecutedAgentIdsFromAudits(input.audits, input.runId);
+  }
+  return [];
+}
+
 export function toMissionControlData(input: {
   mission?: MissionRecord;
   run?: MissionRun;
   route?: AgentRoutingDecisionRecord;
   logs: MissionRunLog[];
   tools?: string[];
+  agents?: AgentProfile[];
+  audits?: AuditEvent[];
 }): ForgeMissionControlData {
+  const executedAgentIds = resolveExecutedAgentIds({
+    route: input.route,
+    audits: input.audits,
+    runId: input.run?.id
+  });
+  const executedAgentNames = executedAgentIds.map((id) => resolveAgentName(input.agents, id) ?? id);
   const lastOutput = input.logs
     .filter((l) => l.level === "stdout" || l.level === "stderr" || l.level === "result")
     .slice(-6)
@@ -87,14 +124,31 @@ export function toMissionControlData(input: {
             ? 20
             : 10;
 
+  const startedAt = input.run?.startedAt;
+  const elapsedMs =
+    startedAt && input.run?.completedAt
+      ? new Date(input.run.completedAt).getTime() - new Date(startedAt).getTime()
+      : startedAt
+        ? Date.now() - new Date(startedAt).getTime()
+        : undefined;
+
   return {
     missionTitle: input.mission?.title,
     missionObjective: input.mission?.objective,
+    command: input.mission?.command ?? input.run?.requestedCommand,
     runId: input.run?.id,
     runStatus: input.run?.status,
-    phase: input.route?.selectedPrimaryAgentId ?? input.run?.status,
+    phase: executedAgentIds[0] ?? input.route?.selectedPrimaryAgentId ?? input.run?.status,
     progress,
-    activeTools: input.tools ?? input.route?.supportingAgentIds,
+    primaryAgentName: executedAgentNames[0] ?? resolveAgentName(input.agents, input.route?.selectedPrimaryAgentId),
+    supportingAgentNames: executedAgentNames.slice(1),
+    provider: input.run?.provider ?? input.mission?.provider,
+    model: input.run?.model ?? input.mission?.model,
+    sandboxLevel: input.mission?.sandboxLevel,
+    startedAt,
+    elapsedMs,
+    requiredGates: input.route?.requiredGates,
+    activeTools: input.tools ?? executedAgentIds,
     commandOutput: lastOutput || input.run?.resultSummary || input.run?.error,
     artifacts: input.run?.resultSummary
       ? [{ label: "Run Summary", href: `#run-${input.run.id}` }]
@@ -139,28 +193,50 @@ export function toActivityFeed(audit: AuditEvent[], logs: MissionRunLog[]): Forg
 export function toAgentPresences(
   agents: AgentProfile[],
   activeRun?: MissionRun,
-  route?: AgentRoutingDecisionRecord
+  route?: AgentRoutingDecisionRecord,
+  audits?: AuditEvent[]
 ): ForgeAgentPresence[] {
-  return agents.map((agent) => {
-    const isPrimary = route?.selectedPrimaryAgentId === agent.id;
-    const isSupporting = route?.supportingAgentIds.includes(agent.id);
+  const executedIds = new Set(
+    resolveExecutedAgentIds({ route, audits, runId: activeRun?.id }).map((id) => resolveCanonicalAgentId(id))
+  );
+  const showExecutedOnly = executedIds.size > 0;
 
-    return {
-      id: agent.id,
-      name: agent.name,
-      role: agent.role,
-      state: mapAgentPresenceState(agent.status, isPrimary ? activeRun?.status : undefined),
-      currentTask: isPrimary || isSupporting ? activeRun?.requestedCommand : agent.currentTaskId,
-      activeTool: isPrimary ? route?.selectedPrimaryAgentId : undefined,
-      lastAction: agent.skills[0],
-      permissionLevel: isPrimary ? "mission-scoped" : "observe",
-      progress: agent.workload,
-      confidence: isPrimary ? 82 : 60
-    };
-  });
+  return agents
+    .filter((agent) => !showExecutedOnly || executedIds.has(resolveCanonicalAgentId(agent.id)))
+    .map((agent) => {
+      const canonical = resolveCanonicalAgentId(agent.id);
+      const executedIndex = [...executedIds].indexOf(canonical);
+      const isPrimary = executedIndex === 0;
+      const isSupporting = executedIndex > 0;
+
+      return {
+        id: agent.id,
+        name: agent.name,
+        role: agent.role,
+        state: mapAgentPresenceState(agent.status, isPrimary || isSupporting ? activeRun?.status : undefined),
+        avatarUrl: agentAvatarUrl(agent.id),
+        accentColor: agentAccentColor(agent.id),
+        currentTask: isPrimary || isSupporting ? activeRun?.requestedCommand : agent.currentTaskId,
+        activeTool: isPrimary ? canonical : undefined,
+        lastAction: agent.skills[0],
+        permissionLevel: isPrimary ? "mission-scoped" : isSupporting ? "mission-scoped" : "observe",
+        progress: agent.workload,
+        confidence: isPrimary ? 82 : isSupporting ? 70 : 60
+      };
+    });
 }
 
-export function toMissionTimeline(run?: MissionRun, logs: MissionRunLog[] = []): ForgeMissionStep[] {
+type GateResultChip = {
+  gateId: string;
+  status: "pass" | "fail";
+  summary?: string;
+};
+
+export function toMissionTimeline(
+  run?: MissionRun,
+  logs: MissionRunLog[] = [],
+  gateResults: GateResultChip[] = []
+): ForgeMissionStep[] {
   const steps: ForgeMissionStep[] = [
     { id: "queued", kind: "queued", label: "Queued", status: "pending" },
     { id: "planning", kind: "planning", label: "Planning", status: "pending" },
@@ -217,6 +293,23 @@ export function toMissionTimeline(run?: MissionRun, logs: MissionRunLog[] = []):
     setStatus("complete", "error", run.completedAt, run.error ?? run.lastError);
   }
 
+  if (gateResults.length) {
+    const testing = steps.find((s) => s.id === "testing");
+    if (testing) {
+      testing.gateChips = gateResults.map((gate) => ({
+        gateId: gate.gateId,
+        status: gate.status === "pass" ? "pass" : "fail",
+        label: gate.gateId
+      }));
+      if (gateResults.some((gate) => gate.status === "fail")) {
+        testing.status = "error";
+        testing.details = gateResults.find((gate) => gate.status === "fail")?.summary ?? "A completion gate failed.";
+      } else if (gateResults.every((gate) => gate.status === "pass")) {
+        testing.status = testing.status === "pending" ? "complete" : testing.status;
+      }
+    }
+  }
+
   return steps;
 }
 
@@ -242,12 +335,12 @@ export function toQuickActions(actions: QuickActionRecord[]): ForgeQuickAction[]
 
 export function buildDefaultQuickActions(): ForgeQuickAction[] {
   return [
-    { id: "start-mission", label: "Start Mission", description: "Open missions compose surface" },
+    { id: "start-mission", label: "Start Mission", description: "Open missions compose surface", importance: "primary" },
+    { id: "open-approvals", label: "Open Approvals", description: "Jump to Control Gate", importance: "primary" },
+    { id: "run-tests", label: "Run Tests", description: "Execute frontend quality gate", importance: "secondary" },
+    { id: "generate-ui", label: "Generate UI", description: "Scaffold AgentOS Forge surface", importance: "secondary" },
     { id: "review-diff", label: "Review Latest Diff", description: "Inspect recent code changes" },
-    { id: "run-tests", label: "Run Tests", description: "Execute frontend quality gate" },
-    { id: "open-approvals", label: "Open Approvals", description: "Jump to Control Gate" },
     { id: "inspect-server", label: "Inspect Server", description: "Check API health" },
-    { id: "generate-ui", label: "Generate UI", description: "Scaffold AgentOS Forge surface" },
     { id: "sync-memory", label: "Sync Memory", description: "Refresh archive memory index" },
     { id: "deploy-preview", label: "Deploy Preview", description: "Launch local preview server" }
   ];

@@ -1,4 +1,5 @@
-import { AGENTOS_EMBED_THEME, AWAITING_EMOJI, DIVIDER, SEEN_EMOJI, agentAccentColor, agentDisplayName } from "./theme";
+import { resolveHttpAgentAvatarUrl } from "./agent-avatars";
+import { AGENTOS_EMBED_THEME, AWAITING_EMOJI, SEEN_EMOJI, agentAccentColor, agentDisplayName } from "./theme";
 
 export type AgentEmbedField = {
   name: string;
@@ -20,6 +21,8 @@ export type AgentEmbedInput = {
   seenAt?: string;
   thumbnailUrl?: string;
   timestamp?: string | Date;
+  /** When true, show the agent portrait as an embed thumbnail. */
+  showPortrait?: boolean;
 };
 
 function toneColor(tone: AgentEmbedTone, agentId?: string) {
@@ -41,35 +44,36 @@ function buildFooter(input: Pick<AgentEmbedInput, "footerHint" | "seenBy" | "see
   if (input.seenBy) {
     const stamp = input.seenAt ? ` • ${new Date(input.seenAt).toISOString()}` : "";
     return {
-      text: `${SEEN_EMOJI} Agent synced • seen by ${input.seenBy}${stamp}`,
+      text: `${SEEN_EMOJI} Seen by ${input.seenBy}${stamp}`,
       icon_url: undefined
     };
   }
   return {
-    text: `${AWAITING_EMOJI} ${input.footerHint ?? "Awaiting operator response"} • AgentOS Neural Link`
+    text: `${AWAITING_EMOJI} ${input.footerHint ?? "AgentOS"} • Neural Link`,
+    icon_url: undefined
   };
 }
 
 export function buildAgentEmbed(input: AgentEmbedInput) {
-  const descriptionParts = [
-    `╭${DIVIDER}╮`,
-    input.description?.trim(),
-    `╰${DIVIDER}╯`
-  ].filter(Boolean);
+  const avatarUrl = input.thumbnailUrl ?? resolveHttpAgentAvatarUrl(input.agentId);
 
   return {
     color: toneColor(input.tone ?? "default", input.agentId),
     author: {
-      name: agentDisplayName(input.agentId, input.agentName)
+      name: agentDisplayName(input.agentId, input.agentName),
+      ...(avatarUrl ? { icon_url: avatarUrl } : {})
     },
-    title: `▸ ${input.title}`,
-    description: descriptionParts.join("\n"),
+    title: input.title,
+    description: input.description?.trim() || undefined,
     fields: (input.fields ?? []).map((field) => ({
-      name: `┃ ${field.name}`,
+      name: field.name,
       value: field.value,
       inline: field.inline ?? false
     })),
-    thumbnail: input.thumbnailUrl ? { url: input.thumbnailUrl } : undefined,
+    thumbnail:
+      input.showPortrait && avatarUrl
+        ? { url: avatarUrl }
+        : undefined,
     footer: buildFooter(input),
     timestamp: input.timestamp
       ? typeof input.timestamp === "string"
@@ -88,7 +92,7 @@ export function withSeenState(
     ...embed,
     color: AGENTOS_EMBED_THEME.neonViolet,
     footer: {
-      text: `${SEEN_EMOJI} Agent synced • seen by ${seenBy} • ${seenAt}`
+      text: `${SEEN_EMOJI} Seen by ${seenBy} • ${seenAt}`
     }
   };
 }

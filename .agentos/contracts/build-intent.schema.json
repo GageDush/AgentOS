@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentOS BuildIntent",
+  "type": "object",
+  "required": [
+    "intentId",
+    "taskType",
+    "appName",
+    "summary",
+    "questionnaire"
+  ],
+  "properties": {
+    "intentId": {
+      "type": "string"
+    },
+    "taskType": {
+      "const": "app_creation"
+    },
+    "appName": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "questionnaire": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "prompt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "answers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

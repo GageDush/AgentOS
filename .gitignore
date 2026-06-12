@@ -15,10 +15,19 @@ apps/*/dist/
 .agentos/state/discord-guild.json
 .agentos/state/discord-chat-rooms.json
 .agentos/state/discord-registry.json
+.agentos/state/plan-*.md
+.agentos/state/*.json
+.agentos/state/*.pids
 .agentos/stops/
 
 # Local AgentOS backups (zipped runtime snapshots; may contain .env)
 .agentos/backups/
+.agentos/logs/
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# Local IDE / test artifacts
+.cursor/
+test-results/
+playwright-report/

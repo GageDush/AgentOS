@@ -8,6 +8,8 @@ export function usePointerProximity() {
     let frame = 0;
     let pointerX = 0;
     let pointerY = 0;
+    let smoothX = 0;
+    let smoothY = 0;
     let reducedMotion = false;
 
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -17,7 +19,12 @@ export function usePointerProximity() {
       root.dataset.reducedMotion = reducedMotion ? "true" : "false";
     };
 
-    updateReducedMotion();
+    let proximityReady = false;
+    const enableProximity = () => {
+      proximityReady = true;
+      updateReducedMotion();
+    };
+    window.requestAnimationFrame(() => window.requestAnimationFrame(enableProximity));
     media.addEventListener("change", updateReducedMotion);
 
     const onPointerMove = (event: PointerEvent) => {
@@ -30,8 +37,13 @@ export function usePointerProximity() {
 
     const tick = () => {
       frame = 0;
+      if (!proximityReady) return;
+      smoothX += (pointerX - smoothX) * 0.12;
+      smoothY += (pointerY - smoothY) * 0.12;
       root.style.setProperty("--pointer-x", `${pointerX}px`);
       root.style.setProperty("--pointer-y", `${pointerY}px`);
+      root.style.setProperty("--pointer-x-smooth", `${smoothX}px`);
+      root.style.setProperty("--pointer-y-smooth", `${smoothY}px`);
 
       const targets = document.querySelectorAll<HTMLElement>("[data-forge-proximity]");
 

@@ -61,7 +61,7 @@ export default function OfficePage() {
           <TopNav
             wordmark="AgentOS Office"
             items={[{ id: "office", label: "Office (experimental)", href: "/office", active: true }]}
-            extraLinks={[{ id: "dashboard", label: "Dashboard", href: "/" }]}
+            overflowItems={[{ id: "dashboard", label: "Dashboard", href: "/" }]}
           />
         }
       >

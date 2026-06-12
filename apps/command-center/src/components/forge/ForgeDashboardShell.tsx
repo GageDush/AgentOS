@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import {
@@ -10,8 +11,32 @@ import {
   type ForgeCommandItem,
   type ForgeHealthMetric,
   type ForgeNavItem,
-  type ForgeStatusChip
+  type ForgeNavLinkProps
 } from "@agentos/ui";
+import { useAgentOSEventsContextOptional } from "../../lib/agentos-events-context";
+import { useAgentOSEvents } from "../../lib/use-agentos-events";
+
+function ForgeNavLink({
+  href,
+  className,
+  children,
+  onClick,
+  "aria-current": ariaCurrent,
+  ...rest
+}: ForgeNavLinkProps) {
+  return (
+    <Link
+      href={href}
+      className={className}
+      onClick={onClick}
+      prefetch={false}
+      {...(ariaCurrent ? { "aria-current": ariaCurrent } : {})}
+      {...rest}
+    >
+      {children}
+    </Link>
+  );
+}
 
 type SectionKey =
   | "dashboard"
@@ -33,19 +58,20 @@ type ForgeDashboardShellProps = {
   children: ReactNode;
 };
 
-const primaryNav: Array<{ id: string; label: string; href: string; section: SectionKey }> = [
-  { id: "product", label: "Product", href: "/", section: "dashboard" },
+const slimNav: Array<{ id: string; label: string; href: string; section: SectionKey }> = [
+  { id: "dashboard", label: "Dashboard", href: "/", section: "dashboard" },
+  { id: "missions", label: "Missions", href: "/missions", section: "missions" },
+  { id: "control-gate", label: "Control Gate", href: "/control-gate", section: "control-gate" },
+  { id: "blackbox", label: "Blackbox", href: "/blackbox", section: "blackbox" }
+];
+
+const overflowNav: Array<{ id: string; label: string; href: string; section?: SectionKey }> = [
   { id: "agents", label: "Agents", href: "/operators", section: "operators" },
   { id: "automations", label: "Automations", href: "/routines", section: "routines" },
   { id: "integrations", label: "Integrations", href: "/loadout", section: "loadout" },
-  { id: "settings", label: "Settings", href: "/settings", section: "settings" }
-];
-
-const extraNav: ForgeNavItem[] = [
-  { id: "missions", label: "Missions", href: "/missions" },
-  { id: "control-gate", label: "Control Gate", href: "/control-gate" },
-  { id: "blackbox", label: "Blackbox", href: "/blackbox" },
-  { id: "office", label: "Office", href: "/office" }
+  { id: "archive", label: "Archive", href: "/archive", section: "archive" },
+  { id: "settings", label: "Settings", href: "/settings", section: "settings" },
+  { id: "office", label: "Office (preview)", href: "/office" }
 ];
 
 export function ForgeDashboardShell({
@@ -58,10 +84,24 @@ export function ForgeDashboardShell({
 }: ForgeDashboardShellProps) {
   const router = useRouter();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const sharedEvents = useAgentOSEventsContextOptional();
+  const fallbackEvents = useAgentOSEvents({ pollFallbackMs: 5000, enabled: !sharedEvents });
+  const connectionMode = sharedEvents?.mode ?? fallbackEvents.mode;
 
   const navItems: ForgeNavItem[] = useMemo(
     () =>
-      primaryNav.map((item) => ({
+      slimNav.map((item) => ({
+        id: item.id,
+        label: item.label,
+        href: item.href,
+        active: item.section === section || (item.section === "dashboard" && section === "dashboard")
+      })),
+    [section]
+  );
+
+  const overflowItems: ForgeNavItem[] = useMemo(
+    () =>
+      overflowNav.map((item) => ({
         id: item.id,
         label: item.label,
         href: item.href,
@@ -69,16 +109,6 @@ export function ForgeDashboardShell({
       })),
     [section]
   );
-
-  const statusChips: ForgeStatusChip[] = useMemo(() => {
-    const api = healthMetrics.find((m) => m.id === "api");
-    const server = healthMetrics.find((m) => m.id === "server");
-    return [
-      { id: "local", label: "Local", value: server?.value ?? "unknown", status: server?.status },
-      { id: "api", label: "API", value: api?.value ?? "unknown", status: api?.status },
-      { id: "sandbox", label: "Sandbox", value: "gated", status: "ok" }
-    ];
-  }, [healthMetrics]);
 
   const handleCommand = useCallback(
     (command: ForgeCommandItem) => {
@@ -101,13 +131,21 @@ export function ForgeDashboardShell({
         <TopNav
           wordmark="AgentOS"
           items={navItems}
-          statusChips={statusChips}
-          extraLinks={extraNav}
+          overflowItems={overflowItems}
+          healthMetrics={healthMetrics}
           pendingApprovals={pendingApprovals}
+          linkComponent={ForgeNavLink}
           onOpenCommandPalette={() => setPaletteOpen(true)}
         />
       }
-      healthBar={<AmbientSystemHealthBar metrics={healthMetrics} />}
+      healthBar={
+        <div className="forge-health-bar-standalone">
+          <AmbientSystemHealthBar metrics={healthMetrics} />
+          <p className="forge-mono forge-connection-pill" data-mode={connectionMode} style={{ margin: "0.35rem 0 0", fontSize: "0.68rem" }}>
+            {connectionMode === "live" ? "● Live" : connectionMode === "polling" ? "◐ Polling" : "○ Offline"}
+          </p>
+        </div>
+      }
       commandPalette={
         <CommandPalette
           commands={commandItems}

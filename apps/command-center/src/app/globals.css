@@ -1,20 +1,20 @@
 :root {
   color-scheme: dark;
   /* Legacy aliases — bridge to forge tokens (prefer --forge-* in new code) */
-  --bg: var(--forge-bg, #050608);
-  --bg-2: var(--forge-bg-2, #0a0c10);
-  --panel: var(--forge-panel, rgba(12, 14, 18, 0.72));
-  --panel-strong: var(--forge-panel-strong, rgba(8, 10, 14, 0.92));
+  --bg: var(--forge-bg, #06070c);
+  --bg-2: var(--forge-bg-2, #0a0d14);
+  --panel: var(--forge-panel, rgba(10, 14, 22, 0.74));
+  --panel-strong: var(--forge-panel-strong, rgba(6, 9, 16, 0.92));
   --line: var(--forge-border, rgba(255, 255, 255, 0.08));
-  --line-strong: var(--forge-border-strong, rgba(232, 160, 76, 0.35));
-  --text: var(--forge-text, #eef1f6);
-  --muted: var(--forge-muted, #8b95a8);
-  --soft: var(--forge-soft, #5a6478);
-  --cyan: var(--forge-accent, #e8a04c);
+  --line-strong: var(--forge-border-strong, rgba(107, 159, 255, 0.32));
+  --text: var(--forge-text, #eef2ff);
+  --muted: var(--forge-muted, #8b93a8);
+  --soft: var(--forge-soft, #5a6278);
+  --cyan: var(--forge-accent, #6b9fff);
   --green: var(--forge-green, #5fe4a1);
-  --amber: var(--forge-accent-bright, #ff9f43);
+  --accent: var(--forge-accent-bright, #9eb8ff);
   --red: var(--forge-red, #ff7d86);
-  --violet: #8fa4ff;
+  --violet: var(--forge-violet, #8fa4ff);
   --shadow: var(--forge-shadow, 0 24px 64px rgba(0, 0, 0, 0.45));
 }
 
@@ -26,10 +26,7 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(circle at 18% 8%, rgba(232, 160, 76, 0.09), transparent 28rem),
-    radial-gradient(circle at 82% 92%, rgba(232, 160, 76, 0.05), transparent 32rem),
-    linear-gradient(165deg, var(--bg), var(--bg-2));
+  background: var(--bg);
   color: var(--text);
   font-family: var(--forge-sans, Bahnschrift, "Segoe UI", "Trebuchet MS", sans-serif);
 }
@@ -65,7 +62,7 @@ code,
   border-radius: 14px;
   border: 1px solid var(--line-strong);
   background:
-    linear-gradient(180deg, rgba(232, 160, 76, 0.08), rgba(11, 19, 31, 0.92)),
+    linear-gradient(180deg, rgba(107, 159, 255, 0.08), rgba(11, 19, 31, 0.92)),
     var(--panel);
   padding: 14px;
   display: grid;
@@ -111,8 +108,8 @@ code,
   min-height: 38px;
   border-radius: 10px;
   border: 1px solid var(--line-strong);
-  background: linear-gradient(135deg, var(--amber), var(--cyan));
-  color: #1a0f04;
+  background: linear-gradient(135deg, var(--violet), var(--cyan));
+  color: #060a14;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -170,7 +167,7 @@ code,
   gap: 16px;
   margin-bottom: 14px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(232, 160, 76, 0.08), rgba(95, 228, 161, 0.05));
+  background: linear-gradient(135deg, rgba(107, 159, 255, 0.08), rgba(95, 228, 161, 0.05));
 }
 
 .focus-card strong,
@@ -254,7 +251,7 @@ code,
 .status-chip-reviewing,
 .status-chip-thinking,
 .status-chip-mock {
-  color: var(--amber);
+  color: var(--accent);
 }
 
 .status-chip-failed,
@@ -290,13 +287,13 @@ code,
 
 .primary-button {
   border: 1px solid var(--line-strong);
-  background: linear-gradient(135deg, rgba(232, 160, 76, 0.18), rgba(95, 228, 161, 0.12));
+  background: linear-gradient(135deg, rgba(107, 159, 255, 0.18), rgba(95, 228, 161, 0.12));
   color: var(--text);
 }
 
 .secondary-button {
-  border: 1px solid rgba(232, 160, 76, 0.28);
-  background: rgba(232, 160, 76, 0.08);
+  border: 1px solid rgba(107, 159, 255, 0.28);
+  background: rgba(107, 159, 255, 0.08);
   color: var(--text);
 }
 
@@ -379,11 +376,11 @@ code,
 }
 
 .log-level-plan {
-  color: var(--amber);
+  color: var(--accent);
 }
 
 .log-level-approval {
-  color: var(--amber);
+  color: var(--accent);
 }
 
 .log-level-stderr {
@@ -408,7 +405,7 @@ code,
 
 .history-button-active {
   border-color: var(--line-strong);
-  background: linear-gradient(135deg, rgba(232, 160, 76, 0.08), rgba(143, 164, 255, 0.08));
+  background: linear-gradient(135deg, rgba(107, 159, 255, 0.08), rgba(143, 164, 255, 0.1));
 }
 
 .settings-grid,
@@ -866,4 +863,33 @@ code,
   .shell .footer-text {
     text-align: left;
   }
+}
+
+.forge-memory-queue {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--forge-border, rgba(255, 255, 255, 0.08));
+}
+
+.forge-memory-queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.forge-memory-queue-item {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--forge-border, rgba(255, 255, 255, 0.08));
+}
+
+.forge-muted-copy {
+  color: var(--forge-muted, rgba(255, 255, 255, 0.62));
+  font-size: 0.85rem;
 }

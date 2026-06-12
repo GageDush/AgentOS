@@ -50,8 +50,8 @@ export default function ForgePreviewPage() {
           items={[
             { id: "gallery", label: "Gallery", href: "/preview/forge", active: true }
           ]}
-          statusChips={[
-            { id: "local", label: "Local", value: "preview", status: "ok" }
+          healthMetrics={[
+            { id: "server", label: "Local", value: "preview", status: "ok" }
           ]}
         />
         <AmbientSystemHealthBar metrics={sampleHealth} />

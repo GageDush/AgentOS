@@ -11,6 +11,7 @@ export type OperatorSession = {
 };
 
 const SESSION_COOKIE = "agentos_session";
+const DEFAULT_SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 function sessionSecret() {
   const secret = process.env.SESSION_SECRET?.trim();
@@ -22,6 +23,13 @@ function sessionSecret() {
 
 function sign(value: string) {
   return createHmac("sha256", sessionSecret()).update(value).digest("base64url");
+}
+
+export function sessionMaxAgeSeconds() {
+  const raw = process.env.AGENTOS_SESSION_MAX_AGE_SECONDS?.trim();
+  const parsed = raw ? Number.parseInt(raw, 10) : Number.NaN;
+  if (Number.isFinite(parsed) && parsed > 0) return parsed;
+  return DEFAULT_SESSION_MAX_AGE_SECONDS;
 }
 
 export function createSessionToken(session: OperatorSession) {
@@ -63,18 +71,34 @@ function cookieDomainAttribute() {
 
 function cookieSecureAttribute() {
   const apiBase = process.env.AGENTOS_API_BASE_URL?.trim() ?? "";
-  if (process.env.AGENTOS_ENV === "production" || apiBase.startsWith("https://")) {
+  const sameSite = cookieSameSiteAttribute();
+  if (sameSite.includes("None") || process.env.AGENTOS_ENV === "production" || apiBase.startsWith("https://")) {
     return "; Secure";
   }
   return "";
 }
 
-export function buildSessionCookie(token: string, maxAgeSeconds = 60 * 60 * 24 * 7) {
-  return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAgeSeconds}${cookieSecureAttribute()}${cookieDomainAttribute()}`;
+function cookieSameSiteAttribute() {
+  const explicit = process.env.AGENTOS_COOKIE_SAMESITE?.trim().toLowerCase();
+  if (explicit === "none" || explicit === "lax" || explicit === "strict") {
+    return `; SameSite=${explicit[0].toUpperCase()}${explicit.slice(1)}`;
+  }
+  if (cookieDomainAttribute()) {
+    return "; SameSite=None";
+  }
+  return "; SameSite=Lax";
+}
+
+export function buildSessionCookie(token: string, maxAgeSeconds = sessionMaxAgeSeconds()) {
+  return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly${cookieSameSiteAttribute()}; Max-Age=${maxAgeSeconds}${cookieSecureAttribute()}${cookieDomainAttribute()}`;
+}
+
+export function touchSessionCookie(token: string) {
+  return buildSessionCookie(token);
 }
 
 export function clearSessionCookie() {
-  return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${cookieSecureAttribute()}${cookieDomainAttribute()}`;
+  return `${SESSION_COOKIE}=; Path=/; HttpOnly${cookieSameSiteAttribute()}; Max-Age=0${cookieSecureAttribute()}${cookieDomainAttribute()}`;
 }
 
 export function readCookieValue(cookieHeader: string | undefined, name: string) {

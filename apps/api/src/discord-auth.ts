@@ -15,11 +15,43 @@ type DiscordUser = {
   avatar?: string | null;
 };
 
-export function getDiscordOAuthRedirectUri() {
+function localOAuthRedirectUri() {
   return (
     process.env.DISCORD_OAUTH_REDIRECT_URI?.trim() ||
     `http://127.0.0.1:${process.env.AGENTOS_API_PORT ?? 8787}/auth/discord/callback`
   );
+}
+
+function productionOAuthRedirectUri() {
+  const explicit = process.env.DISCORD_OAUTH_REDIRECT_URI_PROD?.trim();
+  if (explicit) return explicit;
+  const apiBase = process.env.AGENTOS_API_BASE_URL?.trim();
+  if (!apiBase) return undefined;
+  return `${apiBase.replace(/\/$/, "")}/auth/discord/callback`;
+}
+
+function hostFromRequest(requestHost?: string) {
+  return requestHost?.split(":")[0]?.toLowerCase() ?? "";
+}
+
+export function getDiscordOAuthRedirectUri(requestHost?: string) {
+  const local = localOAuthRedirectUri();
+  const prod = productionOAuthRedirectUri();
+  const host = hostFromRequest(requestHost);
+  if (!host || host === "127.0.0.1" || host === "localhost") {
+    return local;
+  }
+  if (prod) {
+    try {
+      const prodHost = new URL(prod).hostname.toLowerCase();
+      if (host === prodHost || host.endsWith(".flous.dev")) {
+        return prod;
+      }
+    } catch {
+      return prod;
+    }
+  }
+  return local;
 }
 
 function apiBaseUrl() {
@@ -35,7 +67,7 @@ export function isDiscordOAuthConfigured() {
   return Boolean(process.env.DISCORD_CLIENT_ID?.trim() && process.env.DISCORD_CLIENT_SECRET?.trim() && process.env.SESSION_SECRET?.trim());
 }
 
-export function buildDiscordAuthorizeUrl(state: string) {
+export function buildDiscordAuthorizeUrl(state: string, requestHost?: string) {
   const clientId = process.env.DISCORD_CLIENT_ID?.trim() || process.env.DISCORD_APPLICATION_ID?.trim();
   if (!clientId) {
     throw new Error("DISCORD_CLIENT_ID or DISCORD_APPLICATION_ID is required.");
@@ -43,7 +75,7 @@ export function buildDiscordAuthorizeUrl(state: string) {
   const scope = process.env.DISCORD_OAUTH_SCOPES?.trim() || "identify";
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: getDiscordOAuthRedirectUri(),
+    redirect_uri: getDiscordOAuthRedirectUri(requestHost),
     response_type: "code",
     scope,
     state
@@ -51,7 +83,7 @@ export function buildDiscordAuthorizeUrl(state: string) {
   return `https://discord.com/api/oauth2/authorize?${params.toString()}`;
 }
 
-export async function exchangeDiscordOAuthCode(code: string) {
+export async function exchangeDiscordOAuthCode(code: string, requestHost?: string) {
   const clientId = process.env.DISCORD_CLIENT_ID?.trim() || process.env.DISCORD_APPLICATION_ID?.trim();
   const clientSecret = process.env.DISCORD_CLIENT_SECRET?.trim();
   if (!clientId || !clientSecret) {
@@ -63,7 +95,7 @@ export async function exchangeDiscordOAuthCode(code: string) {
     client_secret: clientSecret,
     grant_type: "authorization_code",
     code,
-    redirect_uri: getDiscordOAuthRedirectUri()
+    redirect_uri: getDiscordOAuthRedirectUri(requestHost)
   });
 
   const response = await fetch("https://discord.com/api/oauth2/token", {
@@ -89,8 +121,8 @@ export async function fetchDiscordUser(accessToken: string) {
   return (await response.json()) as DiscordUser;
 }
 
-export async function createDiscordOperatorSession(code: string): Promise<OperatorSession> {
-  const token = await exchangeDiscordOAuthCode(code);
+export async function createDiscordOperatorSession(code: string, requestHost?: string): Promise<OperatorSession> {
+  const token = await exchangeDiscordOAuthCode(code, requestHost);
   const user = await fetchDiscordUser(token.access_token);
   return {
     provider: "discord",
