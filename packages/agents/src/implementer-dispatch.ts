@@ -33,6 +33,23 @@ export type ImplementerDispatchOptions = {
   gatewayUrl?: string;
 };
 
+function extractRepoPathsFromText(...texts: string[]) {
+  const paths = new Set<string>();
+  const patterns = [
+    /\b(?:apps|packages|scripts|docs|infra)\/[A-Za-z0-9_./-]+/g,
+    /\b[A-Za-z0-9_./-]+\.(?:ts|tsx|js|mjs|json|md|sql|css)\b/g
+  ];
+  for (const text of texts) {
+    if (!text) continue;
+    for (const pattern of patterns) {
+      for (const match of text.matchAll(pattern)) {
+        paths.add(match[0].replace(/['"`]/g, ""));
+      }
+    }
+  }
+  return [...paths];
+}
+
 function shouldApplyImplementerPatches() {
   const raw = process.env.AGENTOS_IMPLEMENTER_APPLY_PATCHES;
   if (raw === undefined || raw === "") return true;
@@ -93,7 +110,12 @@ export async function dispatchImplementerWork(
   options?: ImplementerDispatchOptions
 ): Promise<AgentReport & { dispatchMode: ImplementerDispatchMode }> {
   const mode = options?.mode ?? resolveImplementerDispatchMode();
-  const scopedFiles = contextPacket?.repoPaths ?? envelope.filesInScope;
+  const scopedFiles =
+    contextPacket?.repoPaths?.length
+      ? contextPacket.repoPaths
+      : envelope.filesInScope.length
+        ? envelope.filesInScope
+        : extractRepoPathsFromText(envelope.normalizedGoal, envelope.userGoal, envelope.inScope[0]);
   const commandsRun: string[] = [];
 
   if (mode === "cursor" && options?.cursorPrompt && options.sessionKey) {
@@ -121,6 +143,13 @@ export async function dispatchImplementerWork(
     let toolExcerpt = "";
 
     if (isToolExecutionEnabled() && scopedFiles.length > 0) {
+      const recordProbe = (toolsRun: string[], excerpts: string[], budgetLabel?: string) => {
+        if (!toolsRun.length) return;
+        commandsRun.push(...toolsRun);
+        toolExcerpt = excerpts.filter(Boolean).join("\n---\n").slice(0, 800);
+        if (budgetLabel) commandsRun.push(budgetLabel);
+      };
+
       if (isLlmToolLoopEnabled() && options.generatePatch) {
         const loop = await runLlmToolLoop(
           async (prior) => {
@@ -145,6 +174,17 @@ export async function dispatchImplementerWork(
           commandsRun.push(...loop.toolsRun.map((t) => `llm.tool:${t}`));
           toolExcerpt = loop.excerpts.filter(Boolean).join("\n---\n").slice(0, 800);
           if (loop.budget) commandsRun.push(`tool.budget:${loop.budget.iterations}/${loop.budget.maxIterations}`);
+        } else {
+          const probe = await probeImplementerContext(scopedFiles, {
+            gatewayUrl: options.gatewayUrl,
+            missionId: options.missionId,
+            runId: options.runId
+          });
+          recordProbe(
+            probe.toolsRun,
+            probe.excerpts,
+            probe.budget ? `tool.budget:${probe.budget.iterations}/${probe.budget.maxIterations}` : undefined
+          );
         }
       } else {
         const probe = await probeImplementerContext(scopedFiles, {
@@ -152,13 +192,11 @@ export async function dispatchImplementerWork(
           missionId: options.missionId,
           runId: options.runId
         });
-        if (probe.toolsRun.length) {
-          commandsRun.push(...probe.toolsRun);
-          toolExcerpt = probe.excerpts.filter(Boolean).join("\n---\n").slice(0, 800);
-          if (probe.budget) {
-            commandsRun.push(`tool.budget:${probe.budget.iterations}/${probe.budget.maxIterations}`);
-          }
-        }
+        recordProbe(
+          probe.toolsRun,
+          probe.excerpts,
+          probe.budget ? `tool.budget:${probe.budget.iterations}/${probe.budget.maxIterations}` : undefined
+        );
       }
     }
 

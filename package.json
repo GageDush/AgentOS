@@ -15,6 +15,8 @@
     "agentos:bench-report": "node .agentos/scripts/bench-report.mjs",
     "agentos:bench-baseline": "node .agentos/scripts/bench-baseline.mjs",
     "mission:smoke": "node scripts/mission-execution-smoke.mjs",
+    "tool:smoke": "node scripts/tool-execution-smoke.mjs",
+    "tool:smoke:live": "node scripts/tool-execution-live-smoke.mjs",
     "agentos:optimize-hints": "node .agentos/scripts/optimize-agent-hints.mjs",
     "agentos:min-maxed-profiles": "node .agentos/scripts/apply-min-maxed-profiles.mjs",
     "memory:migrate-wiki": "node scripts/migrate-memory-to-wiki.mjs",

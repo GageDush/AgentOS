@@ -55,4 +55,5 @@ Core policy rules:
 - Merged human-readable summary: `pnpm agentos:bench-report` (writes `.agentos/state/bench-report.json`).
 - Regression baseline: `pnpm agentos:bench-baseline` (compares against `.agentos/benchmarks/baseline-snapshot.json`; refresh with `--write`).
 - Mission pipeline smoke (QA fail / release approval): `pnpm mission:smoke`.
+- Tool execution smoke (gateway tools + runtime dispatch): `pnpm tool:smoke` (live stack proof: `pnpm tool:smoke:live`).
 - Benchmark profile tiers (`min-maxed`, `competitive`, `control-plane`) with `pnpm agentos:bench-profiles`.

@@ -4,35 +4,108 @@ import { tmpdir } from "node:os";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SqlitePersistenceAdapter } from "@agentos/persistence";
 import type { MissionRecord } from "@agentos/shared";
+import type { ToolRequest } from "@agentos/shared";
 import { processPendingMissionRuns } from "./index";
 
-function mockGatewayCommandResults(results: Record<string, boolean> | ((command: string) => boolean)) {
-  const resolve = typeof results === "function" ? results : (command: string) => results[command] ?? true;
+type GatewayMockOptions = {
+  commandOk?: (command: string) => boolean;
+};
+
+function mockGatewayFetch(options: GatewayMockOptions = {}) {
+  const commandOk = options.commandOk ?? (() => true);
 
   vi.stubGlobal(
     "fetch",
-    vi.fn(async (_url: string, init?: RequestInit) => {
-      const body = JSON.parse(String(init?.body ?? "{}")) as { command?: string };
-      const command = body.command ?? "";
-      const ok = resolve(command);
-      const stdout = command.includes("git diff --stat")
-        ? " README.md | 2 +-\n 1 file changed, 2 insertions(+)"
-        : ok
-          ? "ok"
-          : "";
-      return {
-        ok: true,
-        json: async () => ({
+    vi.fn(async (url: string, init?: RequestInit) => {
+      const urlStr = String(url);
+      const body = JSON.parse(String(init?.body ?? "{}")) as { command?: string } & ToolRequest;
+
+      if (urlStr.includes("/tools/invoke")) {
+        const request = body as ToolRequest;
+        if (request.id === "read") {
+          return {
+            ok: true,
+            json: async () => ({
+              id: "read",
+              ok: true,
+              stdout: `export function isToolExecutionEnabled() {}\n`,
+              leaseId: request.leaseId
+            })
+          };
+        }
+        if (request.id === "grep") {
+          return {
+            ok: true,
+            json: async () => ({
+              id: "grep",
+              ok: true,
+              stdout: "packages/agents/src/tool-broker.ts:6:export function isToolExecutionEnabled",
+              leaseId: request.leaseId
+            })
+          };
+        }
+        if (request.id === "git.status") {
+          return {
+            ok: true,
+            json: async () => ({
+              id: "git.status",
+              ok: true,
+              stdout: " M packages/agents/src/tool-broker.ts",
+              leaseId: request.leaseId
+            })
+          };
+        }
+        if (request.id === "git.diff") {
+          return {
+            ok: true,
+            json: async () => ({
+              id: "git.diff",
+              ok: true,
+              stdout: "diff --git a/packages/agents/src/tool-broker.ts",
+              leaseId: request.leaseId
+            })
+          };
+        }
+        return {
           ok: true,
-          result: {
-            ok,
-            command,
-            exitCode: ok ? 0 : 1,
-            stdout,
-            stderr: ok ? "" : `failed: ${command}`,
-            durationMs: 5
-          }
-        })
+          json: async () => ({
+            id: request.id,
+            ok: false,
+            error: `unexpected tool ${request.id}`,
+            leaseId: request.leaseId
+          })
+        };
+      }
+
+      if (urlStr.includes("/execute")) {
+        const command = body.command ?? "";
+        const ok = commandOk(command);
+        const stdout = command.includes("git diff --stat")
+          ? " README.md | 2 +-\n 1 file changed, 2 insertions(+)"
+          : command.includes("git diff --name-only")
+            ? "packages/agents/src/tool-broker.ts\n"
+            : ok
+              ? "ok"
+              : "";
+        return {
+          ok: true,
+          json: async () => ({
+            ok: true,
+            result: {
+              ok,
+              command,
+              exitCode: ok ? 0 : 1,
+              stdout,
+              stderr: ok ? "" : `failed: ${command}`,
+              durationMs: 5
+            }
+          })
+        };
+      }
+
+      return {
+        ok: false,
+        json: async () => ({ ok: false, error: `unexpected fetch ${urlStr}` })
       };
     })
   );
@@ -91,7 +164,7 @@ describe("mission execution smoke", () => {
     vi.stubEnv("AGENTOS_CLASSIFIER_TIER2", "false");
     vi.stubEnv("FEATURE_AGENT_LLM", "false");
     vi.stubEnv("AGENTOS_IMPLEMENTER_MODE", "mock");
-    mockGatewayCommandResults((command) => !/\b(pnpm test|pnpm typecheck)\b/.test(command));
+    mockGatewayFetch({ commandOk: (command) => !/\b(pnpm test|pnpm typecheck)\b/.test(command) });
 
     const dir = mkdtempSync(join(tmpdir(), "agentos-mission-smoke-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
@@ -133,7 +206,7 @@ describe("mission execution smoke", () => {
     vi.stubEnv("AGENTOS_CLASSIFIER_TIER2", "false");
     vi.stubEnv("FEATURE_AGENT_LLM", "false");
     vi.stubEnv("AGENTOS_IMPLEMENTER_MODE", "mock");
-    mockGatewayCommandResults(() => true);
+    mockGatewayFetch();
 
     const dir = mkdtempSync(join(tmpdir(), "agentos-mission-smoke-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
@@ -171,5 +244,63 @@ describe("mission execution smoke", () => {
     expect(snapshot.auditEvents.some((event) => event.event === "gate.release_passed" && event.runId === "run-qa-pass-release")).toBe(
       false
     );
+  });
+
+  it("dispatches gateway tools through processRun when tool execution is enabled", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
+    vi.stubEnv("AGENTOS_CLASSIFIER_TIER2", "false");
+    vi.stubEnv("AGENTOS_MOCK_AGENT_EXECUTION", "true");
+    vi.stubEnv("FEATURE_AGENT_LLM", "false");
+    vi.stubEnv("FEATURE_OLLAMA", "false");
+    vi.stubEnv("FEATURE_TOOL_EXECUTION", "true");
+    vi.stubEnv("AGENTOS_IMPLEMENTER_MODE", "gateway");
+    vi.stubEnv("AGENTOS_IMPLEMENTER_APPLY_PATCHES", "false");
+    vi.stubEnv("FEATURE_MEMORY_WIKI", "false");
+    mockGatewayFetch();
+
+    const dir = mkdtempSync(join(tmpdir(), "agentos-mission-smoke-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    seedQueuedRun(persistence, {
+      runId: "run-tool-exec",
+      title: "Tool broker fix",
+      objective: "Fix bug in tool broker export",
+      prompt: "Fix bug in packages/agents/src/tool-broker.ts export function",
+      command: "pnpm typecheck"
+    });
+
+    await processPendingMissionRuns({
+      persistence,
+      gatewayBase: "http://127.0.0.1:8790",
+      workerId: "worker-smoke"
+    });
+
+    const snapshot = persistence.snapshot();
+    const route = snapshot.routingDecisions.find((entry) => entry.runId === "run-tool-exec");
+    expect(route?.selectedPrimaryAgentId).toBe("code-implementer");
+
+    const dispatch = snapshot.auditEvents.find(
+      (event) => event.event === "agent.implementer_dispatched" && event.runId === "run-tool-exec"
+    );
+    expect(dispatch).toBeDefined();
+    const metadata = dispatch?.metadata as {
+      dispatchMode?: string;
+      commandsRun?: string[];
+    };
+    expect(metadata?.dispatchMode).toBe("gateway");
+    expect(metadata?.commandsRun?.some((entry) => entry.startsWith("read:"))).toBe(true);
+    expect(metadata?.commandsRun).toContain("git.status");
+
+    const primaryStep = snapshot.auditEvents.find(
+      (event) => event.event === "agent.step_executed" && event.actor === "code-implementer" && event.runId === "run-tool-exec"
+    );
+    const primaryMeta = primaryStep?.metadata as { mock?: boolean; report?: { dispatchMode?: string } };
+    expect(primaryMeta?.mock).toBe(false);
+    expect(primaryMeta?.report?.dispatchMode).toBe("gateway");
+
+    const qaStep = snapshot.auditEvents.find(
+      (event) => event.event === "agent.step_executed" && event.actor === "qa-agent" && event.runId === "run-tool-exec"
+    );
+    const qaReport = (qaStep?.metadata as { report?: { status?: string } } | undefined)?.report;
+    expect(qaReport?.status).toBe("passed");
   });
 });

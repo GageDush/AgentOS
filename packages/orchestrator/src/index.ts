@@ -532,7 +532,7 @@ export function parseConversationalIntent(input: string, context: ActiveIntentCo
   };
 }
 
-export { buildContextPacket } from "./context-minimizer";
+export { buildContextPacket, extractRepoPathsFromText } from "./context-minimizer";
 export { shouldRunContextMinimizer, estimateTokensInScope } from "./context-triggers";
 export { isAppCreationRequest, parseBuildIntent } from "./intake";
 export { scorePlannerNeed } from "./planner-score";

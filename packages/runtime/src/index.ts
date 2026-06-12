@@ -70,7 +70,12 @@ function isHumanApprovalRequired() {
 function isMockAgentExecutionEnabled(route: AgentRoutingDecisionRecord) {
   if (route.providerLane === "mock_local") return true;
   const raw = process.env.AGENTOS_MOCK_AGENT_EXECUTION;
-  return raw === "true" || raw === "1";
+  if (raw === "true" || raw === "1") return true;
+  const toolExecution =
+    process.env.FEATURE_TOOL_EXECUTION?.trim().toLowerCase() === "true" ||
+    process.env.FEATURE_TOOL_EXECUTION === "1";
+  if (toolExecution && resolveImplementerDispatchMode() === "gateway") return true;
+  return false;
 }
 
 function isPermissiveSandboxLevel(level: MissionRecord["sandboxLevel"]) {
@@ -1393,6 +1398,22 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
       persistence.appendMissionLog(routeRun.id, "plan", `${report!.agent}: ${report!.summary}`);
     }
 
+    if ("dispatchMode" in pipeline.primary && pipeline.primary.dispatchMode !== "mock") {
+      persistence.appendAuditEvent({
+        event: "agent.implementer_dispatched",
+        actor: pipeline.primary.agent,
+        summary: pipeline.primary.summary,
+        missionId: routeInfo.mission.id,
+        runId: routeRun.id,
+        metadata: {
+          dispatchMode: pipeline.primary.dispatchMode,
+          commandsRun: pipeline.primary.commandsRun,
+          changedFiles: pipeline.primary.changedFiles,
+          report: pipeline.primary
+        }
+      });
+    }
+
     if (pipeline.qa?.status === "passed") {
       persistence.appendAuditEvent({
         event: gatePassEvent("qa"),
@@ -1454,22 +1475,6 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
     }
 
     persistence.appendMissionLog(routeRun.id, "result", pipeline.synthesizer.summary);
-
-    if ("dispatchMode" in pipeline.primary && pipeline.primary.dispatchMode !== "mock") {
-      persistence.appendAuditEvent({
-        event: "agent.implementer_dispatched",
-        actor: pipeline.primary.agent,
-        summary: pipeline.primary.summary,
-        missionId: routeInfo.mission.id,
-        runId: routeRun.id,
-        metadata: {
-          dispatchMode: pipeline.primary.dispatchMode,
-          commandsRun: pipeline.primary.commandsRun,
-          changedFiles: pipeline.primary.changedFiles,
-          report: pipeline.primary
-        }
-      });
-    }
 
     if (process.env.AGENTOS_MEMORY_DECAY !== "false" && process.env.FEATURE_MEMORY_WIKI !== "true") {
       const pruned = decayStaleMemoryNotes(installed.rootDir);

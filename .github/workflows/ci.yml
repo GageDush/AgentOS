@@ -34,6 +34,9 @@ jobs:
       - run: pnpm mission:smoke
         env:
           AGENTOS_CLASSIFIER_TIER2: "false"
+      - run: pnpm tool:smoke
+        env:
+          AGENTOS_CLASSIFIER_TIER2: "false"
       - run: pnpm agentos:bench-baseline
       - run: pnpm discord:test
 

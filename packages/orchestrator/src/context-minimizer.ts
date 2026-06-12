@@ -33,6 +33,17 @@ function inferContextBudget(envelope: TaskEnvelope): ContextPacket["contextBudge
   return "small";
 }
 
+export function extractRepoPathsFromText(...texts: string[]) {
+  const paths = new Set<string>();
+  for (const text of texts) {
+    if (!text) continue;
+    for (const path of extractPathsFromCommand(text)) {
+      paths.add(path);
+    }
+  }
+  return [...paths];
+}
+
 function extractPathsFromCommand(command: string): string[] {
   const paths = new Set<string>();
   const patterns = [
@@ -116,7 +127,13 @@ export function buildContextPacket(
 
   const commandPaths = extractPathsFromCommand(command);
   const envelopePaths = envelope.filesInScope.filter(Boolean);
-  const repoPaths = [...new Set([...envelopePaths, ...commandPaths])].slice(0, 12);
+  const repoPaths = [
+    ...new Set([
+      ...envelopePaths,
+      ...commandPaths,
+      ...extractRepoPathsFromText(envelope.normalizedGoal, envelope.userGoal)
+    ])
+  ].slice(0, 12);
 
   let memoryIncluded: ContextPacket["memoryIncluded"] = [];
   let riskAreas: string[] = [];

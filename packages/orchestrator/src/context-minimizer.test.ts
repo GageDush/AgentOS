@@ -103,6 +103,18 @@ describe("buildContextPacket", () => {
     expect(packet.memoryIncluded.some((entry) => entry.path.includes("risk-areas.md"))).toBe(true);
   });
 
+  it("infers repo paths from mission goal text when the command has no paths", () => {
+    const packet = buildContextPacket(
+      {
+        ...baseEnvelope,
+        userGoal: "Fix bug in packages/agents/src/tool-broker.ts export function",
+        normalizedGoal: "Fix bug in packages/agents/src/tool-broker.ts export function"
+      },
+      { command: "pnpm typecheck" }
+    );
+    expect(packet.repoPaths).toContain("packages/agents/src/tool-broker.ts");
+  });
+
   it("caps file scope for simple envelopes", () => {
     const packet = buildContextPacket(baseEnvelope);
     for (const file of packet.filesIncluded) {
