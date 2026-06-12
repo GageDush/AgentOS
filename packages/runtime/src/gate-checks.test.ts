@@ -20,6 +20,7 @@ describe("gate-checks", () => {
   });
 
   it("includes semgrep when required", () => {
+    delete process.env.AGENTOS_SEMGREP_GATE;
     process.env.AGENTOS_SEMGREP_REQUIRED = "true";
     expect(isSemgrepGateEnabled()).toBe(true);
     expect(buildSecurityGateCommands()).toContain("semgrep --config .semgrep.yml --error --quiet");
