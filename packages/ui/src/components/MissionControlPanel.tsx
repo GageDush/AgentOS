@@ -12,7 +12,7 @@ type MissionControlPanelProps = {
 export function MissionControlPanel({ data, onRunAgain }: MissionControlPanelProps) {
   return (
     <TerminalWindow
-      title="Mission Control"
+      title="Mission Console"
       subtitle={data.missionTitle ?? "No active mission"}
       actions={
         onRunAgain ? (
