@@ -427,6 +427,53 @@ export type TaskEnvelope = {
   uiGeneration?: UiGenerationSpec;
 };
 
+export type ContextPacketFile = {
+  path: string;
+  reason: string;
+  mode: "excerpt" | "full";
+};
+
+export type ContextPacketMemory = {
+  path: string;
+  reason: string;
+};
+
+export type ContextPacket = {
+  agent: "context-minimizer";
+  status: "complete" | "blocked";
+  contextBudget: "small" | "medium" | "large";
+  repoPaths: string[];
+  riskAreas: string[];
+  suggestedCommands: string[];
+  maxTokenBudget: number;
+  filesIncluded: ContextPacketFile[];
+  memoryIncluded: ContextPacketMemory[];
+  excludedContext: ContextPacketMemory[];
+  notes: string[];
+};
+
+export type AgentReportStatus =
+  | "complete"
+  | "blocked"
+  | "failed"
+  | "passed"
+  | "risk_found"
+  | "skipped"
+  | "approval_required";
+
+export type AgentReport = {
+  agent: string;
+  status: AgentReportStatus;
+  summary: string;
+  changedFiles?: string[];
+  commandsRun?: string[];
+  testsRun?: string[];
+  findings?: Record<string, unknown>[];
+  risks?: string[];
+  blockers?: string[];
+  nextActions?: string[];
+};
+
 export type QuotaProviderId = "anthropic" | "openai_codex" | "cursor";
 
 export type QuotaBucketStatus = {

@@ -243,6 +243,9 @@ importers:
       '@agentos/agents':
         specifier: workspace:*
         version: link:../agents
+      '@agentos/persistence':
+        specifier: workspace:*
+        version: link:../persistence
       '@agentos/shared':
         specifier: workspace:*
         version: link:../shared

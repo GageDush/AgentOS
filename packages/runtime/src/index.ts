@@ -1,6 +1,6 @@
 import { assessCommandPolicy } from "@agentos/sandbox";
-import { loadInstalledAgentProfiles } from "@agentos/agents";
-import { determineMissionRoute, parseConversationalIntent } from "@agentos/orchestrator";
+import { executeAgentStep, loadInstalledAgentProfiles } from "@agentos/agents";
+import { buildContextPacket, determineMissionRoute, parseConversationalIntent } from "@agentos/orchestrator";
 import type { AgentOSDatabase, PersistenceAdapter, QuickActionBlueprint } from "@agentos/persistence";
 import { getPersistenceAdapter } from "@agentos/persistence";
 import { evaluateQuotaSteward } from "@agentos/token-manager";
@@ -12,8 +12,10 @@ import {
   type ApprovalRecord,
   type AuditEvent,
   type ChatMessageRecord,
+  type ContextPacket,
   type ConversationalIntent,
   type MissionRecord,
+  type TaskEnvelope,
   type MissionRun,
   type MissionRunLog,
   type QuickActionRecord,
@@ -31,6 +33,12 @@ function isHumanApprovalRequired() {
   const raw = process.env.AGENTOS_REQUIRE_HUMAN_APPROVAL;
   if (raw === undefined || raw === "") return true;
   return !["false", "0", "no", "off"].includes(raw.toLowerCase());
+}
+
+function isMockAgentExecutionEnabled(route: AgentRoutingDecisionRecord) {
+  if (route.providerLane === "mock_local") return true;
+  const raw = process.env.AGENTOS_MOCK_AGENT_EXECUTION;
+  return raw === "true" || raw === "1";
 }
 
 function isPermissiveSandboxLevel(level: MissionRecord["sandboxLevel"]) {
@@ -727,6 +735,43 @@ export async function processRun(runId: string, options?: RuntimeOptions): Promi
   const routeRun = routeInfo.run ?? claimedRun;
   for (const action of buildStandardRunQuickActionBlueprints(routeInfo.mission, routeRun)) {
     persistence.createQuickAction(action);
+  }
+
+  const taskEnvelope = route.metadata?.taskEnvelope as TaskEnvelope | undefined;
+  let contextPacket: ContextPacket | undefined;
+  if (taskEnvelope?.requiresRepoContext) {
+    contextPacket = buildContextPacket(taskEnvelope, {
+      repoRoot: installed.rootDir,
+      command: routeInfo.mission.command
+    });
+    persistence.appendAuditEvent({
+      event: "context.minimized",
+      actor: "context-minimizer",
+      summary: `Context packet prepared with ${contextPacket.filesIncluded.length} files (${contextPacket.contextBudget} budget).`,
+      missionId: routeInfo.mission.id,
+      runId: routeRun.id,
+      correlationId: routeRun.correlationId ?? route.id,
+      metadata: { contextPacket }
+    });
+    persistence.appendMissionLog(
+      routeRun.id,
+      "plan",
+      `Context minimizer included ${contextPacket.filesIncluded.length} files; token budget ${contextPacket.maxTokenBudget}.`
+    );
+  }
+
+  if (isMockAgentExecutionEnabled(route) && taskEnvelope) {
+    const report = executeAgentStep(route.selectedPrimaryAgentId, taskEnvelope, contextPacket);
+    persistence.appendAuditEvent({
+      event: "agent.step_executed",
+      actor: route.selectedPrimaryAgentId,
+      summary: report.summary,
+      missionId: routeInfo.mission.id,
+      runId: routeRun.id,
+      correlationId: routeRun.correlationId ?? route.id,
+      metadata: { report, mock: true }
+    });
+    persistence.appendMissionLog(routeRun.id, "plan", `${route.selectedPrimaryAgentId}: ${report.summary}`);
   }
 
   const commandDecision = assessCommandPolicy(routeInfo.mission.command);

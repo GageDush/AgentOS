@@ -45,6 +45,19 @@ describe("deterministic routing", () => {
     }
   });
 
+  it("includes context-minimizer when repo context is required", () => {
+    const installed = loadInstalledAgentProfiles();
+    const route = determineMissionRoute(installed, {
+      id: "mission-ctx",
+      workspaceId: "workspace-local",
+      title: "Fix auth bug",
+      objective: "Repair the login regression.",
+      prompt: "Investigate and fix the auth bug in the API.",
+      command: "git diff apps/api/src/auth.ts"
+    });
+    expect(route.supportingAgentIds).toContain("context-minimizer");
+  });
+
   it("asks for clarification when approval intent is ambiguous", () => {
     const intent = parseConversationalIntent("approve that", {
       pendingApprovalIds: ["a-1", "a-2"]

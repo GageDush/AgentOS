@@ -254,6 +254,90 @@ describe("runtime spine", () => {
     expect(run?.status).not.toBe("completed");
   });
 
+  it("fires approval-created listeners when runtime creates approval bundles", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "true");
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    const listener = vi.fn();
+    const { onApprovalCreated, resetApprovalCreatedListenersForTests } = await import("@agentos/persistence");
+    onApprovalCreated(listener);
+    persistence.mutate((database) => {
+      const mission = database.missions[0]!;
+      mission.title = "Fix auth bug";
+      mission.objective = "Repair the login regression in API code.";
+      mission.prompt = "Investigate and fix the auth bug.";
+      mission.command = "git status";
+      mission.status = "queued";
+      mission.sandboxLevel = "observe";
+      mission.commandPolicy = "auto_allowed";
+      database.missionRuns.unshift({
+        id: "run-approval-hook",
+        workspaceId: database.workspaces[0].id,
+        missionId: mission.id,
+        sessionId: database.sessions[0].id,
+        requestedByOperatorId: database.operators[0].id,
+        operatorId: "builder-agent",
+        provider: "mock",
+        model: "mock-agentos-local",
+        status: "queued",
+        commandPolicy: "auto_allowed",
+        requestedCommand: "git status",
+        attemptCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      mission.latestRunId = "run-approval-hook";
+    });
+    await processPendingMissionRuns({ persistence, gatewayBase: "http://127.0.0.1:8790", workerId: "worker-test" });
+    expect(listener).toHaveBeenCalled();
+    expect(listener.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({
+        runId: "run-approval-hook",
+        status: "pending",
+        missionId: expect.any(String)
+      })
+    );
+    resetApprovalCreatedListenersForTests();
+  });
+
+  it("records context minimizer and mock agent steps for repo-context missions", async () => {
+    vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
+    mockGatewaySuccess();
+    const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
+    const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
+    persistence.mutate((database) => {
+      const mission = database.missions[0]!;
+      mission.title = "Fix auth bug";
+      mission.objective = "Repair the login regression.";
+      mission.prompt = "Investigate and fix the auth bug.";
+      mission.command = "git diff apps/api/src/auth.ts";
+      mission.status = "queued";
+      mission.sandboxLevel = "observe";
+      mission.commandPolicy = "auto_allowed";
+      database.missionRuns.unshift({
+        id: "run-context-mock",
+        workspaceId: database.workspaces[0].id,
+        missionId: mission.id,
+        sessionId: database.sessions[0].id,
+        requestedByOperatorId: database.operators[0].id,
+        operatorId: "builder-agent",
+        provider: "mock",
+        model: "mock-agentos-local",
+        status: "queued",
+        commandPolicy: "auto_allowed",
+        requestedCommand: mission.command,
+        attemptCount: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      mission.latestRunId = "run-context-mock";
+    });
+    await processPendingMissionRuns({ persistence, gatewayBase: "http://127.0.0.1:8790", workerId: "worker-test" });
+    const snapshot = persistence.snapshot();
+    expect(snapshot.auditEvents.some((event) => event.event === "context.minimized" && event.runId === "run-context-mock")).toBe(true);
+    expect(snapshot.auditEvents.some((event) => event.event === "agent.step_executed" && event.runId === "run-context-mock")).toBe(true);
+  });
+
   it("requires human approval for gated missions even with permissive sandbox", async () => {
     vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "true");
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));

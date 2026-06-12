@@ -241,6 +241,9 @@ export function determineMissionRoute(installed: InstalledAgentProfileSet, missi
     providerLane
   };
   const taskEnvelope = buildTaskEnvelope(mission, routeCore);
+  if (taskEnvelope.requiresRepoContext) {
+    supportingAgents.add("context-minimizer");
+  }
 
   return {
     id: routeId,
@@ -354,6 +357,8 @@ export function parseConversationalIntent(input: string, context: ActiveIntentCo
     reason: "The message did not safely map to a single control action."
   };
 }
+
+export { buildContextPacket } from "./context-minimizer";
 
 export const chooseAgentForMission = (_agents: unknown, mission: Pick<MissionRecord, "title" | "objective" | "command">) => {
   const text = `${mission.title}\n${mission.objective}\n${mission.command}`.toLowerCase();
