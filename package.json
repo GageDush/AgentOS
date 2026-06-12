@@ -23,6 +23,8 @@
     "wiki:rebuild-manifest": "tsx scripts/rebuild-wiki-manifest.mjs",
     "wiki:index-repo": "tsx scripts/wiki-index-repo.mjs",
     "wiki:sync-cursor": "tsx scripts/wiki-sync-cursor.mjs",
+    "wiki:meta-reset": "node .agentos/scripts/reset-wiki-meta-drift.mjs",
+    "hooks:install": "git config core.hooksPath .githooks",
     "wiki:sync-chatgpt": "tsx scripts/wiki-sync-chatgpt.mjs",
     "wiki:benchmark": "tsx scripts/wiki-memory-benchmark.mjs",
     "sanitize:check": "node scripts/sanitize-agentos.mjs",

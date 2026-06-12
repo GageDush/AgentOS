@@ -56,4 +56,5 @@ Core policy rules:
 - Regression baseline: `pnpm agentos:bench-baseline` (compares against `.agentos/benchmarks/baseline-snapshot.json`; refresh with `--write`).
 - Mission pipeline smoke (QA fail / release approval): `pnpm mission:smoke`.
 - Tool execution smoke (gateway tools + runtime dispatch): `pnpm tool:smoke` (live stack proof: `pnpm tool:smoke:live`).
+- Wiki manifest drift (timestamp-only): `pnpm wiki:meta-reset` before commit; optional hook: `pnpm hooks:install`. Keep `AGENTOS_CURSOR_WIKI_SYNC=false` unless you want live session indexing.
 - Benchmark profile tiers (`min-maxed`, `competitive`, `control-plane`) with `pnpm agentos:bench-profiles`.

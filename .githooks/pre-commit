@@ -1,0 +1,3 @@
+#!/bin/sh
+node .agentos/scripts/reset-wiki-meta-drift.mjs
+git add .agentos/memory/wiki/_meta/graph.json .agentos/memory/wiki/_meta/index.json 2>/dev/null || true

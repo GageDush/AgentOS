@@ -202,7 +202,16 @@ export function saveChatGptWikiSyncState(repoRoot: string, state: ChatGptWikiSyn
 
 function readGitBundleMarkdown(repoRoot: string, relPath: string): string | undefined {
   try {
-    const raw = execSync(`git show HEAD:${relPath.replace(/\\/g, "/")}`, {
+    const normalized = relPath.replace(/\\/g, "/");
+    const commit = execSync(
+      `git log --full-history -1 --diff-filter=AM --format=%H -- "${normalized}"`,
+      {
+      cwd: repoRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"]
+    }).trim();
+    if (!commit) return undefined;
+    const raw = execSync(`git show ${commit}:${normalized}`, {
       cwd: repoRoot,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"]

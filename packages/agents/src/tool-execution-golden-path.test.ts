@@ -190,7 +190,7 @@ describe("tool execution golden path", () => {
     });
 
     expect(pipeline.usedLiveExecution).toBe(true);
-    expect(pipeline.primary.dispatchMode).toBe("gateway");
+    expect("dispatchMode" in pipeline.primary ? pipeline.primary.dispatchMode : undefined).toBe("gateway");
     expect(pipeline.primary.commandsRun?.some((entry) => entry.startsWith("read:"))).toBe(true);
     expect(pipeline.qa?.status).toBe("passed");
     expect(pipeline.executedAgentIds).toContain("code-implementer");
