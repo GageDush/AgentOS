@@ -1,49 +1,117 @@
 # AgentOS
 
-AgentOS is a local-first AI agent operations dashboard for running, observing, and demoing coordinated agent workflows without depending on cloud credentials. The current MVP centers on an interactive Phaser office scene, React control panels, a safe Fastify API layer, local Ollama support, memory and audit surfaces, and mock-first integrations that stay usable when credentials are missing.
+AgentOS Local is the canonical product in this repo. It is a local-first, host-ready AI dev operations hub for creating missions, supervising safe execution, routing through installed `.agentos` profiles, approving risky actions, reading audit trails, and controlling the system through normal conversation plus quick actions.
 
-## Highlights
+The Office Demo remains in the repo only as an archival/demo surface under `/demo/office`. It is not the product direction.
 
-- Local-first demo experience with safe mock fallbacks by default
-- Interactive command center built with Next.js, React, and Phaser
-- Fastify API and gateway services for app and orchestration flows
-- Local LLM support through Ollama for prompt and task execution
-- Memory, logs, and audit-style visibility for agent activity
-- Data-driven game interactions through `packages/game-schema`
-- Shared contracts and types kept in `packages/shared`
+## What Exists Now
+
+- Host-ready domain model with workspace and operator boundaries
+- SQL-backed local persistence behind a repository layer that can be swapped for a real Postgres adapter later
+- Mission, run, approval, audit, archive, routine, session, routing, chat, and quick-action records
+- Deterministic `.agentos` profile-driven routing
+- Safe local worker spine for claiming queued runs and executing allow-listed commands
+- Conversational control layer for normal-language prompts like `approve that`, `pause it`, `run QA`, and `show details`
+- Quick actions with emoji-driven controls such as `✅`, `❌`, `⏸️`, `▶️`, `👀`, `🧪`, `🔒`, `🔁`, and `🧾`
+- Rich agent message cards for chat-first control (`[Admin] Ash` placard layout with destination, context, and structured quick-action emojis)
+- Rich-card emoji actions route through `POST /rich-actions/execute` with scoped approve/deny Control Gate enforcement
+- Mock-first behavior with optional Ollama support for local prompt work
+
+## Core Principles
+
+- AgentOS Local is canonical
+- Office Demo is archival/demo only
+- The system is host-ready by design
+- Local mode uses a default workspace and default operator
+- `.agentos` profiles drive deterministic routing
+- Conversational prompts and quick actions are the intended control surface
+- Slash commands are not the intended UX
+- Rich agent message cards reuse the same quick-action model for chat-first control and can render in Discord later without requiring slash commands
+- Cloud APIs are disabled by default
+- Unsafe autonomous execution is out of scope
 
 ## Monorepo Layout
 
 ### Apps
 
-- `apps/command-center`: Next.js dashboard and Phaser office scene
-- `apps/api`: Fastify API for local data, memory, and agent-facing actions
-- `apps/gateway`: Gateway service for local routing and health checks
-- `apps/worker`: Background worker entry point for task execution flows
+- `apps/command-center`: Next.js operator UI and preserved office demo route
+- `apps/api`: Fastify API and durable control-layer endpoints
+- `apps/gateway`: safe allow-listed command execution
+- `apps/worker`: local worker loop for queued mission runs
 
 ### Packages
 
-- `packages/game-schema`: Data-driven scene and interaction schema
-- `packages/shared`: Shared contracts, types, and cross-app utilities
-- `packages/memory`: Memory helpers and persistence logic
-- `packages/orchestrator`: Agent workflow coordination logic
-- `packages/agents`: Agent definitions and composition helpers
-- `packages/token-manager`: Token and provider handling utilities
-- `packages/tools`: Tooling interfaces for internal actions
-- `packages/ui`: Shared UI building blocks
-- `packages/config`: Shared configuration helpers
-- `packages/sandbox`: Sandbox-related utilities
+- `packages/shared`: durable domain types and default seed data
+- `packages/persistence`: local persistence adapter and database shape
+- `packages/persistence`: SQL adapters, repository methods, and compatibility snapshot helpers
+- `packages/runtime`: worker/runtime spine, quick actions, and conversational control
+- `packages/agents`: installed `.agentos` registry/profile loading
+- `packages/orchestrator`: deterministic routing and intent parsing
+- `packages/sandbox`: command policy and permission levels
+- `packages/memory`: archive helpers
+- `packages/token-manager`: usage and budget helpers
+- `packages/game-schema`: deprecated office-demo schema only
 
-## Tech Stack
+### Control-Layer Profiles
 
-- `pnpm` workspaces
-- `Next.js 15`
-- `React 19`
-- `Phaser 3`
-- `Fastify 5`
-- `TypeScript`
-- `Vitest`
-- `Ollama` for optional local model execution
+- `.agentos/agents/`
+- `.agentos/contracts/`
+- `.agentos/agent-registry.json`
+
+Validate profiles with:
+
+```powershell
+pnpm agentos:validate-profiles
+```
+
+## Runtime Spine
+
+Persistent entities:
+
+- workspaces
+- operators
+- missions
+- mission runs
+- approval requests
+- audit events
+- archive entries
+- routines
+- sessions
+- agent routing decisions
+- provider usage
+- chat threads
+- chat messages
+- quick actions
+
+Local persistence now uses a SQL-backed database at `.agentos/state/agentos-local.db`. The older JSON persistence file is deprecated and kept only as a compatibility/import path, not the primary runtime store.
+
+Runtime code now uses repository-native transaction bundles for the highest-churn transitions: mission creation, route persistence, approval requests, approval decisions, run execution start, pause/resume, retry, quick action consumption, run completion, run failure, and chat exchange persistence. `snapshot()`, `mutate()`, and `reset()` still remain for compatibility and local developer convenience while lower-churn paths continue to migrate.
+
+## Safety Model
+
+Auto-allowed commands:
+
+- `git status`
+- `git diff`
+- `pnpm test`
+- `pnpm typecheck`
+- `pnpm lint`
+
+Approval-required:
+
+- dependency install
+- network access
+- `.env` access
+- git commit
+- git push
+- workspace mutation outside the small allow-list
+- elevated sandbox levels
+
+Denied:
+
+- `sudo`
+- destructive global filesystem commands
+- unrestricted elevated/system operations
 
 ## Getting Started
 
@@ -51,7 +119,7 @@ AgentOS is a local-first AI agent operations dashboard for running, observing, a
 
 - Node.js 22+
 - `pnpm`
-- Optional: `Ollama` for local model-backed flows
+- Optional: Ollama for local model-backed prompt work
 
 ### Install
 
@@ -60,23 +128,30 @@ pnpm install
 Copy-Item .env.example .env
 ```
 
-### Initialize local data
+### Initialize local durable state
 
 ```powershell
 pnpm db:migrate
 pnpm db:seed
 ```
 
-### Validate the environment
+Optional local reset:
+
+```powershell
+pnpm db:reset
+```
+
+### Validate
 
 ```powershell
 pnpm sanitize:check
 pnpm env:check
 pnpm typecheck
 pnpm test
+pnpm agentos:validate-profiles
 ```
 
-### Run the full local stack
+### Run
 
 ```powershell
 pnpm dev
@@ -88,19 +163,24 @@ Expected local URLs:
 - API health: `http://localhost:8787/health`
 - Gateway health: `http://localhost:8790/health`
 
-## Environment Model
+## Conversational Control
 
-AgentOS is intentionally mock-first until real provider credentials and security rules are configured.
+AgentOS Local is designed around normal prompts, not command syntax.
 
-- If credentials are missing, the app should continue in mock or local mode
-- Product-facing names should stay under the AgentOS identity
-- Real autonomous execution should not be added without approval gates and audit events
+Examples:
 
-See `.env.example` for the current environment surface.
+- `approve that`
+- `pause it`
+- `show details`
+- `run QA`
+- `retry`
+- `summarize`
+
+When a request is ambiguous, AgentOS asks for clarification instead of guessing dangerously.
 
 ## Local AI With Ollama
 
-AgentOS can call a local Ollama model through `POST /llm/chat`.
+The command center can still use Ollama for local prompt work.
 
 Recommended setup:
 
@@ -109,7 +189,7 @@ ollama serve
 ollama pull qwen2.5-coder:7b
 ```
 
-Set the following in `.env` when you want local model execution instead of the mock provider:
+Optional `.env` values:
 
 ```env
 AGENTOS_MODEL_PROVIDER=ollama
@@ -117,50 +197,30 @@ AGENTOS_DEFAULT_MODEL=qwen2.5-coder:7b
 FEATURE_OLLAMA=true
 ```
 
-## Discord Integration
+Cloud APIs stay disabled by default.
 
-The current Discord surface is intentionally safe and read-only.
+## Persistence Direction
 
-Optional environment values:
+- SQLite is the active local storage engine
+- Repository methods are the preferred write/read path for runtime-safe operations
+- Runtime-critical transitions are bundled into SQLite transactions through the repository layer
+- `snapshot()`, `mutate()`, and `reset()` still exist for compatibility and UI/dev convenience
+- A hosted Postgres adapter is the intended next persistence target
+- Chat plus quick actions remain the intended control UX
 
-```env
-FEATURE_DISCORD=true
-DISCORD_BOT_TOKEN=
-DISCORD_CLIENT_ID=
-DISCORD_GUILD_ID=
-DISCORD_PUBLIC_KEY=
-```
+Supporting docs:
 
-If those values are missing, the dashboard and API stay in mock mode without crashing.
-
-## Demo Walkthrough
-
-1. Start the local stack with `pnpm dev`.
-2. Open the dashboard and click the highlighted office surfaces.
-3. Open `Local AI Console` and run a prompt.
-4. Open `Tasks`, queue a task, and run it with local AI.
-5. Press `Run Demo Mission` to simulate a planner-to-builder-to-reviewer-to-memory flow.
-6. Open `Logs`, `Memory`, and `Discord` to show the surrounding operational surfaces.
-
-## Common Commands
-
-```powershell
-pnpm install
-Copy-Item .env.example .env
-pnpm dev
-pnpm sanitize:check
-pnpm env:check
-pnpm typecheck
-pnpm test
-```
+- [API/store mutate audit](C:\Users\gaged\Documents\AgenOS\docs\HOSTING_API_STORE_AUDIT.md)
+- [Hosted execution notes](C:\Users\gaged\Documents\AgenOS\docs\HOSTED_EXECUTION_NOTES.md)
+- [Hosting secrets template](C:\Users\gaged\Documents\AgenOS\docs\agentos-hosting-secrets-template.txt)
 
 ## Troubleshooting
 
 - If the dashboard falls back to seed data, make sure the API is running on `8787`.
+- If mission runs do not progress, make sure the worker is running or use the API-triggered local run path.
 - If `/llm/chat` fails, verify Ollama is serving on `http://127.0.0.1:11434`.
-- If Discord is not configured, the app should show mock or status behavior instead of throwing.
 - If a Next.js chunk error appears during local dev, clear `apps/command-center/.next` and restart the dev server.
 
 ## Status
 
-This repository is currently an MVP and demo environment. It is best suited for local development, workflow demos, UI iteration, and safe orchestration experiments before live provider rollout.
+This repository is an active local-first control-layer build. The durable SQL runtime spine is in place, the office scene is deprecated, and the next work should deepen worker recovery, richer query patterns, and hosted Postgres readiness without weakening the current safety posture.

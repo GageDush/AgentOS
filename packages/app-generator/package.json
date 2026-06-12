@@ -1,0 +1,25 @@
+{
+  "name": "@agentos/app-generator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./templates/agentos-forge/sample-data": "./templates/agentos-forge/sample-data.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@agentos/shared": "workspace:*",
+    "@agentos/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.7",
+    "react": "^19.0.0",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

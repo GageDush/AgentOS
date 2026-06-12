@@ -1,0 +1,1 @@
+export { SqlitePersistenceAdapter } from "../index";

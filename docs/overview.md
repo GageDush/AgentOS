@@ -1,10 +1,14 @@
 # AgentOS Overview
 
-AgentOS Command Center is a local-first agent operations dashboard. The MVP combines a Phaser office map with React panels and a mock backend so the product can run without external API keys.
+AgentOS Local is the canonical product: a host-ready local AI dev operations hub with SQL-backed local persistence, repository-backed runtime paths, transaction-bundled mission state transitions, durable missions, approvals, audit trails, archive memory, routing decisions, conversational control, and quick actions.
 
-The first usable loop is:
+The intended operator loop is:
 
-1. Open the office dashboard.
-2. Click agents, boards, desks, stations, and system objects.
-3. Inspect mock tasks, memories, usage, approvals, and audit logs.
-4. Add real providers only after approval and budget controls are stable.
+1. Open the command center.
+2. Create or inspect a mission.
+3. Let AgentOS route deterministically through installed `.agentos` profiles.
+4. Pause in Control Gate when a risky action requires approval.
+5. Resume safe execution through the local gateway and worker spine, with runtime-critical transitions persisted through repository transaction bundles.
+6. Review logs, archive output, routing decisions, and quick actions in one place.
+
+The Office Demo remains preserved only for archival/demo purposes and should not drive product decisions.

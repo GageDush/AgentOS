@@ -12,6 +12,8 @@
   "dependencies": {
     "@agentos/game-schema": "workspace:*",
     "@agentos/shared": "workspace:*",
+    "@agentos/ui": "workspace:*",
+    "@agentos/app-generator": "workspace:*",
     "next": "^15.1.6",
     "phaser": "^3.87.0",
     "react": "^19.0.0",

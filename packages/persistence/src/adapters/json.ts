@@ -1,0 +1,1 @@
+export { JsonFilePersistenceAdapter } from "../index";

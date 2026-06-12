@@ -4,14 +4,29 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles/agentos-forge.css": "./src/tokens/agentos-forge.css",
+    "./motion": "./src/motion/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@agentos/shared": "workspace:*"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.2.0",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "jsdom": "^26.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"
   }

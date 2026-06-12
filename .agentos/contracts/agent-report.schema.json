@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentOS AgentReport",
+  "type": "object",
+  "required": [
+    "agent",
+    "status",
+    "summary"
+  ],
+  "properties": {
+    "agent": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "blocked",
+        "failed",
+        "passed",
+        "risk_found",
+        "skipped",
+        "approval_required"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "changedFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "commandsRun": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "testsRun": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nextActions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

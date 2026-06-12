@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@agentos/agents": "workspace:*",
     "@agentos/shared": "workspace:*"
   },
   "devDependencies": {

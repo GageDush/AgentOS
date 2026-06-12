@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { demoMissionVisualSteps, officeAgentRoster, officeInteractables, type OfficeAgentVisual } from "@agentos/game-schema";
+import { officeInteractables, type OfficeAgentVisual } from "@agentos/game-schema";
+import { demoMissionVisualSteps, officeAgentRoster } from "../demo-office/legacyAgents";
 import { emitOfficeInteraction } from "./eventBus";
 
 type TilePoint = {

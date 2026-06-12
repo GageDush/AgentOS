@@ -8,10 +8,21 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "agentos:validate-profiles": "node .agentos/scripts/validate-agent-profiles.mjs",
     "sanitize:check": "node scripts/sanitize-agentos.mjs",
     "env:check": "node scripts/validate-env.mjs",
-    "db:migrate": "node scripts/db-migrate.mjs",
-    "db:seed": "node scripts/db-seed.mjs"
+    "db:migrate": "tsx scripts/db-migrate.mjs",
+    "db:seed": "tsx scripts/db-seed.mjs",
+    "db:reset": "tsx scripts/db-reset.mjs",
+    "discord:bootstrap": "tsx scripts/bootstrap-discord-guild.ts",
+    "discord:restructure": "tsx scripts/restructure-discord-guild.ts",
+    "discord:sync-roles": "tsx scripts/sync-discord-roles.ts",
+    "discord:interactions-mode": "tsx scripts/discord-interactions-mode.mjs",
+    "discord:post-guides": "tsx scripts/post-discord-channel-guides.ts",
+    "discord:kick-bots": "tsx scripts/kick-discord-bots.ts",
+    "discord:sync-commands": "tsx scripts/sync-discord-commands.ts",
+    "discord:smoke": "node apps/api/src/discord-smoke.mjs",
+    "control": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agentos-control.ps1"
   },
   "devDependencies": {
     "@types/node": "^22.10.7",

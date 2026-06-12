@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentOS TaskEnvelope",
+  "type": "object",
+  "required": [
+    "taskId",
+    "userGoal",
+    "taskType",
+    "riskLevel",
+    "acceptanceCriteria",
+    "requiredGates"
+  ],
+  "properties": {
+    "taskId": {
+      "type": "string"
+    },
+    "userGoal": {
+      "type": "string"
+    },
+    "taskType": {
+      "enum": [
+        "answer_only",
+        "code_change",
+        "bug_fix",
+        "repo_analysis",
+        "research",
+        "qa",
+        "security",
+        "release",
+        "config",
+        "agent_profile_work"
+      ]
+    },
+    "complexity": {
+      "enum": [
+        "trivial",
+        "simple",
+        "moderate",
+        "complex",
+        "unknown"
+      ]
+    },
+    "riskLevel": {
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "inScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outOfScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "filesInScope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredGates": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "qa",
+          "code_review",
+          "security_review",
+          "release_manager",
+          "human_approval"
+        ]
+      }
+    },
+    "modelLane": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "manual",
+        "assisted",
+        "autopilot"
+      ]
+    },
+    "uiGeneration": {
+      "type": "object",
+      "properties": {
+        "uiPreset": {
+          "enum": ["agentos-forge", "default"],
+          "default": "agentos-forge"
+        },
+        "surfaces": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "dashboard",
+              "mission-control",
+              "approval-center",
+              "integration-settings",
+              "generated-app-preview"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

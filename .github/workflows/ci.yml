@@ -2,8 +2,9 @@ name: ci
 
 on:
   pull_request:
+    branches: [main, "pivot/**"]
   push:
-    branches: [main]
+    branches: [main, "pivot/**"]
 
 jobs:
   checks:
@@ -19,6 +20,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm sanitize:check
+      - run: pnpm agentos:validate-profiles
       - run: pnpm env:check
       - run: pnpm typecheck
       - run: pnpm test
