@@ -6,7 +6,10 @@ const mockDispatch = vi.fn();
 const mockHandleChat = vi.fn();
 
 vi.mock("./client", () => ({
-  isDiscordBotEnabled: () => mockIsDiscordBotEnabled(),
+  isDiscordBotEnabled: () => mockIsDiscordBotEnabled()
+}));
+
+vi.mock("./bootstrap", () => ({
   loadDiscordGuildState: () => mockLoadDiscordGuildState()
 }));
 
@@ -25,7 +28,7 @@ describe("discord gateway", () => {
     mockLoadDiscordGuildState.mockReturnValue(undefined);
     mockDispatch.mockResolvedValue(undefined);
     mockHandleChat.mockResolvedValue(undefined);
-    delete process.env.DISCORD_BOT_TOKEN;
+    process.env.DISCORD_BOT_TOKEN = "";
   });
 
   afterEach(() => {
