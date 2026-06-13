@@ -2,8 +2,6 @@
 
 AgentOS Local is the canonical product in this repo. It is a local-first, host-ready AI dev operations hub for creating missions, supervising safe execution, routing through installed `.agentos` profiles, approving risky actions, reading audit trails, and controlling the system through normal conversation plus quick actions.
 
-The Office Demo remains in the repo only as an archival/demo surface under `/demo/office`. It is not the product direction.
-
 ## What Exists Now
 
 - Host-ready domain model with workspace and operator boundaries
@@ -20,7 +18,7 @@ The Office Demo remains in the repo only as an archival/demo surface under `/dem
 ## Core Principles
 
 - AgentOS Local is canonical
-- Office Demo is archival/demo only
+- The retired office demo is not part of the active product surface in this checkout
 - The system is host-ready by design
 - Local mode uses a default workspace and default operator
 - `.agentos` profiles drive deterministic routing
@@ -34,7 +32,7 @@ The Office Demo remains in the repo only as an archival/demo surface under `/dem
 
 ### Apps
 
-- `apps/command-center`: Next.js operator UI and preserved office demo route
+- `apps/command-center`: Next.js operator UI
 - `apps/api`: Fastify API and durable control-layer endpoints
 - `apps/gateway`: safe allow-listed command execution
 - `apps/worker`: local worker loop for queued mission runs
@@ -50,7 +48,6 @@ The Office Demo remains in the repo only as an archival/demo surface under `/dem
 - `packages/sandbox`: command policy and permission levels
 - `packages/memory`: archive helpers
 - `packages/token-manager`: usage and budget helpers
-- `packages/game-schema`: deprecated office-demo schema only
 
 ### Control-Layer Profiles
 
@@ -223,4 +220,4 @@ Supporting docs:
 
 ## Status
 
-This repository is an active local-first control-layer build. The durable SQL runtime spine is in place, the office scene is deprecated, and the next work should deepen worker recovery, richer query patterns, and hosted Postgres readiness without weakening the current safety posture.
+This repository is an active local-first control-layer build. The durable SQL runtime spine is in place, the office scene has been removed from this checkout, and the next work should deepen worker recovery, richer query patterns, and hosted Postgres readiness without weakening the current safety posture.

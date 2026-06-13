@@ -13,11 +13,11 @@ $OutDir = ".\docs\overnight-plans"
 New-Item -ItemType Directory -Path $OutDir -Force | Out-Null
 
 $FocusAreas = @(
-    "UI smoke test: verify clickable office zones, selected zone state, hover behavior, and panel mapping",
-    "Game schema hardening: unique zone ids, clear action names, no overlapping rectangles, comments for future editing",
+    "UI smoke test: verify mission actions, control-gate flows, archive views, and memory wiki navigation",
+    "Runtime hardening: queued run flow, approval state transitions, and audit event consistency",
     "Command center UX: improve panel clarity, task visibility, issue indicator explanation, and dashboard readability",
     "API mock data reliability: review agents, tasks, memory, usage, approvals, audit endpoint consistency",
-    "Testing plan: add small high-value tests for game-schema, shared seed data, and API store behavior",
+    "Testing plan: add small high-value tests for shared seed data, persistence bundles, and API store behavior",
     "Developer experience: README improvements, setup commands, troubleshooting notes, and common errors",
     "Codex task planning: split the next 10 implementation steps into tiny safe prompts under 5 files each",
     "Risk review: identify things not to build yet, including auth, real agents, Discord, secrets, Docker, and production deployment"
@@ -54,8 +54,8 @@ function Invoke-OllamaReview {
         "package.json" = Get-SafeFileContent "package.json"
         "apps/command-center/src/app/layout.tsx" = Get-SafeFileContent "apps/command-center/src/app/layout.tsx"
         "apps/command-center/src/app/page.tsx" = Get-SafeFileContent "apps/command-center/src/app/page.tsx"
-        "packages/game-schema/src/index.ts" = Get-SafeFileContent "packages/game-schema/src/index.ts"
         "packages/shared/src/index.ts" = Get-SafeFileContent "packages/shared/src/index.ts"
+        "packages/persistence/src/index.ts" = Get-SafeFileContent "packages/persistence/src/index.ts"
         "apps/api/src/index.ts" = Get-SafeFileContent "apps/api/src/index.ts"
         "apps/api/src/store.ts" = Get-SafeFileContent "apps/api/src/store.ts"
     }
@@ -74,10 +74,9 @@ You are a local read-only planning worker for AgentOS.
 Current project state:
 - AgentOS is a working local MVP.
 - It has a Next.js command-center frontend.
-- It has a Phaser office dashboard.
 - It has a Fastify mock API.
-- It has a mock gateway.
-- It has a worker heartbeat.
+- It has an allow-listed gateway.
+- It has a local worker loop.
 - It already passes pnpm typecheck, pnpm test, and pnpm build.
 - Git checkpoint exists.
 

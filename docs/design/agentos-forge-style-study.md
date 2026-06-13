@@ -113,5 +113,4 @@ When `prefers-reduced-motion: reduce` is active:
 ## Preview Routes
 
 - Component gallery: `http://localhost:3000/preview/forge`
-- Experimental office map: `http://localhost:3000/office`
 - Command center: `http://localhost:3000/`

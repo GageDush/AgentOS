@@ -54,10 +54,6 @@ pnpm --filter @agentos/api dev
 
 The dashboard intentionally falls back to local mock seed data if the API is offline.
 
-## Phaser canvas is blank
-
-Check that `apps/command-center/public/assets/office-master.png` exists.
-
 ## flous.dev tunnel URLs (525, 530, or DNS not found)
 
 **Dashboard URLs** (use one of these):

@@ -7,7 +7,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@agentos/agents": fromRoot("./packages/agents/src/index.ts"),
-      "@agentos/game-schema": fromRoot("./packages/game-schema/src/index.ts"),
       "@agentos/memory": fromRoot("./packages/memory/src/index.ts"),
       "@agentos/orchestrator": fromRoot("./packages/orchestrator/src/index.ts"),
       "@agentos/persistence": fromRoot("./packages/persistence/src/index.ts"),

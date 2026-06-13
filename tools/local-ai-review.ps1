@@ -16,7 +16,6 @@ $FilesToRead = @(
     "pnpm-workspace.yaml",
     "apps/command-center/src/app/layout.tsx",
     "apps/command-center/src/app/page.tsx",
-    "packages/game-schema/src/index.ts",
     "packages/shared/src/index.ts",
     "apps/api/src/index.ts",
     "apps/api/src/store.ts"
@@ -42,11 +41,10 @@ You are a local read-only coding reviewer for the AgentOS MVP.
 
 The project is a working local pnpm monorepo with:
 - Next.js command center frontend
-- Phaser office dashboard
 - Fastify mock API
-- Mock gateway
-- Worker heartbeat
-- Shared packages for agents, memory, token budget, game schema, and UI
+- Allow-listed gateway
+- Local worker
+- Shared packages for agents, memory, token budget, persistence, and UI
 
 Rules:
 - DO NOT suggest huge rewrites.
@@ -55,7 +53,7 @@ Rules:
 - DO NOT tell me to edit files automatically.
 - Focus on the next 10 tiny improvements that are safe while Codex tokens recharge.
 - Each task should touch 1-3 files max.
-- Prefer UI smoke-test issues, click-zone reliability, panel clarity, developer experience, and tests.
+- Prefer mission-flow polish, dashboard clarity, developer experience, runtime safety, and tests.
 - Include a "Best next Codex prompt" section at the end.
 - Include a "Safe to do manually" section.
 - Include a "Do not do yet" section.

@@ -47,7 +47,7 @@ Core policy rules:
 - Keep product-facing names under the AgentOS identity.
 - Default to mock/local behavior when credentials are missing.
 - Do not add real autonomous execution without approval gates and audit events.
-- Keep Phaser interactions data-driven through `packages/game-schema`.
+- Do not reintroduce the retired Phaser office / `packages/game-schema` surface unless explicitly requested.
 - Keep API contracts in `packages/shared`.
 - Agent profiles live in `.agentos/agents/` and contracts live in `.agentos/contracts/`.
 - Validate the installed profile system with `pnpm agentos:validate-profiles`.
