@@ -3,7 +3,7 @@ slug: areas/risk-areas
 title: Risk areas
 tags: [security, policy, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # Risk areas
 

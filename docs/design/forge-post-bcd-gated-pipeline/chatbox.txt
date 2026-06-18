@@ -1,0 +1,33 @@
+Run the full gated pipeline — do NOT ask me to choose options. Stop only if a gate fails twice or you need credentials.
+
+Full spec: docs/design/forge-post-bcd-gated-pipeline/prompt.md
+
+## Context (Cursor visual QA 2026-06-16)
+- B Control Gate + C Wiki Map + D LLM router infra are shipped
+- UI port override likely 3003 (read .agentos/state/command-center-port.override) — zombie may still hold :3000
+- QA PASS: /control-gate 200 (empty state, rich card, Run Inspector), /wiki?view=map 200 (200 nodes, click→inspector), pnpm llm:smoke PASS (Ollama)
+- Cursor fixed: duplicate POST /llm/chat merged; llm-smoke exitCode crash
+
+## Your job — execute in order, gate before next stage
+
+**Gate 0** — stack stability: typecheck, test, build, llm:smoke exit 0, UI routes 200 on same port
+
+**Stage 1** — caller-swap: providers.ts + packages/agents/llm.ts → routeLlmCall (spec acceptance #6)
+
+**Stage 2** — router health readout in Settings/health (GET /llm/routes)
+
+**Stage 3** — Wiki Map QA checklist → fix only if checklist fails, else SKIP
+
+**Stage 4** — Control Gate QA checklist → fix only if fails, else SKIP (try mission:smoke for pending approvals)
+
+**Stage 5** — stack port canonicalization (stack:port script, override cleanup docs)
+
+**Stage 6** — AGENTS.md + router spec status + optional CI llm-smoke
+
+## Rules
+- One PR per stage; conventional commits
+- Orange Forge only; no approval API changes
+- pnpm stack:repair before browsing; use active UI port not assumed 3000
+- Record gate pass/fail in each PR description
+
+Start at Gate 0 now. Do not ask which stage — run the pipeline.

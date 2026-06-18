@@ -359,7 +359,8 @@ export function buildCommandPaletteItems(input: {
     { id: "slash-deploy", label: "/deploy local preview", category: "slash" },
     { id: "slash-schedule", label: "/schedule daily repo summary", category: "slash" },
     { id: "slash-inspect", label: "/inspect server", category: "slash" },
-    { id: "slash-sync", label: "/sync memory", category: "slash" }
+    { id: "slash-sync", label: "/sync memory", category: "slash" },
+    { id: "slash-wiki", label: "/open memory wiki", category: "slash", keywords: ["wiki", "cursor", "sessions"] }
   ];
 
   const suggested = toQuickActions(input.quickActions).map((action) => ({

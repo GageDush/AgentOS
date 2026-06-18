@@ -4,26 +4,14 @@ import { assessCommandPolicy } from "@agentos/sandbox";
 import type { GatewayExecutionRequest, GatewayExecutionResult, ToolRequest } from "@agentos/shared";
 import { invokeGatewayTool } from "./tools.js";
 import { resolveGatewayRepoRoot } from "./repo-root.js";
+import { buildGatewayCommandAliases } from "./command-aliases.js";
 
 const app = Fastify({ logger: true });
 const port = Number(process.env.AGENTOS_GATEWAY_PORT ?? 8790);
 const repoRoot = resolveGatewayRepoRoot();
 const pnpmBin = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
-const commandAliases: Record<string, { file: string; args: string[] }> = {
-  "git status": { file: "git", args: ["status"] },
-  "git status --short": { file: "git", args: ["status", "--short"] },
-  "git diff": { file: "git", args: ["diff"] },
-  "git diff --stat": { file: "git", args: ["diff", "--stat"] },
-  "git diff --name-only": { file: "git", args: ["diff", "--name-only"] },
-  "semgrep --config .semgrep.yml --error --quiet": {
-    file: "semgrep",
-    args: ["--config", ".semgrep.yml", "--error", "--quiet"]
-  },
-  "pnpm test": { file: pnpmBin, args: ["test"] },
-  "pnpm typecheck": { file: pnpmBin, args: ["typecheck"] },
-  "pnpm lint": { file: pnpmBin, args: ["lint"] }
-};
+const commandAliases = buildGatewayCommandAliases(pnpmBin);
 
 function executeAllowedCommand(command: string) {
   const normalized = command.trim().replace(/\s+/g, " ");

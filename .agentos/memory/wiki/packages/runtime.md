@@ -87,3 +87,5 @@ See also: [[packages/sandbox]]
 - **2026-06-12T13:43:41** — memory-curator: Cursor: Plan a layout for the discord server/guild that utilizes the full spectrum of what can be modified in a discord server with a fully authed a (scope: scripts/bootstrap-discord-guild.ts, apps/api/src/discord/, packages/shared/src/index.ts, apps/command-center/src/components/local/AgentOSLocalApp.tsx; artifacts: cursor-transcript)
 
 - **2026-06-12T13:43:42** — memory-curator: Cursor: Explore C:\Users\gaged\Documents\AgenOS for: 1. Existing discord embeds in apps/api/src/discord/embeds.ts, personas.ts 2. packages/shared st (scope: apps/api/src/discord/embeds.ts, packages/shared, apps/command-center, apps/api/src/discord/; artifacts: cursor-transcript)
+
+- **2026-06-16T14:10:48** — memory-curator: Cursor: I'll start by locating the single AgentOS repository root under `C:\Users\gaged`. Let me search for identifying markers. Two candidate locat (scope: docs/AGENTOS_FULL_REVIEW.md, docs/AGENTOS_SMOKE_TEST_REPORT.md, docs/AGENTOS_FEATURE_MATRIX.md, docs/AGENTOS_ARCHITECTURE_MAP.md; artifacts: cursor-transcript)

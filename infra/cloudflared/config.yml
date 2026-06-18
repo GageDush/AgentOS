@@ -1,0 +1,21 @@
+# Cloudflare Tunnel config for the Oracle VM (reuses the EXISTING tunnel, so no DNS change).
+# Install to /etc/cloudflared/config.yml on the VM and run cloudflared as a host systemd
+# service (`cloudflared service install`). It points at the loopback ports published by
+# docker-compose.prod.yml, so the tunnel stays up across app restarts/rebuilds.
+#
+# The credentials JSON is the SAME file used on the laptop today — copy it from
+# C:\Users\gaged\.cloudflared\333ca9b1-2503-409c-8bc0-4433866b6382.json to the VM.
+tunnel: 333ca9b1-2503-409c-8bc0-4433866b6382
+credentials-file: /etc/cloudflared/333ca9b1-2503-409c-8bc0-4433866b6382.json
+
+ingress:
+  - hostname: api.flous.dev
+    service: http://127.0.0.1:8787
+  - hostname: flous.dev
+    service: http://127.0.0.1:3000
+  - hostname: app.flous.dev
+    service: http://127.0.0.1:3000
+  - hostname: agentos.flous.dev
+    service: http://127.0.0.1:3000
+  # news.flous.dev intentionally removed — it moves to Cloudflare Pages (Nebraska Ledger).
+  - service: http_status:404

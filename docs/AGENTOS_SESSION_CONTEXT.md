@@ -2,10 +2,20 @@
 
 Read this first in new agent sessions instead of replaying long chat history.
 
+## Consolidated conversation briefs
+
+| Topic | Doc |
+|-------|-----|
+| Forge dashboard, URLs, agent placards, art assets | `.agentos/memory/wiki/product/forge-command-center-consolidated.md` |
+| All Cursor sessions (auto-synced) | `.agentos/memory/wiki/sessions/cursor/index.md` |
+| Rolling Cursor digest | `.agentos/memory/wiki/flows/cursor-memory.md` |
+
+Sync Cursor chats into wiki: `pnpm wiki:sync-cursor` (or `--full`).
+
 ## Product
 
 - **AgentOS Local** = canonical product: isolated, self-run command center; must operate offline (mock/Ollama/gateway) when APIs are off.
-- **Office Demo** = archived only at `/demo/office`; do not invest unless asked.
+- **Office / Phaser surface** = removed from this checkout; Claude is handling the replacement path.
 - **Repo:** `GageDush/AgentOS`, branch `pivot/agentos-local-command-center`, commit `7ae4724+`.
 
 ## Locked decisions (2026-06-11)

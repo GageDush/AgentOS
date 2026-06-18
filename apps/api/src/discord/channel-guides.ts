@@ -3,6 +3,7 @@ import { buildAgentEmbed } from "./embeds";
 import type { AgentOsChannelKey } from "./layout";
 import { STREAMLINED_LAYOUT } from "./layout";
 import { sendAgentMessage } from "./messenger";
+import { houseChannelName } from "./agent-houses";
 import { ROSTER_PERSONAS, personaDiscordName } from "./personas";
 import { DiscordRestClient } from "./rest";
 
@@ -112,9 +113,49 @@ export const CHANNEL_GUIDES: Partial<Record<AgentOsChannelKey, ChannelGuide>> = 
         value: "Reserve `#chat-room-1`–`3` from here — e.g. \"I'll take chat room 2 with Brock\" or `/agentos reserve-room room:1 topic:...`. When a room closes, `[Admin] Ash` posts a summary here.",
         inline: false
       },
-      { name: "Roster", value: "`[Admin] Ash` · `[Builder] Brock` · `[QA] Misty` · `[Security] Surge` · `[Release] Lance` · `[Quota] Bill`", inline: false }
+      {
+        name: "Neighborhood",
+        value: "For downtime character work, each agent also has a house under **◈ NEIGHBORHOOD** — start at `#town-square`.",
+        inline: false
+      },
+      {
+        name: "Roster",
+        value: ROSTER_PERSONAS.map((persona) => `\`${personaDiscordName(persona)}\``).join(" · "),
+        inline: false
+      }
     ],
     footerHint: "Briefing room"
+  },
+  townSquare: {
+    agentId: "admin-agent",
+    title: "Channel guide: #town-square",
+    description: "Neighborhood plaza — post invites, get visit announcements, browse houses.",
+    fields: [
+      {
+        name: "Invite",
+        value:
+          "`invite Misty to Brock's house for coffee` · `/agentos invite-house host:… guest:… topic:…`",
+        inline: false
+      },
+      {
+        name: "Houses",
+        value: ROSTER_PERSONAS.map((persona) => `\`#${houseChannelName(persona)}\``).join(" "),
+        inline: false
+      },
+      { name: "End visit", value: "`end visit` in the house channel or `/agentos end-visit`", inline: false },
+      { name: "Wiki", value: "Visit summaries append to each host's `agents/{agent-id}/journal`.", inline: false }
+    ],
+    footerHint: "Town square"
+  },
+  socialLounge: {
+    agentId: "agentos-operator",
+    title: "Channel guide: #social-lounge",
+    description: "Mixed hangout for 2–4 agents during downtime — no mission tools.",
+    fields: [
+      { name: "Gather", value: "Announce lounge gatherings in `#town-square` first (Phase 3 ambient).", inline: false },
+      { name: "Invites", value: "House visits use per-agent `#…-house` channels.", inline: false }
+    ],
+    footerHint: "Social lounge"
   },
   chatRoom1: {
     agentId: "admin-agent",
@@ -208,6 +249,7 @@ function zoneMapField() {
       "**◈ START** — `#welcome` `#rules` `#announcements`",
       "**◈ OPS** — `#status` `#approvals` `#missions` `#ops-feed`",
       "**◈ BRIEFING** — `#round-table` `#chat-room-1` `#chat-room-2` `#chat-room-3`",
+      "**◈ NEIGHBORHOOD** — `#town-square` `#social-lounge` agent houses",
       "**◈ LOUNGE** — `#general` voice lounge"
     ].join("\n"),
     inline: false

@@ -3,7 +3,7 @@ slug: docs/demo/acceptance_criteria
 title: ACCEPTANCE CRITERIA
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # ACCEPTANCE CRITERIA
 

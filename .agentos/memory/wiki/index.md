@@ -3,7 +3,7 @@ slug: index
 title: AgentOS Memory Wiki
 tags: [home, agentos, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # AgentOS Memory Wiki
 
@@ -13,9 +13,6 @@ Full-repo index (auto-generated, secrets excluded). Curator merges still apply v
 
 - [[flows/test-commands]] — verification
 - [[flows/pipeline]] — agent routing
-- [[sessions/cursor/index]] — Cursor IDE chat sessions (auto-synced)
-- [[flows/cursor-memory]] — rolling Cursor session digest
-- [[planning/chatgpt/index]] — OG ChatGPT planning board (indexed)
 - [[areas/repo-layout]] — monorepo map
 - [[areas/config]] — env var names (no values)
 - [[packages/runtime]] — mission spine
@@ -32,7 +29,6 @@ Full-repo index (auto-generated, secrets excluded). Curator merges still apply v
 
 - [[packages/agents]]
 - [[packages/app-generator]]
-- [[packages/game-schema]]
 - [[packages/memory]]
 - [[packages/orchestrator]]
 - [[packages/persistence]]
@@ -69,11 +65,12 @@ Full-repo index (auto-generated, secrets excluded). Curator merges still apply v
 - [[docs/architecture]]
 - [[docs/troubleshooting]]
 - [[docs/gates]]
+- [[learning/osint/index]] — flous.dev OSINT curriculum (full body)
 
 ## Index stats
 
-- Articles indexed this run: **84**
-- Generated at: 2026-06-12T13:38:52.155Z
+- Articles indexed this run: **151**
+- Generated at: 2026-06-16T03:56:56.827Z
 
 ## How it works
 

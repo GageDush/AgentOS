@@ -7,7 +7,7 @@ AgentOS Forge draws conceptual inspiration from polished agent command centers:
 - Dark terminal shell with mission-control framing
 - Live agent presence and run visibility
 - Mono labels for status, logs, and navigation
-- Cool blue/violet active states (Halo-inspired palette)
+- Molten orange active states (`#FF6A35` primary, `#F04E1A` ember in gradients)
 - Subtle hover motion and cursor-reactive microinteractions
 - Translucent panels with thin borders
 - Sandbox approval UX with clear risk and scope

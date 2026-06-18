@@ -23,14 +23,19 @@ export type CommandPolicyDecision = {
 
 const autoAllowedCommands = new Set([
   "git status",
+  "git status --short",
   "git diff",
+  "git diff --stat",
   "git diff --name-only",
   "git log",
+  "semgrep --config .semgrep.yml --error --quiet",
   "pnpm test",
   "pnpm typecheck",
   "pnpm lint",
   "pnpm build"
 ]);
+
+export const AUTO_ALLOWED_COMMANDS = [...autoAllowedCommands] as const;
 
 const approvalPatterns: Array<{ pattern: RegExp; permissionLevel: SandboxPermissionLevel; reason: string }> = [
   { pattern: /\bpnpm install\b/i, permissionLevel: "dependency_install", reason: "Dependency installation changes the workspace state." },

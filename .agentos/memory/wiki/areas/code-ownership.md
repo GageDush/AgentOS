@@ -3,7 +3,7 @@ slug: areas/code-ownership
 title: Code ownership map
 tags: [ownership, navigation, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # Code ownership map
 

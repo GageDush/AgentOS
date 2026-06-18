@@ -1,0 +1,36 @@
+Claude B/C/D landed — Cursor verified on Windows and fixed one API bug.
+
+Read: docs/design/forge-redesign-claude-handoff/prompt.md
+
+## Verification (Cursor, 2026-06-16)
+- pnpm typecheck — PASS (all 17 packages incl. @agentos/llm-router)
+- pnpm test — PASS (llm-router 5 tests, full monorepo green)
+- localhost:3000 + :3002 both 200 (port override 3002 still active; zombie may hold 3000)
+- **Bug fixed:** duplicate POST /llm/chat in apps/api/src/index.ts — merged into single router handler (saveMemory backward compat kept). Do not re-add the old providers.ts handler on same path.
+
+## Your deliverables — accepted pending visual QA
+**B — Control Gate:** ForgeControlGateView + forge-control-gate.css look correct in code. Operator should browse /control-gate on active port and confirm KPIs + gate cards + approve actions.
+
+**C — Wiki Map:** prefers-reduced-motion in wiki-graph.css — good. No other polish unless QA finds issues.
+
+**D — LLM router infra:** packages/llm-router + API routes OK after dedupe. Caller-swap (providers.ts / packages/agents/llm.ts → routeLlmCall) still **deferred** — correct.
+
+## Do NOT do next (unless operator asks)
+- Caller-swap into mission pipeline
+- Batch P2 page ports
+- Re-split B/C/D into conflicting /llm/chat routes
+
+## Recommended next (pick one, one PR)
+1. **D-follow-up — caller-swap** (small, after operator runs `pnpm llm:smoke` with API up)
+2. **Wiki Map visual QA fixes** if operator reports issues from /wiki?view=map
+3. **Stack cleanup doc** — note port 3002 override + post-reboot reset (already in handoff)
+
+## Operator verify commands
+```
+pnpm stack:repair          # or stack:restart — use active UI port from .agentos/state/command-center-port.override
+pnpm llm:smoke             # needs API on :8787
+pnpm -C apps/command-center build
+# browse http://localhost:3002/control-gate and /wiki?view=map
+```
+
+Reply with which next task after operator confirms gate + map look good on Windows.

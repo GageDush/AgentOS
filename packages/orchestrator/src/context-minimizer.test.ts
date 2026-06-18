@@ -92,6 +92,7 @@ describe("buildContextPacket", () => {
   });
 
   it("returns a compact packet with inferred paths and memory hints", () => {
+    process.env.FEATURE_MEMORY_WIKI = "false";
     const packet = buildContextPacket(baseEnvelope, {
       command: "git diff apps/api/src/auth.ts"
     });

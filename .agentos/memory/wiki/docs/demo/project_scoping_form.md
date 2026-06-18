@@ -3,7 +3,7 @@ slug: docs/demo/project_scoping_form
 title: PROJECT SCOPING FORM
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # PROJECT SCOPING FORM
 

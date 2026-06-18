@@ -1,0 +1,8 @@
+﻿Hardening pass update (Cursor)
+- stack:port fixed and now runs cleanly
+- typecheck: PASS
+- command-center build: PASS
+- full test suite: mostly PASS; one flaky timeout seen once in discord gateway test, targeted rerun PASS
+- llm:smoke: PASS
+- site healthy after repair; active UI port now 3010 with tunnel mapped to 3010
+- discord pulse posted successfully

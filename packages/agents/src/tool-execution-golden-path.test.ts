@@ -137,6 +137,7 @@ describe("tool execution golden path", () => {
   it("gateway implementer probes tools, applies patch, and runs fix-verify", async () => {
     vi.stubEnv("FEATURE_TOOL_EXECUTION", "true");
     vi.stubEnv("FEATURE_AGENT_LLM", "false");
+    vi.stubEnv("FEATURE_OLLAMA", "false");
     vi.stubEnv("AGENTOS_IMPLEMENTER_APPLY_PATCHES", "true");
     vi.stubEnv("AGENTOS_FIX_VERIFY_RETRIES", "0");
     mockGatewayToolFetch();
@@ -175,6 +176,7 @@ describe("tool execution golden path", () => {
   it("pipeline step wires implementer dispatch with live tool execution metadata", async () => {
     vi.stubEnv("FEATURE_TOOL_EXECUTION", "true");
     vi.stubEnv("FEATURE_AGENT_LLM", "false");
+    vi.stubEnv("FEATURE_OLLAMA", "false");
     vi.stubEnv("AGENTOS_IMPLEMENTER_MODE", "gateway");
     vi.stubEnv("AGENTOS_IMPLEMENTER_APPLY_PATCHES", "false");
     vi.stubEnv("AGENTOS_FIX_VERIFY_RETRIES", "0");

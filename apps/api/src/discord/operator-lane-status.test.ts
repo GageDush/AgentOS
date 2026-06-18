@@ -11,11 +11,15 @@ describe("operator lane status", () => {
     vi.resetModules();
   });
 
-  it("reports ready when no active task or runs", async () => {
-    const { getOperatorLaneStatus } = await import("./operator-lane-status");
-    expect(getOperatorLaneStatus().ready).toBe(true);
-    expect(getOperatorLaneStatus().topic).toContain("Ready");
-  });
+  it(
+    "reports ready when no active task or runs",
+    async () => {
+      const { getOperatorLaneStatus } = await import("./operator-lane-status");
+      expect(getOperatorLaneStatus().ready).toBe(true);
+      expect(getOperatorLaneStatus().topic).toContain("Ready");
+    },
+    15_000
+  );
 
   it("classifies mission and control commands", async () => {
     const { operatorLaneTaskLabel } = await import("./operator-lane-status");

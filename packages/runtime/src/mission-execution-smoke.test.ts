@@ -163,6 +163,8 @@ describe("mission execution smoke", () => {
     vi.stubEnv("AGENTOS_NO_SELF_APPROVAL", "false");
     vi.stubEnv("AGENTOS_CLASSIFIER_TIER2", "false");
     vi.stubEnv("FEATURE_AGENT_LLM", "false");
+    vi.stubEnv("FEATURE_OLLAMA", "false");
+    vi.stubEnv("AGENTOS_MOCK_AGENT_EXECUTION", "true");
     vi.stubEnv("AGENTOS_IMPLEMENTER_MODE", "mock");
     mockGatewayFetch({ commandOk: (command) => !/\b(pnpm test|pnpm typecheck)\b/.test(command) });
 
@@ -205,6 +207,8 @@ describe("mission execution smoke", () => {
     vi.stubEnv("AGENTOS_NO_SELF_APPROVAL", "false");
     vi.stubEnv("AGENTOS_CLASSIFIER_TIER2", "false");
     vi.stubEnv("FEATURE_AGENT_LLM", "false");
+    vi.stubEnv("FEATURE_OLLAMA", "false");
+    vi.stubEnv("AGENTOS_MOCK_AGENT_EXECUTION", "true");
     vi.stubEnv("AGENTOS_IMPLEMENTER_MODE", "mock");
     mockGatewayFetch();
 

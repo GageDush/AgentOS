@@ -3,7 +3,7 @@ slug: agents/frontend-ui-agent
 title: Frontend Ui Agent
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # frontend-ui-agent
 Implements scoped frontend UI changes, state wiring, forms, routing, styling, and browser-verifiable behavior when delegated by planner or implementer.

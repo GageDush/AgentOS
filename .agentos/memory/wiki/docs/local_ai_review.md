@@ -3,7 +3,7 @@ slug: docs/local_ai_review
 title: LOCAL AI REVIEW
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # LOCAL AI REVIEW
 

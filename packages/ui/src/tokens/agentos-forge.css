@@ -1,27 +1,48 @@
+/* ─────────────────────────────────────────────────────────────────
+   AgentOS — Forge identity (warm-dark / molten orange).
+   Rewired from the Claude Design "AgentOS — Home" handoff (Jun 2026).
+   Source palette: agentos-design-system/_ds tokens.
+   The whole app reads these --forge-* tokens, so changing the values
+   here re-skins every surface to the new identity.
+   ───────────────────────────────────────────────────────────────── */
 :root {
-  --forge-bg: #06070c;
-  --forge-bg-2: #0a0d14;
-  --forge-panel: rgba(10, 14, 22, 0.74);
-  --forge-panel-strong: rgba(6, 9, 16, 0.92);
-  --forge-panel-elevated: rgba(12, 16, 26, 0.78);
-  --forge-panel-sunken: rgba(4, 6, 12, 0.88);
-  --forge-border: rgba(255, 255, 255, 0.08);
-  --forge-border-strong: rgba(107, 159, 255, 0.32);
-  --forge-text: #eef2ff;
-  --forge-muted: #8b93a8;
-  --forge-soft: #5a6278;
-  --forge-accent: #6b9fff;
-  --forge-accent-bright: #9eb8ff;
-  --forge-accent-dim: rgba(107, 159, 255, 0.14);
-  --forge-accent-rgb: 107, 159, 255;
-  --forge-violet: #8fa4ff;
-  --forge-violet-rgb: 143, 164, 255;
-  --forge-cyan: #5bc4ff;
-  --forge-green: #5fe4a1;
-  --forge-red: #ff7d86;
-  --forge-mono: Consolas, "SFMono-Regular", "Liberation Mono", monospace;
-  --forge-sans: Bahnschrift, "Segoe UI", "Trebuchet MS", sans-serif;
-  --forge-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  /* Background surfaces — warm near-black (brown undertone, NOT pure #000) */
+  --forge-bg: #0a0908;
+  --forge-bg-2: #131110;
+  --forge-panel: rgba(28, 26, 23, 0.74);
+  --forge-panel-strong: rgba(10, 9, 8, 0.92);
+  --forge-panel-elevated: rgba(38, 35, 32, 0.78);
+  --forge-panel-sunken: rgba(10, 9, 8, 0.9);
+  --forge-border: rgba(255, 255, 255, 0.07);
+  --forge-border-strong: rgba(255, 106, 53, 0.32);
+
+  /* Warm neutral text scale */
+  --forge-text: #f5f2ee;
+  --forge-muted: #a89d92;
+  --forge-soft: #635650;
+
+  /* Molten orange accent (primary brand) */
+  --forge-accent: #ff6a35;
+  --forge-accent-bright: #ff8a4c;
+  --forge-accent-dim: rgba(255, 106, 53, 0.14);
+  --forge-accent-rgb: 255, 106, 53;
+
+  /* "violet" slot now carries the deep-orange ember used in gradients */
+  --forge-violet: #f04e1a;
+  --forge-violet-rgb: 240, 78, 26;
+  --forge-cyan: #ff8a4c;
+
+  /* Runtime status colors (state only, never decorative) */
+  --forge-green: #22c97a;
+  --forge-red: #ef4545;
+
+  /* Type — Inter / Inter Display / JetBrains Mono / Switzer italic */
+  --forge-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+  --forge-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --forge-display: "Inter Display", "Inter", system-ui, sans-serif;
+  --forge-italic: "Switzer", "Inter", sans-serif;
+
+  --forge-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
   --forge-text-xs: 0.68rem;
   --forge-text-sm: 0.82rem;
   --forge-text-md: 0.95rem;
@@ -55,9 +76,9 @@
   color: var(--forge-text);
   font-family: var(--forge-sans);
   background:
-    radial-gradient(circle at 18% 8%, rgba(var(--forge-accent-rgb), 0.1), transparent 28rem),
-    radial-gradient(circle at 82% 92%, rgba(var(--forge-violet-rgb), 0.06), transparent 32rem),
-    linear-gradient(165deg, var(--forge-bg), var(--forge-bg-2));
+    radial-gradient(circle at 50% -10%, rgba(var(--forge-accent-rgb), 0.08), transparent 36rem),
+    radial-gradient(circle at 82% 92%, rgba(var(--forge-violet-rgb), 0.05), transparent 32rem),
+    linear-gradient(180deg, var(--forge-bg), var(--forge-bg-2));
   min-height: 100%;
 }
 

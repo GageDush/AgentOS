@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48" fill="none" role="img" aria-label="AgentOS">
+  
+  <rect x="2.5" y="2.5" width="43" height="43" rx="10.5" fill="#0F0D0B" stroke="#FF6A35" stroke-width="3"></rect>
+  
+  <rect x="9" y="11" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="13" y="15" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="17" y="19" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="13" y="23" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="9" y="27" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  
+  <rect x="9" y="34" width="13" height="3.5" rx="0.5" fill="#FF6A35"></rect>
+
+  
+  
+  <text x="60" y="35" font-family="&#39;Inter Display&#39;,&#39;Inter&#39;,system-ui,sans-serif" font-weight="700" font-size="28" fill="#F5F2EE" letter-spacing="-0.5">Agent</text>
+  <text x="152" y="35" font-family="&#39;Inter Display&#39;,&#39;Inter&#39;,system-ui,sans-serif" font-weight="700" font-size="28" fill="#FF6A35" letter-spacing="-0.5">OS</text>
+</svg>

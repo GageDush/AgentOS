@@ -42,3 +42,9 @@ See also: [[areas/apps-gateway]]
 - **2026-06-12T13:43:41** — memory-curator: Cursor: Explore the AgentOS monorepo at C:\Users\gaged\Documents\AgenOS and return a structured report covering: 1. Top-level folder structure (apps (scope: apps/api/src/index.ts, apps/api/src/discord/, apps/command-center, packages/agents; artifacts: cursor-transcript)
 
 See also: [[areas/apps-command-center]]
+
+- **2026-06-14T17:30:16** — memory-curator: Cursor: <plugin_info kind="matched_installed"> display_name: Figma description: Plugin that includes the Figma MCP server and Skills for common work (scope: packages/ui, docs/design/, docs/design/platform-gallery-handoff/, packages/ui-blocks/; artifacts: cursor-transcript)
+
+See also: [[packages/ui]]
+
+See also: [[packages/ui-blocks]]

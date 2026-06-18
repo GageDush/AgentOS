@@ -58,3 +58,23 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: npx playwright install --with-deps chromium
       - run: pnpm test:e2e
+
+  # Optional, non-blocking: focused LLM-router signal. The deterministic unit
+  # tests (mock fetch, no Ollama) gate the router logic; a live `pnpm llm:smoke`
+  # needs Ollama + the API, which CI doesn't run, so this stays continue-on-error.
+  llm-smoke:
+    runs-on: ubuntu-latest
+    needs: checks
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: LLM router unit tests
+        run: pnpm --filter @agentos/llm-router test

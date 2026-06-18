@@ -1,0 +1,440 @@
+{
+  "version": 1,
+  "program": "agentos-functionalization",
+  "description": "Ordered implementation of AgentOS functionalization (security → real execution → cost → persistence → UI → truth → review automation).",
+  "docs": "docs/AGENTOS_FUNCTIONALIZATION_PROGRAM.md",
+  "chainPromptTemplate": "Continue AgentOS functionalization: complete task {id} — {title}.\n\nPrior task {priorId} is marked done. Run phase gates with `pnpm functional:gates` before calling `pnpm functional:next`.\n\nScope (do not expand):\n{scope}\n\nFiles (primary touch surface):\n{files}\n\nGates to satisfy:\n{gates}\n\nRules: AGENTS.md, minimal diff, match repo conventions, add tests for security paths, no commits unless user asks.\n\nWhen finished report: done / blocked, files changed, gate command results, and whether to run `pnpm functional:next`.",
+  "phases": [
+    {
+      "id": "phase-0",
+      "title": "Baseline and invariants",
+      "tasks": [
+        {
+          "id": "0.1",
+          "title": "Capture baseline snapshot",
+          "runner": "shell",
+          "shell": ["node scripts/functionalization/capture-baseline.mjs"],
+          "scope": "Record typecheck, test, mission:smoke, tool:smoke, build timings in docs/functionalization/baseline.json. Tag reference commit in state only (no git tag unless user asks).",
+          "files": ["docs/functionalization/baseline.json", ".agentos/state/functionalization-state.json"],
+          "gates": {
+            "functionality": ["pnpm typecheck", "pnpm mission:smoke", "pnpm tool:smoke"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "0.2",
+          "title": "API auth route matrix",
+          "scope": "Document every Fastify route as public-read, authenticated-read, authenticated-mutate, operator-admin, or internal-only in docs/architecture/api-auth-matrix.md.",
+          "files": ["docs/architecture/api-auth-matrix.md", "apps/api/src/index.ts", "apps/api/src/scraper/routes.ts"],
+          "gates": {
+            "functionality": ["node scripts/functionalization/check-auth-matrix.mjs"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "0.3",
+          "title": "Functional profile env block",
+          "scope": "Add docs/functional-profile.md and .env.functional.example with flags for real execution path (FEATURE_AGENT_LLM, AGENTOS_API_REQUIRE_AUTH, etc.).",
+          "files": ["docs/functional-profile.md", ".env.functional.example"],
+          "gates": {
+            "functionality": ["pnpm env:check"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "0.4",
+          "title": "Hygiene scripts parity",
+          "scope": "Add root lint script or document omission; add gateway alias ↔ sandbox parity test if missing.",
+          "files": ["package.json", "apps/gateway"],
+          "gates": {
+            "functionality": ["pnpm typecheck"],
+            "performance": [],
+            "security": []
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm typecheck", "pnpm test"],
+        "performance": [],
+        "security": []
+      }
+    },
+    {
+      "id": "phase-1",
+      "title": "P0 security lockdown",
+      "tasks": [
+        {
+          "id": "1.1",
+          "title": "Global auth preHandler",
+          "scope": "Add requireAuth/requireOperator Fastify preHandlers; protect mutating routes (/missions POST, /runs/*, /approvals/*, /worker/process, /events WS, Discord admin). Public allowlist: /health, /auth/*, /media/agents. Use AGENTOS_API_REQUIRE_AUTH env (functional profile true).",
+          "files": ["apps/api/src/auth-guard.ts", "apps/api/src/index.ts", "apps/api/src/session.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/api exec vitest run src/auth-guard.test.ts"],
+            "performance": [],
+            "security": ["pnpm functional:gate:auth"]
+          }
+        },
+        {
+          "id": "1.2",
+          "title": "Scraper SSRF hardening",
+          "scope": "Add url-policy module; block loopback, RFC1918, link-local, metadata IPs, file/ftp schemes; require auth on all /scraper/*; add vitest suite.",
+          "files": ["apps/api/src/scraper/url-policy.ts", "apps/api/src/scraper/routes.ts", "apps/api/src/scraper/url-policy.test.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/api exec vitest run src/scraper/url-policy.test.ts"],
+            "performance": [],
+            "security": ["pnpm functional:gate:scraper"]
+          }
+        },
+        {
+          "id": "1.3",
+          "title": "Auth-adjacent hardening",
+          "scope": "Configurable session max-age; CORS allowlist via env; rate-limit mutating routes; gate Discord bootstrap/restructure on auth + env flag.",
+          "files": ["apps/api/src/index.ts", ".env.example"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/api test"],
+            "performance": [],
+            "security": ["pnpm functional:gate:auth"]
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm mission:smoke"],
+        "performance": [],
+        "security": ["pnpm functional:gate:auth", "pnpm functional:gate:scraper"]
+      }
+    },
+    {
+      "id": "phase-2",
+      "title": "Real execution path",
+      "tasks": [
+        {
+          "id": "2.1",
+          "title": "Wire routeLlmCall into callAgentLlm",
+          "scope": "Replace prompt-echo default with packages/llm-router when FEATURE_AGENT_LLM=true; preserve explicit mock fallback.",
+          "files": ["packages/agents/src/llm.ts", "packages/llm-router/src/index.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/agents test", "pnpm llm:smoke"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "2.2",
+          "title": "Invert mock pipeline gating",
+          "scope": "Default executeAgentPipelineStep; mock opt-in via AGENTOS_MOCK_PIPELINE=true; non-mock path runs full pipeline.",
+          "files": ["packages/runtime/src/index.ts"],
+          "gates": {
+            "functionality": ["pnpm mission:smoke", "pnpm --filter @agentos/runtime test"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "2.3",
+          "title": "Tool execution on real path",
+          "scope": "Enable FEATURE_TOOL_EXECUTION in functional profile; reconcile gateway alias map with sandbox policy; strip secrets from child env.",
+          "files": ["apps/gateway/src/index.ts", "packages/sandbox", "packages/agents/src/tool-broker.ts"],
+          "gates": {
+            "functionality": ["pnpm tool:smoke"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "2.4",
+          "title": "Functional smoke script",
+          "scope": "Add pnpm functional:smoke chaining llm + mission + tool with functional env profile.",
+          "files": ["scripts/functional-smoke.mjs", "package.json"],
+          "gates": {
+            "functionality": ["pnpm functional:smoke"],
+            "performance": [],
+            "security": []
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm functional:smoke"],
+        "performance": [],
+        "security": ["pnpm functional:gate:auth"]
+      }
+    },
+    {
+      "id": "phase-3",
+      "title": "Real token and cost accounting",
+      "tasks": [
+        {
+          "id": "3.1",
+          "title": "Capture usage at source",
+          "scope": "routeLlmCall returns usage; callAgentLlm propagates; completeRunBundle writes non-zero usage_events.",
+          "files": ["packages/llm-router/src/index.ts", "packages/agents/src/llm.ts", "packages/runtime/src/index.ts", "packages/token-manager"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/token-manager test"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "3.2",
+          "title": "Budget hard-stop",
+          "scope": "Quota steward blocks cloud lane and new runs when cap exceeded; surface real spend in /usage and settings.",
+          "files": ["packages/token-manager", "apps/api/src/index.ts", "apps/command-center"],
+          "gates": {
+            "functionality": ["pnpm test"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "3.3",
+          "title": "Cloud lane gating",
+          "scope": "LiteLLM only when auth + cost tracking + budget headroom + FEATURE_LITELLM_PROXY.",
+          "files": ["packages/llm-router/src/index.ts", ".env.example"],
+          "gates": {
+            "functionality": ["pnpm llm:smoke"],
+            "performance": [],
+            "security": ["pnpm functional:gate:auth"]
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm functional:smoke"],
+        "performance": [],
+        "security": []
+      }
+    },
+    {
+      "id": "phase-4",
+      "title": "Persistence hardening",
+      "tasks": [
+        {
+          "id": "4.1",
+          "title": "Migration framework",
+          "scope": "Drizzle Kit migrations; schema_migrations table; forward-only db-migrate.",
+          "files": ["packages/persistence", "scripts/db-migrate.mjs"],
+          "gates": {
+            "functionality": ["pnpm db:migrate"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "4.2",
+          "title": "FKs and indexes",
+          "scope": "PRAGMA foreign_keys=ON; indexes on mission_runs, mission_logs, audit_events, chat_messages, approvals.",
+          "files": ["packages/persistence/src/index.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/persistence test"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "4.3",
+          "title": "Kill hot-path full-DB rewrite",
+          "scope": "Per-row SQL for claimNextQueuedRun, appendMissionLog, approval bundles, mission writes.",
+          "files": ["packages/persistence/src/index.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/persistence test"],
+            "performance": ["pnpm functional:gate:persistence-perf"],
+            "security": []
+          }
+        },
+        {
+          "id": "4.4",
+          "title": "Retention and pruning",
+          "scope": "pnpm db:prune for audit/logs/chat age caps.",
+          "files": ["scripts/db-prune.mjs", "package.json"],
+          "gates": {
+            "functionality": ["pnpm typecheck"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "4.5",
+          "title": "Concurrency proof test",
+          "scope": "Parallel N runs test with API+worker; no lost updates.",
+          "files": ["packages/persistence/src/concurrency.test.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/persistence exec vitest run src/concurrency.test.ts"],
+            "performance": [],
+            "security": []
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm test", "pnpm mission:smoke"],
+        "performance": ["pnpm functional:gate:persistence-perf"],
+        "security": []
+      }
+    },
+    {
+      "id": "phase-5",
+      "title": "Command center runtime stability",
+      "tasks": [
+        {
+          "id": "5.1",
+          "title": "Port and process determinism",
+          "scope": "stack:doctor command; Playwright webServer free port; document override precedence.",
+          "files": ["scripts/stack-doctor.ps1", "playwright.config.ts", "package.json"],
+          "gates": {
+            "functionality": ["pnpm stack:port"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "5.2",
+          "title": "Degraded-mode UI hardening",
+          "scope": "Split API down vs fetch fail vs WS disconnect; stale-while-revalidate banner; route error boundaries.",
+          "files": ["apps/command-center/src/components/local/AgentOSLocalApp.tsx", "apps/command-center/src/lib/use-agentos-events.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/command-center typecheck"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "5.3",
+          "title": "Route health soak",
+          "scope": "pnpm ui:route-smoke for core routes; add to CI when green.",
+          "files": ["scripts/ui-route-smoke.mjs", "package.json"],
+          "gates": {
+            "functionality": ["pnpm ui:route-smoke"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "5.4",
+          "title": "Real service health probes",
+          "scope": "Replace hardcoded worker/gateway online in /dashboard system block.",
+          "files": ["apps/api/src/index.ts"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/api test"],
+            "performance": [],
+            "security": []
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm ui:route-smoke", "pnpm test:e2e"],
+        "performance": [],
+        "security": []
+      }
+    },
+    {
+      "id": "phase-6",
+      "title": "Truthful LIVE panels",
+      "tasks": [
+        {
+          "id": "6.1",
+          "title": "De-fake home widgets",
+          "scope": "Wire analytics/providers/integrations to live endpoints; remove Math.random/static LIVE mislabels.",
+          "files": ["apps/command-center/src/components/forge-home"],
+          "gates": {
+            "functionality": ["pnpm --filter @agentos/command-center build"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "6.2",
+          "title": "Derive metrics from real state",
+          "scope": "Progress from run state machine; integration cards from real connection probes.",
+          "files": ["apps/command-center/src/lib/dashboard-adapters.ts"],
+          "gates": {
+            "functionality": ["pnpm typecheck"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "6.3",
+          "title": "UI vocabulary unification",
+          "scope": "Home uses @agentos/ui components; consistent status chip semantics.",
+          "files": ["apps/command-center", "packages/ui"],
+          "gates": {
+            "functionality": ["pnpm build"],
+            "performance": [],
+            "security": []
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm ui:route-smoke"],
+        "performance": [],
+        "security": []
+      }
+    },
+    {
+      "id": "phase-7",
+      "title": "Review automation and system-review dashboard",
+      "tasks": [
+        {
+          "id": "7.1",
+          "title": "Review run schema",
+          "scope": "Tables review_runs, review_metrics, review_findings, review_artifacts; migration.",
+          "files": ["packages/persistence", "packages/shared/src/review.ts"],
+          "gates": {
+            "functionality": ["pnpm db:migrate"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "7.2",
+          "title": "system-review-run collector",
+          "scope": "scripts/system-review-run.mjs gathers gates, git churn, risks, token snapshot.",
+          "files": ["scripts/system-review-run.mjs"],
+          "gates": {
+            "functionality": ["pnpm system-review:run"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "7.3",
+          "title": "Compare brief generator",
+          "scope": "JSON source of truth; markdown brief with evidence IDs; optional PDF.",
+          "files": ["scripts/system-review-brief.mjs", "docs/reviews"],
+          "gates": {
+            "functionality": ["node scripts/system-review-brief.mjs --dry-run"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "7.4",
+          "title": "Scheduler integration",
+          "scope": "Daily routine triggers system-review-run; audit event on completion.",
+          "files": ["apps/scheduler", "apps/api/src/index.ts"],
+          "gates": {
+            "functionality": ["pnpm typecheck"],
+            "performance": [],
+            "security": []
+          }
+        },
+        {
+          "id": "7.5",
+          "title": "System-review dashboard route",
+          "scope": "/system-review page with trends, compare delta, phase progress bars.",
+          "files": ["apps/command-center/src/app/system-review"],
+          "gates": {
+            "functionality": ["pnpm ui:route-smoke"],
+            "performance": [],
+            "security": ["pnpm functional:gate:auth"]
+          }
+        }
+      ],
+      "phaseGates": {
+        "functionality": ["pnpm system-review:run", "pnpm functional:complete"],
+        "performance": [],
+        "security": ["pnpm functional:gate:auth", "pnpm functional:gate:scraper"]
+      }
+    }
+  ]
+}

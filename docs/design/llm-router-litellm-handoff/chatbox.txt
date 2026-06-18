@@ -1,0 +1,33 @@
+Implement the AgentOS self-hosted LLM router (OpenRouter-like control plane, no platform fee).
+
+Read full spec: docs/design/llm-router-litellm-handoff/prompt.md
+
+## Goal
+One routing choke point for all LLM calls: quota-steward + USD budgets BEFORE cloud inference; Ollama local-first; optional LiteLLM sidecar for BYOK multi-provider fallback.
+
+## Phase 1 scope (one PR)
+1. New package packages/llm-router with routeLlmCall()
+2. configs/model-routes.json + setup-litellm script (.agentos/state/litellm.config.yaml gitignored)
+3. API: POST /llm/chat, GET /llm/routes, GET /llm/activity
+4. Refactor apps/api/providers.ts + packages/agents/llm.ts to use router (no direct Ollama bypass)
+5. Wire evaluateQuotaSteward + evaluateBudget pre-flight on every cloud attempt
+6. Log UsageEvent per successful call; pnpm llm:smoke
+
+## Do NOT
+- Put LLM proxy in apps/gateway (tools only — use packages/llm-router + API)
+- Hardcode API keys
+- Skip quota/budget gates for "convenience"
+- Replace home Router UI yet (Phase 2)
+
+## Existing code to extend
+- packages/token-manager/quota-steward.ts
+- configs/quota-providers.json
+- packages/orchestrator/lane-router.ts
+- apps/api/providers.ts
+
+## Verify
+pnpm llm:smoke
+pnpm typecheck && pnpm test
+Ollama at :11434; optional LiteLLM at :4000 with FEATURE_LITELLM_PROXY=true
+
+Ask if alias naming or ProviderLane extension needs my sign-off before merging.

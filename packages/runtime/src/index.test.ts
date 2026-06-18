@@ -1,7 +1,7 @@
 import { mkdtempSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { SqlitePersistenceAdapter } from "@agentos/persistence";
 import {
   approveRunReleaseGate,
@@ -37,9 +37,17 @@ function mockGatewaySuccess() {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("runtime spine", () => {
+  beforeEach(() => {
+    vi.stubEnv("FEATURE_OLLAMA", "false");
+    vi.stubEnv("AGENTOS_CLASSIFIER_TIER2", "false");
+    vi.stubEnv("AGENTOS_MOCK_AGENT_EXECUTION", "false");
+    mockGatewaySuccess();
+  });
+
   it("claims and processes queued runs", async () => {
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));
@@ -405,6 +413,7 @@ describe("runtime spine", () => {
 
   it("records context minimizer and mock agent steps for repo-context missions", async () => {
     vi.stubEnv("AGENTOS_REQUIRE_HUMAN_APPROVAL", "false");
+    vi.stubEnv("AGENTOS_MOCK_AGENT_EXECUTION", "true");
     mockGatewaySuccess();
     const dir = mkdtempSync(join(tmpdir(), "agentos-runtime-"));
     const persistence = new SqlitePersistenceAdapter(join(dir, "agentos.db"));

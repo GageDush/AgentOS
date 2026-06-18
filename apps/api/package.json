@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@agentos/agents": "workspace:*",
+    "@agentos/llm-router": "workspace:*",
     "@agentos/memory": "workspace:*",
     "@agentos/orchestrator": "workspace:*",
     "@agentos/persistence": "workspace:*",
@@ -22,9 +23,13 @@
     "@cursor/sdk": "^1.0.18",
     "@fastify/cors": "^10.0.2",
     "@fastify/websocket": "^11.0.1",
-    "fastify": "^5.2.1"
+    "archiver": "^7.0.1",
+    "cheerio": "^1.0.0",
+    "fastify": "^5.2.1",
+    "puppeteer": "^24.2.1"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.3",
     "@types/node": "^22.10.7",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",

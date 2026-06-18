@@ -3,7 +3,7 @@ slug: agents/code-reviewer
 title: Code Reviewer
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # code-reviewer
 Reviews meaningful diffs for correctness, regressions, maintainability, missing tests, and merge blockers. Supports parallel focused review and GitHub comments.

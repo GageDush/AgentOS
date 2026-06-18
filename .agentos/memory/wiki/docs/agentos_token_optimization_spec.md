@@ -3,7 +3,7 @@ slug: docs/agentos_token_optimization_spec
 title: AGENTOS TOKEN OPTIMIZATION SPEC
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # AGENTOS TOKEN OPTIMIZATION SPEC
 

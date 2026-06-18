@@ -3,7 +3,7 @@ slug: areas/dependency-graph
 title: Dependency graph
 tags: [monorepo, packages, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # Dependency graph
 
@@ -52,10 +52,6 @@ Workspace `dependencies` ( @agentos/* only ).
 
 - `@agentos/shared`
 - `@agentos/ui`
-
-## packages/game-schema
-
-- _(no workspace deps)_
 
 ## packages/memory
 

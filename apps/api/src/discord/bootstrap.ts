@@ -9,6 +9,15 @@ function sleep(ms: number) {
 import { buildActionRows } from "./components";
 import { buildAgentEmbed } from "./embeds";
 import {
+  buildAgentHouseSpecs,
+  CATEGORY_NEIGHBORHOOD,
+  houseGuideEmbed,
+  socialLoungeGuideEmbed,
+  townSquareGuideEmbed,
+  type AgentHouseSpec
+} from "./agent-houses";
+import { ensureAgentJournalStubs } from "./house-wiki";
+import {
   AGENTOS_ROOT_COMMAND,
   CATEGORY_BRIEFING,
   CATEGORY_LOUNGE,
@@ -23,6 +32,15 @@ import { kickInactiveBots } from "./bots";
 import { cleanupLegacyRoles, ensurePersonaRoles } from "./roles";
 import { DiscordRestClient, webhookUrl, type DiscordChannel } from "./rest";
 
+export type AgentHouseState = {
+  agentId: string;
+  channelId: string;
+  channelName: string;
+  wikiJournalSlug: string;
+  webhook?: string;
+  guideMessageId?: string;
+};
+
 export type DiscordGuildState = {
   guildId: string;
   guildName: string;
@@ -32,8 +50,10 @@ export type DiscordGuildState = {
     ops: string;
     briefing: string;
     lounge: string;
+    neighborhood?: string;
   };
   channels: Record<AgentOsChannelKey, string>;
+  houses?: Record<string, AgentHouseState>;
   roles: Partial<Record<AgentOsRoleKey, string>>;
   personas: Record<string, { roleId: string; discordName: string; characterName: string }>;
   webhooks: Partial<
@@ -48,7 +68,9 @@ export type DiscordGuildState = {
       | "roundTable"
       | "chatRoom1"
       | "chatRoom2"
-      | "chatRoom3",
+      | "chatRoom3"
+      | "townSquare"
+      | "socialLounge",
       string
     >
   >;
@@ -61,7 +83,7 @@ export type DiscordGuildState = {
   operatorLaneStatusMessageId?: string;
 };
 
-const LAYOUT_VERSION = 7;
+const LAYOUT_VERSION = 8;
 
 const PERM_VIEW_CHANNEL = "1024";
 const PERM_SEND_MESSAGES = "2048";
@@ -163,11 +185,35 @@ async function ensurePrivateOwnerChannel(
   return created.id;
 }
 
+async function ensureHouseChannel(
+  client: DiscordRestClient,
+  channels: DiscordChannel[],
+  neighborhoodCategoryId: string,
+  spec: AgentHouseSpec
+) {
+  const existing = resolveByNames(channels, [spec.channelName, ...spec.legacyNames], 0);
+  if (existing) {
+    await client.patchChannel(existing.id, {
+      name: spec.channelName,
+      parent_id: neighborhoodCategoryId,
+      topic: spec.topic
+    });
+    return existing.id;
+  }
+  const created = await client.createChannel({
+    name: spec.channelName,
+    type: 0,
+    parent_id: neighborhoodCategoryId,
+    topic: spec.topic
+  });
+  return created.id;
+}
+
 async function ensureStreamlinedChannel(
   client: DiscordRestClient,
   channels: DiscordChannel[],
   key: AgentOsChannelKey,
-  categoryIds: Record<"start" | "ops" | "briefing" | "lounge", string>
+  categoryIds: Record<"start" | "ops" | "briefing" | "neighborhood" | "lounge", string>
 ) {
   if (key === "operatorCommand" || key === "cursor") {
     throw new Error(`Use ensurePrivateOwnerChannel for ${key}.`);
@@ -180,7 +226,9 @@ async function ensureStreamlinedChannel(
         ? categoryIds.ops
         : spec.category === CATEGORY_BRIEFING
           ? categoryIds.briefing
-          : categoryIds.lounge;
+          : spec.category === CATEGORY_NEIGHBORHOOD
+            ? categoryIds.neighborhood
+            : categoryIds.lounge;
 
   const existing = resolveByNames(channels, [spec.name, ...spec.legacyNames], spec.type);
   if (existing) {
@@ -240,6 +288,11 @@ function hubEmbed(publicAppUrl: string, apiBaseUrl: string) {
       {
         name: "Briefing",
         value: "`#round-table` — full roster · `#chat-room-1` `#chat-room-2` `#chat-room-3` — focused 1–3 agent side chats",
+        inline: false
+      },
+      {
+        name: "Neighborhood",
+        value: "`#town-square` plaza · `#social-lounge` hangout · `#ash-house` `#brock-house` … — one home per agent with wiki dream journals",
         inline: false
       },
       { name: "Chat", value: "`#general` for operator LLM chat · `#operator-command` for private owner commands · `/agentos chat`", inline: false },
@@ -303,14 +356,18 @@ export async function restructureDiscordGuild(options?: { dryRun?: boolean }) {
       guildName: String(guild.name ?? "unknown"),
       currentChannels: channels.length,
       targetChannels: Object.keys(STREAMLINED_LAYOUT).length,
-      targetCategories: 4
+      targetCategories: 5
     };
   }
+
+  ensureAgentJournalStubs();
+  const houseSpecs = buildAgentHouseSpecs();
 
   const categoryIds = {
     start: await ensureCategory(client, channels, CATEGORY_START),
     ops: await ensureCategory(client, channels, CATEGORY_OPS),
     briefing: await ensureCategory(client, channels, CATEGORY_BRIEFING),
+    neighborhood: await ensureCategory(client, channels, CATEGORY_NEIGHBORHOOD),
     lounge: await ensureCategory(client, channels, CATEGORY_LOUNGE)
   };
 
@@ -340,9 +397,25 @@ export async function restructureDiscordGuild(options?: { dryRun?: boolean }) {
     channelIds[key] = await ensureStreamlinedChannel(client, channels, key, categoryIds);
   }
 
+  const houses: Record<string, AgentHouseState> = {};
+  for (const spec of houseSpecs) {
+    channels = await client.listChannels();
+    const channelId = await ensureHouseChannel(client, channels, categoryIds.neighborhood, spec);
+    const webhook = await ensureWebhook(client, channelId, `agentos-house-${spec.channelName}`);
+    houses[spec.agentId] = {
+      agentId: spec.agentId,
+      channelId,
+      channelName: spec.channelName,
+      wikiJournalSlug: spec.wikiJournalSlug,
+      webhook
+    };
+    await sleep(120);
+  }
+
   const keepIds = new Set<string>([
     ...Object.values(categoryIds),
-    ...Object.values(channelIds)
+    ...Object.values(channelIds),
+    ...Object.values(houses).map((house) => house.channelId)
   ]);
 
   for (const channel of channels) {
@@ -370,7 +443,9 @@ export async function restructureDiscordGuild(options?: { dryRun?: boolean }) {
     roundTable: await ensureWebhook(client, channelIds.roundTable, "agentos-round-table"),
     chatRoom1: await ensureWebhook(client, channelIds.chatRoom1, "agentos-chat-room-1"),
     chatRoom2: await ensureWebhook(client, channelIds.chatRoom2, "agentos-chat-room-2"),
-    chatRoom3: await ensureWebhook(client, channelIds.chatRoom3, "agentos-chat-room-3")
+    chatRoom3: await ensureWebhook(client, channelIds.chatRoom3, "agentos-chat-room-3"),
+    townSquare: await ensureWebhook(client, channelIds.townSquare, "agentos-town-square"),
+    socialLounge: await ensureWebhook(client, channelIds.socialLounge, "agentos-social-lounge")
   };
 
   const emojis = await refreshArtwork(client);
@@ -411,12 +486,49 @@ export async function restructureDiscordGuild(options?: { dryRun?: boolean }) {
     embeds: [roundTableEmbed()]
   });
 
+  const townSquareMessage = await (await import("./webhook-post")).postPersonaWebhookMessage(
+    webhooks.townSquare!,
+    townSquareGuideEmbed({ apiBaseUrl, publicAppUrl, houseSpecs })
+  );
+  try {
+    await client.pinMessage(channelIds.townSquare, townSquareMessage.id);
+  } catch {
+    // Optional pin.
+  }
+
+  const socialLoungeMessage = await (await import("./webhook-post")).postPersonaWebhookMessage(
+    webhooks.socialLounge!,
+    socialLoungeGuideEmbed(publicAppUrl)
+  );
+  try {
+    await client.pinMessage(channelIds.socialLounge, socialLoungeMessage.id);
+  } catch {
+    // Optional pin.
+  }
+
+  for (const spec of houseSpecs) {
+    const house = houses[spec.agentId];
+    if (!house?.webhook) continue;
+    const message = await (await import("./webhook-post")).postPersonaWebhookMessage(
+      house.webhook,
+      houseGuideEmbed({ spec, apiBaseUrl, publicAppUrl })
+    );
+    house.guideMessageId = message.id;
+    try {
+      await client.pinMessage(house.channelId, message.id);
+    } catch {
+      // Optional pin.
+    }
+    await sleep(250);
+  }
+
   const state: DiscordGuildState = {
     guildId,
     guildName: "AgentOS HQ",
     applicationId: resolvedApplicationId,
     categories: categoryIds,
     channels: channelIds,
+    houses,
     roles: roleIds,
     personas: personaProfiles,
     webhooks,

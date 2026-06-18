@@ -16,7 +16,10 @@ describe("agent avatars", () => {
     process.env.AGENTOS_DISCORD_AVATAR_BASE_URL = "https://cdn.example.com/portraits";
     const { resolveDiscordAgentAvatarUrl } = await import("./agent-avatars");
     expect(resolveDiscordAgentAvatarUrl("admin-agent")).toBe(
-      "https://cdn.example.com/portraits/agentos-operator.png"
+      "https://cdn.example.com/portraits/admin-agent.png"
+    );
+    expect(resolveDiscordAgentAvatarUrl("release-manager")).toBe(
+      "https://cdn.example.com/portraits/release-manager.png"
     );
   });
 

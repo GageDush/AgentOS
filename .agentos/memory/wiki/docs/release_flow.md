@@ -3,7 +3,7 @@ slug: docs/release_flow
 title: RELEASE FLOW
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # RELEASE FLOW
 

@@ -85,15 +85,13 @@ export async function callAgentLlm(
       body: JSON.stringify({ model, prompt, stream: false }),
       signal: AbortSignal.timeout(options?.timeoutMs ?? 8000)
     });
-    if (!response.ok) {
-      return { text: prompt.slice(0, 600), provider: "mock", model: "mock-fallback" };
+    if (response.ok) {
+      const payload = (await response.json()) as { response?: string };
+      if (payload.response?.trim()) {
+        return { text: payload.response.trim(), provider: "ollama", model };
+      }
     }
-    const body = (await response.json()) as { response?: string };
-    return {
-      text: body.response?.trim() || prompt.slice(0, 600),
-      provider: "ollama",
-      model
-    };
+    return { text: prompt.slice(0, 600), provider: "mock", model: "mock-fallback" };
   } catch {
     return { text: prompt.slice(0, 600), provider: "mock", model: "mock-fallback" };
   }

@@ -18,6 +18,26 @@ $RepoRoot = Split-Path $PSScriptRoot -Parent
 $ApiPort = 8787
 $UiPort = 3000
 $GatewayPort = 8790
+
+function Import-AgentOsPorts() {
+  $envPath = Join-Path $RepoRoot ".env"
+  if (Test-Path $envPath) {
+    foreach ($line in Get-Content $envPath -ErrorAction SilentlyContinue) {
+      if ($line -match '^\s*AGENTOS_API_PORT=(\d+)\s*$') { $script:ApiPort = [int]$Matches[1] }
+      if ($line -match '^\s*AGENTOS_GATEWAY_PORT=(\d+)\s*$') { $script:GatewayPort = [int]$Matches[1] }
+      if ($line -match '^\s*AGENTOS_COMMAND_CENTER_PORT=(\d+)\s*$') { $script:UiPort = [int]$Matches[1] }
+    }
+  }
+  $overridePath = Join-Path $RepoRoot ".agentos\state\command-center-port.override"
+  if (Test-Path $overridePath) {
+    $parsed = 0
+    if ([int]::TryParse((Get-Content $overridePath -Raw).Trim(), [ref]$parsed) -and $parsed -gt 0) {
+      $script:UiPort = $parsed
+    }
+  }
+}
+
+Import-AgentOsPorts
 $BackupRoot = Join-Path $RepoRoot ".agentos\backups"
 $DesktopLauncher = Join-Path $env:USERPROFILE "Desktop\AgentOS Control.cmd"
 $script:GuiLogSink = $null
@@ -53,6 +73,25 @@ function Get-ListenPid([int]$Port) {
   return $null
 }
 
+function Stop-ProcessTree([int]$ProcessId) {
+  if ($ProcessId -le 0) { return $true }
+  if (-not (Get-Process -Id $ProcessId -ErrorAction SilentlyContinue)) { return $true }
+  $result = Start-Process -FilePath taskkill.exe -ArgumentList "/F", "/T", "/PID", "$ProcessId" -Wait -PassThru -WindowStyle Hidden -ErrorAction SilentlyContinue
+  Start-Sleep -Milliseconds 500
+  return (-not (Get-Process -Id $ProcessId -ErrorAction SilentlyContinue)) -or ($result.ExitCode -eq 0)
+}
+
+function Test-CommandCenterHealthy() {
+  return (Test-HttpOk "http://127.0.0.1:$UiPort" 8).Ok
+}
+
+function Repair-CommandCenterCache() {
+  $nextDir = Join-Path $RepoRoot "apps\command-center\.next"
+  if (-not (Test-Path $nextDir)) { return }
+  Remove-Item -Recurse -Force $nextDir -ErrorAction SilentlyContinue
+  Write-Info "Removed Command Center .next cache (stale dev build)."
+}
+
 function Test-HttpOk([string]$Url, [int]$TimeoutSec = 4) {
   try {
     $response = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec $TimeoutSec
@@ -72,10 +111,18 @@ function Stop-Port([int]$Port, [string]$Label) {
     Write-Info "$Label (port $Port) is not running."
     return $false
   }
-  Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
-  Start-Sleep -Milliseconds 600
-  Write-Ok "Stopped $Label (pid $processId, port $Port)."
-  return $true
+  $stopped = Stop-ProcessTree $processId
+  if (-not $stopped) {
+    Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Milliseconds 400
+    $stopped = -not (Get-ListenPid $Port)
+  }
+  if ($stopped -or -not (Get-ListenPid $Port)) {
+    Write-Ok "Stopped $Label (pid $processId, port $Port)."
+    return $true
+  }
+  Write-Warn "Could not fully stop $Label on port $Port (pid $processId may need an elevated shell)."
+  return $false
 }
 
 function Wait-PortFree([int]$Port, [int]$TimeoutSec = 20) {
@@ -96,10 +143,22 @@ function Stop-ProjectNodeProcesses {
     return 0
   }
   foreach ($proc in $matches) {
-    Stop-Process -Id $proc.ProcessId -Force -ErrorAction SilentlyContinue
-    Write-Ok "Stopped node.exe pid $($proc.ProcessId)."
+    if (Stop-ProcessTree $proc.ProcessId) {
+      Write-Ok "Stopped node.exe pid $($proc.ProcessId)."
+    } else {
+      Write-Warn "node.exe pid $($proc.ProcessId) may still be running."
+    }
   }
   return @($matches).Count
+}
+
+function Stop-StackListeners {
+  foreach ($port in @($ApiPort, $UiPort, $GatewayPort)) {
+    $listenerPid = Get-ListenPid $port
+    if ($listenerPid) {
+      Stop-ProcessTree $listenerPid | Out-Null
+    }
+  }
 }
 
 function Get-CloudflaredPath() {
@@ -155,8 +214,11 @@ function Stop-HiddenStackLaunchers() {
     foreach ($launcherPid in Get-Content $pidFile -ErrorAction SilentlyContinue) {
       $parsed = 0
       if ([int]::TryParse("$launcherPid".Trim(), [ref]$parsed) -and $parsed -gt 0) {
-        Stop-Process -Id $parsed -Force -ErrorAction SilentlyContinue
-        Write-Ok "Stopped hidden launcher cmd.exe (pid $parsed)."
+        if (Stop-ProcessTree $parsed) {
+          Write-Ok "Stopped hidden launcher cmd.exe (pid $parsed)."
+        } else {
+          Write-Warn "Hidden launcher cmd.exe (pid $parsed) may still be running."
+        }
       }
     }
     Remove-Item $pidFile -Force -ErrorAction SilentlyContinue
@@ -170,8 +232,11 @@ function Stop-HiddenStackLaunchers() {
       $_.CommandLine -match 'pnpm (dev:full|dev:api|dev:stack)'
     }
   foreach ($proc in @($launchers)) {
-    Stop-Process -Id $proc.ProcessId -Force -ErrorAction SilentlyContinue
-    Write-Ok "Stopped repo launcher cmd.exe pid $($proc.ProcessId)."
+    if (Stop-ProcessTree $proc.ProcessId) {
+      Write-Ok "Stopped repo launcher cmd.exe pid $($proc.ProcessId)."
+    } else {
+      Write-Warn "Repo launcher cmd.exe pid $($proc.ProcessId) may still be running."
+    }
   }
 }
 
@@ -179,7 +244,13 @@ function Start-HiddenPnpm([string]$Label, [string]$PnpmCommand) {
   $logDir = Get-StackLogDir
   $logFile = Join-Path $logDir "$Label.log"
   $header = "`n===== $Label started $(Get-Date -Format o) =====`n"
-  Add-Content -Path $logFile -Value $header -Encoding UTF8
+  try {
+    Add-Content -Path $logFile -Value $header -Encoding UTF8 -ErrorAction Stop
+  } catch {
+    $logFile = Join-Path $logDir "$Label-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
+    Add-Content -Path $logFile -Value $header -Encoding UTF8
+    Write-Warn "$Label log was locked; using $logFile"
+  }
 
   $inner = "cd /d `"$RepoRoot`" && pnpm $PnpmCommand >> `"$logFile`" 2>&1"
   $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $inner -WorkingDirectory $RepoRoot -WindowStyle Hidden -PassThru
@@ -237,20 +308,31 @@ function Start-ApiDedicated() {
 }
 
 function Start-StackServices() {
-  $uiUp = [bool](Get-ListenPid $UiPort)
-  $gwUp = [bool](Get-ListenPid $GatewayPort)
-  if ($uiUp -and $gwUp) {
+  $uiPid = Get-ListenPid $UiPort
+  $gwPid = Get-ListenPid $GatewayPort
+  $uiHealthy = if ($uiPid) { Test-CommandCenterHealthy } else { $false }
+  if ($uiPid -and $gwPid -and $uiHealthy) {
     Write-Info "Command Center and Gateway already listening."
     return
+  }
+  if ($uiPid -and -not $uiHealthy) {
+    Write-Warn "Command Center is listening but unhealthy (likely stale .next cache) - restarting UI stack."
+    Repair-CommandCenterCache
+    Stop-Port $UiPort "Command Center" | Out-Null
+    if ($gwPid) { Stop-Port $GatewayPort "Gateway" | Out-Null }
+    Stop-HiddenStackLaunchers
+    Stop-ProjectNodeProcesses | Out-Null
+    Wait-PortFree $UiPort 15 | Out-Null
+    Wait-PortFree $GatewayPort 15 | Out-Null
   }
   Start-HiddenPnpm "dev-stack" "dev:stack" | Out-Null
 }
 
 function Test-StackHealthy() {
   $apiHealthy = (Test-HttpOk "http://127.0.0.1:$ApiPort/health").Ok
-  $uiUp = [bool](Get-ListenPid $UiPort)
+  $uiHealthy = Test-CommandCenterHealthy
   $gwUp = [bool](Get-ListenPid $GatewayPort)
-  return $apiHealthy -and $uiUp -and $gwUp
+  return $apiHealthy -and $uiHealthy -and $gwUp
 }
 
 function Start-StackSequential() {
@@ -495,6 +577,7 @@ function Stop-Stack {
   Stop-Port $UiPort "Command Center" | Out-Null
   Stop-Port $GatewayPort "Gateway" | Out-Null
   Stop-ProjectNodeProcesses | Out-Null
+  Stop-StackListeners
 
   $cf = Get-Process cloudflared -ErrorAction SilentlyContinue
   if ($cf) {
@@ -598,6 +681,9 @@ function Restart-Stack {
   )
 
   Write-Title "Restarting AgentOS (shutdown -> API first -> stack -> verify)"
+  if ((Get-ListenPid $UiPort) -and -not (Test-CommandCenterHealthy)) {
+    Repair-CommandCenterCache
+  }
   Stop-Stack
   Start-Sleep -Seconds 2
 

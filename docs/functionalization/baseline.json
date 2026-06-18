@@ -1,0 +1,36 @@
+{
+  "capturedAt": "2026-06-16T18:41:07.892Z",
+  "gitHead": "9bbbb0f69f5793b24852428f1210fb1e07d9e70d",
+  "results": {
+    "typecheck": {
+      "cmd": "pnpm typecheck",
+      "ok": true,
+      "exitCode": 0,
+      "ms": 18405
+    },
+    "test": {
+      "cmd": "pnpm test",
+      "ok": true,
+      "exitCode": 0,
+      "ms": 23104
+    },
+    "mission_smoke": {
+      "cmd": "pnpm mission:smoke",
+      "ok": true,
+      "exitCode": 0,
+      "ms": 5841
+    },
+    "tool_smoke": {
+      "cmd": "pnpm tool:smoke",
+      "ok": true,
+      "exitCode": 0,
+      "ms": 10304
+    },
+    "build": {
+      "cmd": "pnpm build",
+      "ok": true,
+      "exitCode": 0,
+      "ms": 34003
+    }
+  }
+}

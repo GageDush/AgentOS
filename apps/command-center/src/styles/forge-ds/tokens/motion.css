@@ -1,0 +1,77 @@
+:root {
+  /* ─ Duration ─────────────────────────────────────── */
+  --dur-instant:  50ms;  /* @kind other */
+  --dur-fast:    150ms;  /* @kind other */
+  --dur-base:    250ms;  /* @kind other */
+  --dur-slow:    400ms;  /* @kind other */
+  --dur-slower:  600ms;  /* @kind other */
+  --dur-slowest: 900ms;  /* @kind other */
+
+  /* ─ Easing ───────────────────────────────────────── */
+  --ease-out:     cubic-bezier(0, 0, 0.2, 1);        /* @kind other */
+  --ease-in:      cubic-bezier(0.4, 0, 1, 1);        /* @kind other */
+  --ease-inout:   cubic-bezier(0.4, 0, 0.2, 1);      /* @kind other */
+  --ease-default: cubic-bezier(0.16, 1, 0.3, 1);     /* @kind other */
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1); /* @kind other */
+
+  /* ─ Transition Presets ───────────────────────────── */
+  --t-color:     color var(--dur-fast) var(--ease-out),
+                 background-color var(--dur-fast) var(--ease-out),
+                 border-color var(--dur-fast) var(--ease-out); /* @kind other */
+  --t-shadow:    box-shadow var(--dur-fast) var(--ease-out);   /* @kind other */
+  --t-opacity:   opacity var(--dur-base) var(--ease-out);      /* @kind other */
+  --t-transform: transform var(--dur-fast) var(--ease-spring); /* @kind other */
+  --t-all:       all var(--dur-fast) var(--ease-out);          /* @kind other */
+}
+
+/* ─ Keyframes ────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;    transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.72); }
+}
+
+@keyframes status-ping {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  70%  { transform: scale(1.8); opacity: 0;   }
+  100% { transform: scale(1.8); opacity: 0;   }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 6px  var(--forge-orange-glow); }
+  50%       { box-shadow: 0 0 18px var(--forge-orange-glow-strong); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px);  }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+/* ─ Reduced Motion ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:       0.01ms !important;
+    animation-iteration-count: 1     !important;
+    transition-duration:      0.01ms !important;
+    scroll-behavior:          auto   !important;
+  }
+}

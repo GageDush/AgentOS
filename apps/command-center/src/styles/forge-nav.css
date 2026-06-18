@@ -1,0 +1,243 @@
+/* ════════════════════════════════════════════════════════════════
+   ForgeNav — shared shell nav (loaded globally in app/layout.tsx).
+   Two route-aware densities: .fnav--pill (home) and .fnav--rail (ops).
+   Uses global Forge tokens so it looks identical on every route.
+   ════════════════════════════════════════════════════════════════ */
+
+.fnav {
+  --fnav-accent: var(--forge-accent, #ff6a35);
+  --fnav-accent-rgb: var(--forge-accent-rgb, 255, 106, 53);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-sans, "Inter", system-ui, sans-serif);
+  z-index: 200;
+}
+
+/* ── Pill (home) ─────────────────────────────────────────────── */
+.fnav--pill {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 32px), 1080px);
+  height: 56px;
+  padding: 0 8px 0 18px;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07));
+  border-radius: 999px;
+  background: rgba(19, 17, 16, 0.78);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: fnavIn 0.7s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes fnavIn {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ── Rail (operational) ──────────────────────────────────────── */
+.fnav--rail {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 54px;
+  padding: 0 clamp(12px, 3vw, 28px);
+  border-bottom: 1px solid var(--color-border, rgba(255, 255, 255, 0.07));
+  background: rgba(10, 9, 8, 0.82);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* ── Brand ───────────────────────────────────────────────────── */
+.fnav-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+  text-decoration: none;
+  color: inherit;
+}
+.fnav-brand svg { width: 22px; height: 22px; }
+.fnav-word {
+  font-family: var(--font-display, "Inter Display", sans-serif);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  color: var(--color-fg-1, #f5f2ee);
+}
+.fnav-word i { color: var(--fnav-accent); font-style: normal; }
+.fnav-v {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  color: var(--color-fg-4, #635650);
+  background: var(--forge-bg-overlay, #262320);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07));
+}
+.fnav--rail .fnav-v { display: none; }
+@media (min-width: 1100px) { .fnav--rail .fnav-v { display: inline; } }
+
+/* ── Links ───────────────────────────────────────────────────── */
+.fnav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.fnav--pill .fnav-links { justify-content: center; }
+.fnav-link {
+  background: transparent;
+  border: none;
+  color: var(--color-fg-3, #a89d92);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 7px 11px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 150ms, background 150ms;
+}
+.fnav-link:hover {
+  color: var(--color-fg-1, #f5f2ee);
+  background: var(--forge-bg-hover, rgba(255, 255, 255, 0.04));
+}
+.fnav-link.on {
+  color: var(--color-fg-1, #f5f2ee);
+  background: rgba(var(--fnav-accent-rgb), 0.08);
+}
+.fnav-link.on::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 1.5px;
+  background: var(--fnav-accent);
+  box-shadow: 0 0 6px var(--fnav-accent);
+  border-radius: 2px;
+}
+.fnav-ct {
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--forge-bg-overlay, #262320);
+  color: var(--color-fg-3, #a89d92);
+}
+.fnav-ct.hot {
+  background: var(--status-warn-bg, rgba(245, 166, 35, 0.12));
+  color: var(--status-warn, #f5a623);
+}
+
+/* ── More menu ───────────────────────────────────────────────── */
+.fnav-more { position: relative; display: inline-flex; }
+.fnav-more-btn { font: inherit; }
+.fnav-chev { display: inline-flex; opacity: 0.7; }
+.fnav-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 260;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--forge-bg-raised, #131110);
+  border: 1px solid var(--color-border-mid, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  display: grid;
+  gap: 2px;
+  animation: fnavMenuIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.fnav--rail .fnav-menu { left: auto; }
+@keyframes fnavMenuIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+.fnav-menu-item {
+  display: block;
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--color-fg-2, #cbc3b8);
+  text-decoration: none;
+  transition: background 120ms, color 120ms;
+}
+.fnav-menu-item:hover {
+  background: var(--forge-bg-hover, rgba(255, 255, 255, 0.04));
+  color: var(--color-fg-1, #f5f2ee);
+}
+.fnav-menu-item.on {
+  color: var(--color-fg-1, #f5f2ee);
+  background: rgba(var(--fnav-accent-rgb), 0.08);
+}
+
+/* ── Right cluster ───────────────────────────────────────────── */
+.fnav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fnav-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 10.5px;
+  color: var(--color-fg-3, #a89d92);
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--forge-bg-overlay, #262320);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07));
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+}
+.fnav-search:hover {
+  border-color: var(--color-border-mid, rgba(255, 255, 255, 0.12));
+  color: var(--color-fg-1, #f5f2ee);
+}
+.fnav-search kbd {
+  font-family: var(--font-mono, monospace);
+  font-size: 9.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07));
+  color: var(--color-fg-3, #a89d92);
+}
+.fnav-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--forge-orange-300, #ff8a4c), var(--forge-orange-500, #f04e1a));
+  color: var(--forge-bg-base, #0a0908);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display, "Inter Display", sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+/* ── Narrow widths: collapse primary links into More on rail ──── */
+@media (max-width: 720px) {
+  .fnav-word, .fnav--rail .fnav-link:not(.fnav-more-btn) { display: none; }
+  .fnav--pill .fnav-link:not(.fnav-more-btn) { display: none; }
+}
+
+/* ── Operational layout: collapse to one column when Run Inspector
+      is scoped out of the current route. ────────────────────────── */
+.forge-dashboard-layout.forge-dashboard-layout--full {
+  grid-template-columns: minmax(0, 1fr);
+}

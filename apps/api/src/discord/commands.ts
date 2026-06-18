@@ -16,7 +16,12 @@ import { optionValue, parseAgentOsCommand, type ParsedAgentOsCommand } from "./p
 import { notifyTaskCreated } from "./notify";
 import { personaDiscordName, ROSTER_PERSONAS } from "./personas";
 import { reserveChatRoom, type ChatRoomNumber } from "./chat-rooms";
-import { lastExecutedAgentIdsFromAudit } from "./mission-briefing";
+import {
+  getActiveHouseVisit,
+  inviteToHouse,
+  loadHouseVisitsState,
+  releaseHouseVisit
+} from "./house-visits";
 import { runRoundTableBriefing } from "./round-table";
 
 export async function handleSlashCommand(
@@ -100,6 +105,105 @@ async function handleAgentOsSubcommand(
         });
       }
     }
+    case "invite-house": {
+      const host = optionValue(parsed.options, "host");
+      const guest = optionValue(parsed.options, "guest");
+      const topic = optionValue(parsed.options, "topic");
+      const durationRaw = optionValue(parsed.options, "duration");
+      if (!host || !guest || !topic) {
+        return embedInteractionResponse({
+          title: "Invalid invite",
+          description: "Provide `host`, `guest`, and `topic` for a house visit.",
+          tone: "warning",
+          ephemeral: true
+        });
+      }
+      const durationMs = durationRaw ? Number(durationRaw) * 60_000 : undefined;
+      try {
+        const result = await inviteToHouse({
+          hostAgentId: host,
+          guests: [guest],
+          topic,
+          durationMs,
+          operatorId,
+          operatorLabel
+        });
+        if (!result.ok) {
+          return embedInteractionResponse({
+            title: "Invite failed",
+            description: `Could not start visit (${result.reason}).`,
+            tone: "warning",
+            ephemeral: true
+          });
+        }
+        return embedInteractionResponse({
+          agentId: host,
+          title: "House visit started",
+          description: `Guests invited to \`#${result.visit.channelName}\`. Chat in the house channel; notes save to \`${result.visit.wikiJournalSlug}\`.`,
+          tone: "success",
+          ephemeral: true
+        });
+      } catch (error) {
+        return embedInteractionResponse({
+          title: "Invite failed",
+          description: error instanceof Error ? error.message : "Unknown error.",
+          tone: "danger",
+          ephemeral: true
+        });
+      }
+    }
+    case "end-visit": {
+      const host = optionValue(parsed.options, "host");
+      try {
+        let hostAgentId = host;
+        if (!hostAgentId) {
+          const active = Object.entries(loadHouseVisitsState().visits).filter(([, visit]) => visit);
+          if (active.length === 1) {
+            hostAgentId = active[0][0];
+          }
+        }
+        if (!hostAgentId) {
+          return embedInteractionResponse({
+            title: "No visit to end",
+            description: "Specify `host` or ensure only one house visit is active.",
+            tone: "warning",
+            ephemeral: true
+          });
+        }
+        const visit = getActiveHouseVisit(hostAgentId);
+        if (!visit) {
+          return embedInteractionResponse({
+            title: "No active visit",
+            description: `No open visit for host \`${hostAgentId}\`.`,
+            tone: "warning",
+            ephemeral: true
+          });
+        }
+        const result = await releaseHouseVisit(hostAgentId, `ended by ${operatorLabel}`, operatorId);
+        if (!result.ok) {
+          return embedInteractionResponse({
+            title: "End visit failed",
+            description: `Could not end visit (${result.reason}).`,
+            tone: "warning",
+            ephemeral: true
+          });
+        }
+        return embedInteractionResponse({
+          agentId: hostAgentId,
+          title: "Visit ended",
+          description: `Notes saved to \`${visit.wikiJournalSlug}\`. Summary posted to \`#town-square\`.`,
+          tone: "success",
+          ephemeral: true
+        });
+      } catch (error) {
+        return embedInteractionResponse({
+          title: "End visit failed",
+          description: error instanceof Error ? error.message : "Unknown error.",
+          tone: "danger",
+          ephemeral: true
+        });
+      }
+    }
     case "briefing": {
       const topic = optionValue(parsed.options, "topic");
       if (!topic) {
@@ -111,11 +215,7 @@ async function handleAgentOsSubcommand(
         });
       }
       try {
-        const executedAgentIds = lastExecutedAgentIdsFromAudit();
-        const result = await runRoundTableBriefing(topic, operatorId, operatorLabel, {
-          agentIds: executedAgentIds,
-          executedOnly: executedAgentIds.length > 0
-        });
+        const result = await runRoundTableBriefing(topic, operatorId, operatorLabel);
         if (!result.ok) {
           return embedInteractionResponse({
             title: "Briefing unavailable",

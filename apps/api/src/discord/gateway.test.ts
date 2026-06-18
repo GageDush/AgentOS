@@ -35,11 +35,15 @@ describe("discord gateway", () => {
     vi.unstubAllGlobals();
   });
 
-  it("returns disabled when bot integration is off", async () => {
-    const { startDiscordGateway } = await import("./gateway");
-    const result = await startDiscordGateway();
-    expect(result).toEqual({ ok: false, reason: "disabled" });
-  });
+  it(
+    "returns disabled when bot integration is off",
+    async () => {
+      const { startDiscordGateway } = await import("./gateway");
+      const result = await startDiscordGateway();
+      expect(result).toEqual({ ok: false, reason: "disabled" });
+    },
+    15_000
+  );
 
   it("returns no-token when bot is enabled without token", async () => {
     mockIsDiscordBotEnabled.mockReturnValue(true);

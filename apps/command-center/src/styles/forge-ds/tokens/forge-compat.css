@@ -1,0 +1,57 @@
+/* Compatibility aliases for older --forge-* consumers.
+   The canonical token names live in colors/typography/spacing/motion/shadows.
+   packages/ui/styles/agentos-forge.css may override some of these aliases with
+   richer component defaults after this token barrel loads. */
+:root {
+  /* RGB channel values for rgba() */
+  --forge-accent-rgb: 255, 106, 53;
+  --forge-accent-dim-rgb: 240, 78, 26;
+  --forge-accent-bright-rgb: 255, 138, 76;
+
+  --forge-ok-rgb: 34, 201, 122;
+  --forge-warn-rgb: 245, 166, 35;
+  --forge-err-rgb: 239, 69, 69;
+
+  --forge-bg-rgb: 10, 9, 8;
+  --forge-surface-rgb: 28, 26, 23;
+  --forge-text-rgb: 245, 242, 238;
+  --forge-muted-rgb: 168, 157, 146;
+
+  /* Legacy aliases used by entry animation and shared Forge components. */
+  --forge-bg: var(--forge-bg-base);
+  --forge-bg-2: var(--forge-bg-raised);
+  --forge-panel: rgba(var(--forge-surface-rgb), 0.74);
+  --forge-panel-strong: rgba(var(--forge-bg-rgb), 0.92);
+  --forge-border: rgba(255, 255, 255, 0.07);
+  --forge-border-strong: rgba(var(--forge-accent-rgb), 0.32);
+  --forge-text: var(--forge-neutral-50);
+  --forge-muted: var(--forge-neutral-300);
+  --forge-soft: var(--forge-neutral-500);
+  --forge-accent: var(--forge-orange-400);
+  --forge-accent-bright: var(--forge-orange-300);
+  --forge-green: var(--status-ok);
+  --forge-red: var(--status-err);
+  --forge-violet: var(--forge-orange-500);
+  --forge-violet-rgb: 240, 78, 26;
+  --forge-cyan: var(--forge-orange-300);
+  --forge-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+
+  --forge-sans: var(--font-sans);
+  --forge-mono: var(--font-mono);
+
+  --forge-space-1: var(--space-1);
+  --forge-space-2: var(--space-2);
+  --forge-space-3: var(--space-3);
+  --forge-space-4: var(--space-4);
+  --forge-space-5: var(--space-5);
+  --forge-space-6: var(--space-6);
+
+  --forge-text-xs: var(--text-xs);
+  --forge-text-sm: var(--text-sm);
+  --forge-text-base: var(--text-base);
+  --forge-text-md: var(--text-md);
+
+  --forge-radius-sm: var(--radius-sm);
+  --forge-radius-md: var(--radius-md);
+  --forge-radius-lg: var(--radius-lg);
+}

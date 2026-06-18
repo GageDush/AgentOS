@@ -3,25 +3,25 @@ import { resolvePersona, type AgentPersona } from "./personas";
 
 /** PNG filenames under apps/api/public/agents (served at /media/agents/). */
 const AGENT_AVATAR_FILES: Record<string, string> = {
-  "admin-agent": "agentos-operator.png",
+  "admin-agent": "admin-agent.png",
   "agentos-operator": "agentos-operator.png",
   "builder-agent": "builder-agent.png",
   "code-implementer": "builder-agent.png",
   "qa-agent": "qa-agent.png",
   "security-auditor": "security-agent.png",
   "security-agent": "security-agent.png",
-  "release-manager": "product-agent.png",
-  "quota-steward": "architect-agent.png",
+  "release-manager": "release-manager.png",
+  "quota-steward": "quota-steward.png",
   "product-agent": "product-agent.png",
   "architect-agent": "architect-agent.png",
   "reviewer-agent": "reviewer-agent.png",
   "code-reviewer": "reviewer-agent.png",
   "docs-agent": "docs-agent.png",
-  "systems-synthesizer": "product-agent.png",
-  "task-classifier": "architect-agent.png",
-  "planner-partitioner": "architect-agent.png",
-  "issue-intake-researcher": "docs-agent.png",
-  "context-minimizer": "architect-agent.png"
+  "systems-synthesizer": "systems-synthesizer.png",
+  "task-classifier": "task-classifier.png",
+  "planner-partitioner": "planner-partitioner.png",
+  "issue-intake-researcher": "issue-intake-researcher.png",
+  "context-minimizer": "context-minimizer.png"
 };
 
 function normalizeBaseUrl(raw?: string) {

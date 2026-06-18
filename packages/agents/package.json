@@ -12,6 +12,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@agentos/llm-router": "workspace:*",
     "@agentos/memory": "workspace:*",
     "@agentos/persistence": "workspace:*",
     "@agentos/shared": "workspace:*"

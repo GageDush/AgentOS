@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbo -p 3000",
+    "dev": "node ../../scripts/next-dev-command-center.mjs",
     "build": "next build",
+    "start": "next start -p 3000",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
@@ -13,6 +14,7 @@
     "@agentos/shared": "workspace:*",
     "@agentos/ui": "workspace:*",
     "@agentos/app-generator": "workspace:*",
+    "@xyflow/react": "^12.4.2",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

@@ -9,7 +9,33 @@
         "auto-indexed"
       ],
       "path": "agents/admin-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.107Z",
+      "updatedAt": "2026-06-16T03:56:56.726Z",
+      "archived": false
+    },
+    "agents/admin-agent/journal": {
+      "slug": "agents/admin-agent/journal",
+      "title": "Ash — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "admin-agent"
+      ],
+      "path": "agents/admin-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.394Z",
+      "archived": false
+    },
+    "agents/agentos-operator/journal": {
+      "slug": "agents/agentos-operator/journal",
+      "title": "Red — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "agentos-operator"
+      ],
+      "path": "agents/agentos-operator/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.397Z",
       "archived": false
     },
     "agents/architect-agent": {
@@ -21,7 +47,20 @@
         "auto-indexed"
       ],
       "path": "agents/architect-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.108Z",
+      "updatedAt": "2026-06-16T03:56:56.730Z",
+      "archived": false
+    },
+    "agents/architect-agent/journal": {
+      "slug": "agents/architect-agent/journal",
+      "title": "Steven — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "architect-agent"
+      ],
+      "path": "agents/architect-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.401Z",
       "archived": false
     },
     "agents/backend-service-agent": {
@@ -33,7 +72,7 @@
         "auto-indexed"
       ],
       "path": "agents/backend-service-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.108Z",
+      "updatedAt": "2026-06-16T03:56:56.730Z",
       "archived": false
     },
     "agents/code-implementer": {
@@ -45,7 +84,20 @@
         "auto-indexed"
       ],
       "path": "agents/code-implementer.md",
-      "updatedAt": "2026-06-12T13:38:52.109Z",
+      "updatedAt": "2026-06-16T03:56:56.730Z",
+      "archived": false
+    },
+    "agents/code-implementer/journal": {
+      "slug": "agents/code-implementer/journal",
+      "title": "Brock — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "code-implementer"
+      ],
+      "path": "agents/code-implementer/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.394Z",
       "archived": false
     },
     "agents/code-reviewer": {
@@ -57,7 +109,7 @@
         "auto-indexed"
       ],
       "path": "agents/code-reviewer.md",
-      "updatedAt": "2026-06-12T13:38:52.110Z",
+      "updatedAt": "2026-06-16T03:56:56.730Z",
       "archived": false
     },
     "agents/context-minimizer": {
@@ -69,7 +121,20 @@
         "auto-indexed"
       ],
       "path": "agents/context-minimizer.md",
-      "updatedAt": "2026-06-12T13:38:52.110Z",
+      "updatedAt": "2026-06-16T03:56:56.730Z",
+      "archived": false
+    },
+    "agents/context-minimizer/journal": {
+      "slug": "agents/context-minimizer/journal",
+      "title": "Erika — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "context-minimizer"
+      ],
+      "path": "agents/context-minimizer/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.401Z",
       "archived": false
     },
     "agents/database-migration-agent": {
@@ -81,7 +146,7 @@
         "auto-indexed"
       ],
       "path": "agents/database-migration-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.111Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
       "archived": false
     },
     "agents/docs-agent": {
@@ -93,7 +158,20 @@
         "auto-indexed"
       ],
       "path": "agents/docs-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.112Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/docs-agent/journal": {
+      "slug": "agents/docs-agent/journal",
+      "title": "Dawn — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "docs-agent"
+      ],
+      "path": "agents/docs-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.401Z",
       "archived": false
     },
     "agents/frontend-ui-agent": {
@@ -105,7 +183,7 @@
         "auto-indexed"
       ],
       "path": "agents/frontend-ui-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.112Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
       "archived": false
     },
     "agents/integration-broker": {
@@ -117,7 +195,7 @@
         "auto-indexed"
       ],
       "path": "agents/integration-broker.md",
-      "updatedAt": "2026-06-12T13:38:52.113Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
       "archived": false
     },
     "agents/issue-intake-researcher": {
@@ -129,7 +207,20 @@
         "auto-indexed"
       ],
       "path": "agents/issue-intake-researcher.md",
-      "updatedAt": "2026-06-12T13:38:52.114Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/issue-intake-researcher/journal": {
+      "slug": "agents/issue-intake-researcher/journal",
+      "title": "Joy — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "issue-intake-researcher"
+      ],
+      "path": "agents/issue-intake-researcher/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.400Z",
       "archived": false
     },
     "agents/memory-curator": {
@@ -141,7 +232,7 @@
         "auto-indexed"
       ],
       "path": "agents/memory-curator.md",
-      "updatedAt": "2026-06-12T13:38:52.114Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
       "archived": false
     },
     "agents/planner-partitioner": {
@@ -153,7 +244,20 @@
         "auto-indexed"
       ],
       "path": "agents/planner-partitioner.md",
-      "updatedAt": "2026-06-12T13:38:52.115Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/planner-partitioner/journal": {
+      "slug": "agents/planner-partitioner/journal",
+      "title": "Oak — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "planner-partitioner"
+      ],
+      "path": "agents/planner-partitioner/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.399Z",
       "archived": false
     },
     "agents/product-agent": {
@@ -165,7 +269,20 @@
         "auto-indexed"
       ],
       "path": "agents/product-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.115Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/product-agent/journal": {
+      "slug": "agents/product-agent/journal",
+      "title": "Leaf — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "product-agent"
+      ],
+      "path": "agents/product-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.400Z",
       "archived": false
     },
     "agents/qa-agent": {
@@ -177,7 +294,20 @@
         "auto-indexed"
       ],
       "path": "agents/qa-agent.md",
-      "updatedAt": "2026-06-12T13:38:52.115Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/qa-agent/journal": {
+      "slug": "agents/qa-agent/journal",
+      "title": "Misty — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "qa-agent"
+      ],
+      "path": "agents/qa-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.394Z",
       "archived": false
     },
     "agents/quota-steward": {
@@ -189,7 +319,20 @@
         "auto-indexed"
       ],
       "path": "agents/quota-steward.md",
-      "updatedAt": "2026-06-12T13:38:52.116Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/quota-steward/journal": {
+      "slug": "agents/quota-steward/journal",
+      "title": "Bill — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "quota-steward"
+      ],
+      "path": "agents/quota-steward/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.397Z",
       "archived": false
     },
     "agents/release-manager": {
@@ -201,7 +344,20 @@
         "auto-indexed"
       ],
       "path": "agents/release-manager.md",
-      "updatedAt": "2026-06-12T13:38:52.116Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/release-manager/journal": {
+      "slug": "agents/release-manager/journal",
+      "title": "Lance — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "release-manager"
+      ],
+      "path": "agents/release-manager/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.396Z",
       "archived": false
     },
     "agents/repo-cartographer": {
@@ -213,7 +369,33 @@
         "auto-indexed"
       ],
       "path": "agents/repo-cartographer.md",
-      "updatedAt": "2026-06-12T13:38:52.117Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
+      "archived": false
+    },
+    "agents/reviewer-agent/journal": {
+      "slug": "agents/reviewer-agent/journal",
+      "title": "Gary — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "reviewer-agent"
+      ],
+      "path": "agents/reviewer-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.399Z",
+      "archived": false
+    },
+    "agents/security-agent/journal": {
+      "slug": "agents/security-agent/journal",
+      "title": "Surge — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "security-agent"
+      ],
+      "path": "agents/security-agent/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.395Z",
       "archived": false
     },
     "agents/security-auditor": {
@@ -225,7 +407,7 @@
         "auto-indexed"
       ],
       "path": "agents/security-auditor.md",
-      "updatedAt": "2026-06-12T13:38:52.118Z",
+      "updatedAt": "2026-06-16T03:56:56.733Z",
       "archived": false
     },
     "agents/systems-synthesizer": {
@@ -237,7 +419,20 @@
         "auto-indexed"
       ],
       "path": "agents/systems-synthesizer.md",
-      "updatedAt": "2026-06-12T13:38:52.118Z",
+      "updatedAt": "2026-06-16T03:56:56.743Z",
+      "archived": false
+    },
+    "agents/systems-synthesizer/journal": {
+      "slug": "agents/systems-synthesizer/journal",
+      "title": "Blaine — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "systems-synthesizer"
+      ],
+      "path": "agents/systems-synthesizer/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.398Z",
       "archived": false
     },
     "agents/task-classifier": {
@@ -249,7 +444,20 @@
         "auto-indexed"
       ],
       "path": "agents/task-classifier.md",
-      "updatedAt": "2026-06-12T13:38:52.119Z",
+      "updatedAt": "2026-06-16T03:56:56.743Z",
+      "archived": false
+    },
+    "agents/task-classifier/journal": {
+      "slug": "agents/task-classifier/journal",
+      "title": "Clemont — Dream Journal",
+      "tags": [
+        "agent",
+        "journal",
+        "neighborhood",
+        "task-classifier"
+      ],
+      "path": "agents/task-classifier/journal.md",
+      "updatedAt": "2026-06-12T15:41:22.398Z",
       "archived": false
     },
     "apps/api": {
@@ -261,7 +469,7 @@
         "auto-indexed"
       ],
       "path": "apps/api.md",
-      "updatedAt": "2026-06-12T13:38:52.088Z",
+      "updatedAt": "2026-06-16T03:56:56.710Z",
       "archived": false
     },
     "apps/command-center": {
@@ -273,7 +481,7 @@
         "auto-indexed"
       ],
       "path": "apps/command-center.md",
-      "updatedAt": "2026-06-12T13:38:52.090Z",
+      "updatedAt": "2026-06-16T03:56:56.715Z",
       "archived": false
     },
     "apps/gateway": {
@@ -285,7 +493,7 @@
         "auto-indexed"
       ],
       "path": "apps/gateway.md",
-      "updatedAt": "2026-06-12T13:38:52.091Z",
+      "updatedAt": "2026-06-16T03:56:56.715Z",
       "archived": false
     },
     "apps/scheduler": {
@@ -297,7 +505,7 @@
         "auto-indexed"
       ],
       "path": "apps/scheduler.md",
-      "updatedAt": "2026-06-12T13:38:52.092Z",
+      "updatedAt": "2026-06-16T03:56:56.715Z",
       "archived": false
     },
     "apps/worker": {
@@ -309,7 +517,7 @@
         "auto-indexed"
       ],
       "path": "apps/worker.md",
-      "updatedAt": "2026-06-12T13:38:52.092Z",
+      "updatedAt": "2026-06-16T03:56:56.717Z",
       "archived": false
     },
     "areas/apps-api": {
@@ -317,7 +525,7 @@
       "title": "Apps Api",
       "tags": [],
       "path": "areas/apps-api.md",
-      "updatedAt": "2026-06-12T13:43:42.555Z",
+      "updatedAt": "2026-06-16T18:44:25.159Z",
       "archived": false
     },
     "areas/apps-command-center": {
@@ -325,7 +533,7 @@
       "title": "Apps Command Center",
       "tags": [],
       "path": "areas/apps-command-center.md",
-      "updatedAt": "2026-06-12T13:43:42.657Z",
+      "updatedAt": "2026-06-16T03:06:08.002Z",
       "archived": false
     },
     "areas/apps-gateway": {
@@ -357,7 +565,20 @@
       "title": "Apps Worker",
       "tags": [],
       "path": "areas/apps-worker.md",
-      "updatedAt": "2026-06-12T13:43:41.484Z",
+      "updatedAt": "2026-06-14T17:30:16.298Z",
+      "archived": false
+    },
+    "areas/architecture-diagrams": {
+      "slug": "areas/architecture-diagrams",
+      "title": "Architecture diagrams (Mermaid)",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "diagrams",
+        "auto-indexed"
+      ],
+      "path": "areas/architecture-diagrams.md",
+      "updatedAt": "2026-06-16T22:08:22.284Z",
       "archived": false
     },
     "areas/code-ownership": {
@@ -369,7 +590,7 @@
         "auto-indexed"
       ],
       "path": "areas/code-ownership.md",
-      "updatedAt": "2026-06-12T13:38:52.151Z",
+      "updatedAt": "2026-06-16T03:56:56.799Z",
       "archived": false
     },
     "areas/config": {
@@ -381,7 +602,7 @@
         "auto-indexed"
       ],
       "path": "areas/config.md",
-      "updatedAt": "2026-06-12T13:38:52.155Z",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
       "archived": false
     },
     "areas/dependency-graph": {
@@ -393,7 +614,126 @@
         "auto-indexed"
       ],
       "path": "areas/dependency-graph.md",
-      "updatedAt": "2026-06-12T13:38:52.150Z",
+      "updatedAt": "2026-06-16T03:56:56.799Z",
+      "archived": false
+    },
+    "areas/diagrams/agent-pipeline": {
+      "slug": "areas/diagrams/agent-pipeline",
+      "title": "Diagram: Conditional agent pipeline",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "agents",
+        "diagram"
+      ],
+      "path": "areas/diagrams/agent-pipeline.md",
+      "updatedAt": "2026-06-16T22:08:22.220Z",
+      "archived": false
+    },
+    "areas/diagrams/approval-gate-sequence": {
+      "slug": "areas/diagrams/approval-gate-sequence",
+      "title": "Diagram: Approval gate sequence",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "sequence",
+        "diagram"
+      ],
+      "path": "areas/diagrams/approval-gate-sequence.md",
+      "updatedAt": "2026-06-16T22:08:22.220Z",
+      "archived": false
+    },
+    "areas/diagrams/containers": {
+      "slug": "areas/diagrams/containers",
+      "title": "Diagram: Containers and hosting (C4 L2)",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "c4",
+        "diagram"
+      ],
+      "path": "areas/diagrams/containers.md",
+      "updatedAt": "2026-06-16T22:08:22.284Z",
+      "archived": false
+    },
+    "areas/diagrams/context": {
+      "slug": "areas/diagrams/context",
+      "title": "Diagram: System context (C4 L1)",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "c4",
+        "diagram"
+      ],
+      "path": "areas/diagrams/context.md",
+      "updatedAt": "2026-06-16T22:08:22.261Z",
+      "archived": false
+    },
+    "areas/diagrams/mission-run-sequence": {
+      "slug": "areas/diagrams/mission-run-sequence",
+      "title": "Diagram: Mission run sequence",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "sequence",
+        "diagram"
+      ],
+      "path": "areas/diagrams/mission-run-sequence.md",
+      "updatedAt": "2026-06-16T22:08:22.228Z",
+      "archived": false
+    },
+    "areas/diagrams/oauth-sequence": {
+      "slug": "areas/diagrams/oauth-sequence",
+      "title": "Diagram: Discord OAuth session",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "sequence",
+        "diagram",
+        "auth"
+      ],
+      "path": "areas/diagrams/oauth-sequence.md",
+      "updatedAt": "2026-06-16T22:08:22.222Z",
+      "archived": false
+    },
+    "areas/diagrams/ui-routes": {
+      "slug": "areas/diagrams/ui-routes",
+      "title": "Diagram: UI routes to API",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "diagram",
+        "ui"
+      ],
+      "path": "areas/diagrams/ui-routes.md",
+      "updatedAt": "2026-06-16T22:08:22.265Z",
+      "archived": false
+    },
+    "areas/diagrams/wiki-sync-sequence": {
+      "slug": "areas/diagrams/wiki-sync-sequence",
+      "title": "Diagram: Memory wiki sync",
+      "tags": [
+        "architecture",
+        "mermaid",
+        "sequence",
+        "diagram",
+        "wiki"
+      ],
+      "path": "areas/diagrams/wiki-sync-sequence.md",
+      "updatedAt": "2026-06-16T22:08:22.283Z",
+      "archived": false
+    },
+    "areas/icepanel-import-manifest": {
+      "slug": "areas/icepanel-import-manifest",
+      "title": "IcePanel Import Manifest — AgentOS",
+      "tags": [
+        "architecture",
+        "icepanel",
+        "import",
+        "auto-indexed"
+      ],
+      "path": "areas/icepanel-import-manifest.md",
+      "updatedAt": "2026-06-16T22:08:22.295Z",
       "archived": false
     },
     "areas/repo-layout": {
@@ -405,7 +745,7 @@
         "auto-indexed"
       ],
       "path": "areas/repo-layout.md",
-      "updatedAt": "2026-06-12T13:43:42.910Z",
+      "updatedAt": "2026-06-17T01:17:23.981Z",
       "archived": false
     },
     "areas/risk-areas": {
@@ -417,7 +757,21 @@
         "auto-indexed"
       ],
       "path": "areas/risk-areas.md",
-      "updatedAt": "2026-06-12T13:38:52.151Z",
+      "updatedAt": "2026-06-16T03:56:56.799Z",
+      "archived": false
+    },
+    "areas/system-routing-schematic": {
+      "slug": "areas/system-routing-schematic",
+      "title": "AgentOS System Routing & Schematic (IcePanel)",
+      "tags": [
+        "architecture",
+        "routing",
+        "icepanel",
+        "schematic",
+        "auto-indexed"
+      ],
+      "path": "areas/system-routing-schematic.md",
+      "updatedAt": "2026-06-16T22:08:22.257Z",
       "archived": false
     },
     "docs/agentos_local_pivot_plan": {
@@ -428,7 +782,7 @@
         "auto-indexed"
       ],
       "path": "docs/agentos_local_pivot_plan.md",
-      "updatedAt": "2026-06-12T13:38:52.121Z",
+      "updatedAt": "2026-06-16T03:56:56.746Z",
       "archived": false
     },
     "docs/agentos_session_context": {
@@ -439,7 +793,7 @@
         "auto-indexed"
       ],
       "path": "docs/agentos_session_context.md",
-      "updatedAt": "2026-06-12T13:38:52.122Z",
+      "updatedAt": "2026-06-16T03:56:56.746Z",
       "archived": false
     },
     "docs/agentos_token_optimization_spec": {
@@ -450,7 +804,7 @@
         "auto-indexed"
       ],
       "path": "docs/agentos_token_optimization_spec.md",
-      "updatedAt": "2026-06-12T13:38:52.123Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/architecture": {
@@ -461,7 +815,18 @@
         "auto-indexed"
       ],
       "path": "docs/architecture.md",
-      "updatedAt": "2026-06-12T13:38:52.131Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
+      "archived": false
+    },
+    "docs/architecture/system-routing-schematic": {
+      "slug": "docs/architecture/system-routing-schematic",
+      "title": "System Routing Schematic",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/architecture/system-routing-schematic.md",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/asset_manifest_and_needs": {
@@ -472,7 +837,7 @@
         "auto-indexed"
       ],
       "path": "docs/asset_manifest_and_needs.md",
-      "updatedAt": "2026-06-12T13:38:52.124Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/demo/acceptance_criteria": {
@@ -483,7 +848,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/acceptance_criteria.md",
-      "updatedAt": "2026-06-12T13:38:52.132Z",
+      "updatedAt": "2026-06-16T03:56:56.760Z",
       "archived": false
     },
     "docs/demo/build_progress": {
@@ -494,7 +859,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/build_progress.md",
-      "updatedAt": "2026-06-12T13:38:52.133Z",
+      "updatedAt": "2026-06-16T03:56:56.761Z",
       "archived": false
     },
     "docs/demo/demo_prerequisites": {
@@ -505,7 +870,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/demo_prerequisites.md",
-      "updatedAt": "2026-06-12T13:38:52.133Z",
+      "updatedAt": "2026-06-16T03:56:56.762Z",
       "archived": false
     },
     "docs/demo/implementation_brief": {
@@ -516,7 +881,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/implementation_brief.md",
-      "updatedAt": "2026-06-12T13:38:52.134Z",
+      "updatedAt": "2026-06-16T03:56:56.762Z",
       "archived": false
     },
     "docs/demo/p1-implementer-gaps": {
@@ -527,7 +892,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/p1-implementer-gaps.md",
-      "updatedAt": "2026-06-12T13:38:52.134Z",
+      "updatedAt": "2026-06-16T03:56:56.762Z",
       "archived": false
     },
     "docs/demo/product_summary": {
@@ -538,7 +903,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/product_summary.md",
-      "updatedAt": "2026-06-12T13:38:52.135Z",
+      "updatedAt": "2026-06-16T03:56:56.762Z",
       "archived": false
     },
     "docs/demo/project_completion": {
@@ -549,7 +914,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/project_completion.md",
-      "updatedAt": "2026-06-12T13:38:52.135Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
       "archived": false
     },
     "docs/demo/project_scoping_form": {
@@ -560,7 +925,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/project_scoping_form.md",
-      "updatedAt": "2026-06-12T13:38:52.136Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
       "archived": false
     },
     "docs/demo/project_wave_runner": {
@@ -571,7 +936,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/project_wave_runner.md",
-      "updatedAt": "2026-06-12T13:38:52.137Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
       "archived": false
     },
     "docs/demo/project_worksheets": {
@@ -582,7 +947,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/project_worksheets.md",
-      "updatedAt": "2026-06-12T13:38:52.137Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
       "archived": false
     },
     "docs/demo/scoping_response": {
@@ -593,7 +958,7 @@
         "auto-indexed"
       ],
       "path": "docs/demo/scoping_response.md",
-      "updatedAt": "2026-06-12T13:38:52.138Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
       "archived": false
     },
     "docs/demo/scoping-form/readme": {
@@ -604,7 +969,62 @@
         "auto-indexed"
       ],
       "path": "docs/demo/scoping-form/readme.md",
-      "updatedAt": "2026-06-12T13:38:52.139Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/agentos-comprehensive-wireframe": {
+      "slug": "docs/design/agentos-comprehensive-wireframe",
+      "title": "Agentos Comprehensive Wireframe",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/agentos-comprehensive-wireframe.md",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/agentos-dashboard-claude-design/claude": {
+      "slug": "docs/design/agentos-dashboard-claude-design/claude",
+      "title": "Claude",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/agentos-dashboard-claude-design/claude.md",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/agentos-dashboard-claude-design/design": {
+      "slug": "docs/design/agentos-dashboard-claude-design/design",
+      "title": "Design",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/agentos-dashboard-claude-design/design.md",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/agentos-dashboard-claude-design/prompt": {
+      "slug": "docs/design/agentos-dashboard-claude-design/prompt",
+      "title": "Prompt",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/agentos-dashboard-claude-design/prompt.md",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/agentos-dashboard-claude-design/wireframe": {
+      "slug": "docs/design/agentos-dashboard-claude-design/wireframe",
+      "title": "Wireframe",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/agentos-dashboard-claude-design/wireframe.md",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
       "archived": false
     },
     "docs/design/agentos-forge-style-study": {
@@ -615,7 +1035,172 @@
         "auto-indexed"
       ],
       "path": "docs/design/agentos-forge-style-study.md",
-      "updatedAt": "2026-06-12T13:38:52.139Z",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/base-site-completion-wireframe": {
+      "slug": "docs/design/base-site-completion-wireframe",
+      "title": "Base Site Completion Wireframe",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/base-site-completion-wireframe.md",
+      "updatedAt": "2026-06-16T03:56:56.776Z",
+      "archived": false
+    },
+    "docs/design/claude-design-platform-handoff/claude": {
+      "slug": "docs/design/claude-design-platform-handoff/claude",
+      "title": "Claude",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/claude-design-platform-handoff/claude.md",
+      "updatedAt": "2026-06-16T03:56:56.778Z",
+      "archived": false
+    },
+    "docs/design/claude-design-platform-handoff/design": {
+      "slug": "docs/design/claude-design-platform-handoff/design",
+      "title": "Design",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/claude-design-platform-handoff/design.md",
+      "updatedAt": "2026-06-16T03:56:56.778Z",
+      "archived": false
+    },
+    "docs/design/claude-design-platform-handoff/prompt": {
+      "slug": "docs/design/claude-design-platform-handoff/prompt",
+      "title": "Prompt",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/claude-design-platform-handoff/prompt.md",
+      "updatedAt": "2026-06-16T03:56:56.778Z",
+      "archived": false
+    },
+    "docs/design/claude-design-platform-handoff/readme": {
+      "slug": "docs/design/claude-design-platform-handoff/readme",
+      "title": "README",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/claude-design-platform-handoff/readme.md",
+      "updatedAt": "2026-06-16T03:56:56.777Z",
+      "archived": false
+    },
+    "docs/design/design": {
+      "slug": "docs/design/design",
+      "title": "DESIGN",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/design.md",
+      "updatedAt": "2026-06-16T03:56:56.765Z",
+      "archived": false
+    },
+    "docs/design/forge-redesign-claude-handoff/prompt": {
+      "slug": "docs/design/forge-redesign-claude-handoff/prompt",
+      "title": "Prompt",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/forge-redesign-claude-handoff/prompt.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/forge-redesign-claude-handoff/readme": {
+      "slug": "docs/design/forge-redesign-claude-handoff/readme",
+      "title": "README",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/forge-redesign-claude-handoff/readme.md",
+      "updatedAt": "2026-06-16T03:56:56.778Z",
+      "archived": false
+    },
+    "docs/design/open-design-to-flous-design-lab": {
+      "slug": "docs/design/open-design-to-flous-design-lab",
+      "title": "Open Design To Flous Design Lab",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/open-design-to-flous-design-lab.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/platform-gallery-handoff/design": {
+      "slug": "docs/design/platform-gallery-handoff/design",
+      "title": "DESIGN",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/platform-gallery-handoff/design.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/platform-gallery-handoff/prompt": {
+      "slug": "docs/design/platform-gallery-handoff/prompt",
+      "title": "PROMPT",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/platform-gallery-handoff/prompt.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/platform-gallery-handoff/readme": {
+      "slug": "docs/design/platform-gallery-handoff/readme",
+      "title": "README",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/platform-gallery-handoff/readme.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/platform-template-motion-reference-pack": {
+      "slug": "docs/design/platform-template-motion-reference-pack",
+      "title": "Platform Template Motion Reference Pack",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/platform-template-motion-reference-pack.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/trusted-device-auth-wireframe": {
+      "slug": "docs/design/trusted-device-auth-wireframe",
+      "title": "Trusted Device Auth Wireframe",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/trusted-device-auth-wireframe.md",
+      "updatedAt": "2026-06-16T03:56:56.781Z",
+      "archived": false
+    },
+    "docs/design/wiki-graph-view-spec": {
+      "slug": "docs/design/wiki-graph-view-spec",
+      "title": "Wiki Graph View Spec",
+      "tags": [
+        "docs",
+        "auto-indexed"
+      ],
+      "path": "docs/design/wiki-graph-view-spec.md",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/first-run": {
@@ -626,7 +1211,7 @@
         "auto-indexed"
       ],
       "path": "docs/first-run.md",
-      "updatedAt": "2026-06-12T13:38:52.140Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/gates": {
@@ -637,7 +1222,7 @@
         "auto-indexed"
       ],
       "path": "docs/gates.md",
-      "updatedAt": "2026-06-12T13:38:52.125Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/hosted_execution_notes": {
@@ -648,7 +1233,7 @@
         "auto-indexed"
       ],
       "path": "docs/hosted_execution_notes.md",
-      "updatedAt": "2026-06-12T13:38:52.125Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/hosting_api_store_audit": {
@@ -659,7 +1244,7 @@
         "auto-indexed"
       ],
       "path": "docs/hosting_api_store_audit.md",
-      "updatedAt": "2026-06-12T13:38:52.126Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/legal/source_references": {
@@ -670,7 +1255,7 @@
         "auto-indexed"
       ],
       "path": "docs/legal/source_references.md",
-      "updatedAt": "2026-06-12T13:38:52.140Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/legal/third_party_notices": {
@@ -681,7 +1266,7 @@
         "auto-indexed"
       ],
       "path": "docs/legal/third_party_notices.md",
-      "updatedAt": "2026-06-12T13:38:52.141Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/local_ai_review": {
@@ -692,7 +1277,7 @@
         "auto-indexed"
       ],
       "path": "docs/local_ai_review.md",
-      "updatedAt": "2026-06-12T13:38:52.127Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/memory_and_token_systems": {
@@ -703,7 +1288,7 @@
         "auto-indexed"
       ],
       "path": "docs/memory_and_token_systems.md",
-      "updatedAt": "2026-06-12T13:38:52.127Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/memory-and-token-systems": {
@@ -714,7 +1299,7 @@
         "auto-indexed"
       ],
       "path": "docs/memory-and-token-systems.md",
-      "updatedAt": "2026-06-12T13:38:52.141Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/next_steps": {
@@ -725,7 +1310,7 @@
         "auto-indexed"
       ],
       "path": "docs/next_steps.md",
-      "updatedAt": "2026-06-12T13:38:52.128Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-124913-cycle-1": {
@@ -736,7 +1321,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-124913-cycle-1.md",
-      "updatedAt": "2026-06-12T13:38:52.142Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-125204-cycle-1": {
@@ -747,7 +1332,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-125204-cycle-1.md",
-      "updatedAt": "2026-06-12T13:38:52.143Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-132237-cycle-2": {
@@ -758,7 +1343,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-132237-cycle-2.md",
-      "updatedAt": "2026-06-12T13:38:52.143Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-135311-cycle-3": {
@@ -769,7 +1354,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-135311-cycle-3.md",
-      "updatedAt": "2026-06-12T13:38:52.144Z",
+      "updatedAt": "2026-06-16T03:56:56.786Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-142346-cycle-4": {
@@ -780,7 +1365,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-142346-cycle-4.md",
-      "updatedAt": "2026-06-12T13:38:52.144Z",
+      "updatedAt": "2026-06-16T03:56:56.793Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-145424-cycle-5": {
@@ -791,7 +1376,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-145424-cycle-5.md",
-      "updatedAt": "2026-06-12T13:38:52.145Z",
+      "updatedAt": "2026-06-16T03:56:56.794Z",
       "archived": false
     },
     "docs/overnight-plans/20260530-152500-cycle-6": {
@@ -802,7 +1387,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/20260530-152500-cycle-6.md",
-      "updatedAt": "2026-06-12T13:38:52.145Z",
+      "updatedAt": "2026-06-16T03:56:56.794Z",
       "archived": false
     },
     "docs/overnight-plans/index": {
@@ -813,7 +1398,7 @@
         "auto-indexed"
       ],
       "path": "docs/overnight-plans/index.md",
-      "updatedAt": "2026-06-12T13:38:52.146Z",
+      "updatedAt": "2026-06-16T03:56:56.794Z",
       "archived": false
     },
     "docs/overview": {
@@ -824,7 +1409,7 @@
         "auto-indexed"
       ],
       "path": "docs/overview.md",
-      "updatedAt": "2026-06-12T13:38:52.146Z",
+      "updatedAt": "2026-06-16T03:56:56.794Z",
       "archived": false
     },
     "docs/phaser_office_implementation_plan": {
@@ -835,7 +1420,7 @@
         "auto-indexed"
       ],
       "path": "docs/phaser_office_implementation_plan.md",
-      "updatedAt": "2026-06-12T13:38:52.129Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/phaser-office": {
@@ -846,7 +1431,7 @@
         "auto-indexed"
       ],
       "path": "docs/phaser-office.md",
-      "updatedAt": "2026-06-12T13:38:52.147Z",
+      "updatedAt": "2026-06-16T03:56:56.794Z",
       "archived": false
     },
     "docs/release_flow": {
@@ -857,7 +1442,7 @@
         "auto-indexed"
       ],
       "path": "docs/release_flow.md",
-      "updatedAt": "2026-06-12T13:38:52.130Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/sanitization_policy": {
@@ -868,7 +1453,7 @@
         "auto-indexed"
       ],
       "path": "docs/sanitization_policy.md",
-      "updatedAt": "2026-06-12T13:38:52.130Z",
+      "updatedAt": "2026-06-16T03:56:56.749Z",
       "archived": false
     },
     "docs/troubleshooting": {
@@ -879,7 +1464,7 @@
         "auto-indexed"
       ],
       "path": "docs/troubleshooting.md",
-      "updatedAt": "2026-06-12T13:38:52.147Z",
+      "updatedAt": "2026-06-16T03:56:56.797Z",
       "archived": false
     },
     "flows/cursor-memory": {
@@ -891,7 +1476,7 @@
         "flow"
       ],
       "path": "flows/cursor-memory.md",
-      "updatedAt": "2026-06-12T15:09:47.426Z",
+      "updatedAt": "2026-06-18T03:17:35.358Z",
       "archived": false
     },
     "flows/memory-curator": {
@@ -914,7 +1499,7 @@
         "auto-indexed"
       ],
       "path": "flows/pipeline.md",
-      "updatedAt": "2026-06-12T14:16:31.855Z",
+      "updatedAt": "2026-06-16T03:56:56.801Z",
       "archived": false
     },
     "flows/root-scripts": {
@@ -926,7 +1511,7 @@
         "auto-indexed"
       ],
       "path": "flows/root-scripts.md",
-      "updatedAt": "2026-06-12T13:38:52.153Z",
+      "updatedAt": "2026-06-16T03:56:56.801Z",
       "archived": false
     },
     "flows/test-commands": {
@@ -949,7 +1534,618 @@
         "auto-indexed"
       ],
       "path": "index.md",
-      "updatedAt": "2026-06-12T13:47:40.170Z",
+      "updatedAt": "2026-06-16T22:08:22.231Z",
+      "archived": false
+    },
+    "learning/osint/adapters/archives": {
+      "slug": "learning/osint/adapters/archives",
+      "title": "Archives",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/archives.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/certificates": {
+      "slug": "learning/osint/adapters/certificates",
+      "title": "Certificates",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/certificates.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/dns": {
+      "slug": "learning/osint/adapters/dns",
+      "title": "Dns",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/dns.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/internet-exposure": {
+      "slug": "learning/osint/adapters/internet-exposure",
+      "title": "Internet Exposure",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/internet-exposure.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/maps": {
+      "slug": "learning/osint/adapters/maps",
+      "title": "Maps",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/maps.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/media-verification": {
+      "slug": "learning/osint/adapters/media-verification",
+      "title": "Media Verification",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/media-verification.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/public-datasets": {
+      "slug": "learning/osint/adapters/public-datasets",
+      "title": "Public Datasets",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/public-datasets.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/adapters/search-engines": {
+      "slug": "learning/osint/adapters/search-engines",
+      "title": "Search Engines",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/adapters/search-engines.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/architecture/collection": {
+      "slug": "learning/osint/architecture/collection",
+      "title": "Collection",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/collection.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/architecture/correlation": {
+      "slug": "learning/osint/architecture/correlation",
+      "title": "Correlation",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/correlation.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/architecture/enrichment": {
+      "slug": "learning/osint/architecture/enrichment",
+      "title": "Enrichment",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/enrichment.md",
+      "updatedAt": "2026-06-16T03:56:56.803Z",
+      "archived": false
+    },
+    "learning/osint/architecture/entity-model": {
+      "slug": "learning/osint/architecture/entity-model",
+      "title": "Entity Model",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/entity-model.md",
+      "updatedAt": "2026-06-16T03:56:56.810Z",
+      "archived": false
+    },
+    "learning/osint/architecture/normalization": {
+      "slug": "learning/osint/architecture/normalization",
+      "title": "Normalization",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/normalization.md",
+      "updatedAt": "2026-06-16T03:56:56.810Z",
+      "archived": false
+    },
+    "learning/osint/architecture/pipeline-overview": {
+      "slug": "learning/osint/architecture/pipeline-overview",
+      "title": "Pipeline Overview",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/pipeline-overview.md",
+      "updatedAt": "2026-06-16T03:56:56.810Z",
+      "archived": false
+    },
+    "learning/osint/architecture/source-adapters": {
+      "slug": "learning/osint/architecture/source-adapters",
+      "title": "Source Adapters",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/source-adapters.md",
+      "updatedAt": "2026-06-16T03:56:56.810Z",
+      "archived": false
+    },
+    "learning/osint/architecture/storage": {
+      "slug": "learning/osint/architecture/storage",
+      "title": "Storage",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/architecture/storage.md",
+      "updatedAt": "2026-06-16T03:56:56.810Z",
+      "archived": false
+    },
+    "learning/osint/components/audit-logs": {
+      "slug": "learning/osint/components/audit-logs",
+      "title": "Audit Logs",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/audit-logs.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/collector": {
+      "slug": "learning/osint/components/collector",
+      "title": "Collector",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/collector.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/confidence-scoring": {
+      "slug": "learning/osint/components/confidence-scoring",
+      "title": "Confidence Scoring",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/confidence-scoring.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/entity-resolver": {
+      "slug": "learning/osint/components/entity-resolver",
+      "title": "Entity Resolver",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/entity-resolver.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/evidence-vault": {
+      "slug": "learning/osint/components/evidence-vault",
+      "title": "Evidence Vault",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/evidence-vault.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/parser": {
+      "slug": "learning/osint/components/parser",
+      "title": "Parser",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/parser.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/query-builder": {
+      "slug": "learning/osint/components/query-builder",
+      "title": "Query Builder",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/query-builder.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/components/redaction-engine": {
+      "slug": "learning/osint/components/redaction-engine",
+      "title": "Redaction Engine",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/components/redaction-engine.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/index": {
+      "slug": "learning/osint/index",
+      "title": "OSINT learning curriculum",
+      "tags": [
+        "learning",
+        "osint",
+        "hub",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/index.md",
+      "updatedAt": "2026-06-16T03:56:56.829Z",
+      "archived": false
+    },
+    "learning/osint/labs/overview": {
+      "slug": "learning/osint/labs/overview",
+      "title": "Overview",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/labs/overview.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/patterns/brand-impersonation-monitor": {
+      "slug": "learning/osint/patterns/brand-impersonation-monitor",
+      "title": "Brand Impersonation Monitor",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/patterns/brand-impersonation-monitor.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/patterns/domain-exposure-mapper": {
+      "slug": "learning/osint/patterns/domain-exposure-mapper",
+      "title": "Domain Exposure Mapper",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/patterns/domain-exposure-mapper.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/patterns/event-timeline-builder": {
+      "slug": "learning/osint/patterns/event-timeline-builder",
+      "title": "Event Timeline Builder",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/patterns/event-timeline-builder.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/patterns/evidence-manager": {
+      "slug": "learning/osint/patterns/evidence-manager",
+      "title": "Evidence Manager",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/patterns/evidence-manager.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/patterns/media-verification-workspace": {
+      "slug": "learning/osint/patterns/media-verification-workspace",
+      "title": "Media Verification Workspace",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/patterns/media-verification-workspace.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/patterns/self-osint-audit": {
+      "slug": "learning/osint/patterns/self-osint-audit",
+      "title": "Self Osint Audit",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/patterns/self-osint-audit.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/platform/backend-services": {
+      "slug": "learning/osint/platform/backend-services",
+      "title": "Backend Services",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/platform/backend-services.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/platform/data-model": {
+      "slug": "learning/osint/platform/data-model",
+      "title": "Data Model",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/platform/data-model.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/platform/plugin-sdk": {
+      "slug": "learning/osint/platform/plugin-sdk",
+      "title": "Plugin Sdk",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/platform/plugin-sdk.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/platform/roadmap": {
+      "slug": "learning/osint/platform/roadmap",
+      "title": "Roadmap",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/platform/roadmap.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/reference/source-bank": {
+      "slug": "learning/osint/reference/source-bank",
+      "title": "Source Bank",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/reference/source-bank.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/safety/policy": {
+      "slug": "learning/osint/safety/policy",
+      "title": "Policy",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/safety/policy.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/ui/diff-viewer": {
+      "slug": "learning/osint/ui/diff-viewer",
+      "title": "Diff Viewer",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/diff-viewer.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/ui/entity-card": {
+      "slug": "learning/osint/ui/entity-card",
+      "title": "Entity Card",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/entity-card.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/ui/evidence-card": {
+      "slug": "learning/osint/ui/evidence-card",
+      "title": "Evidence Card",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/evidence-card.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/ui/graph": {
+      "slug": "learning/osint/ui/graph",
+      "title": "Graph",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/graph.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/ui/map": {
+      "slug": "learning/osint/ui/map",
+      "title": "Map",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/map.md",
+      "updatedAt": "2026-06-16T03:56:56.813Z",
+      "archived": false
+    },
+    "learning/osint/ui/report-builder": {
+      "slug": "learning/osint/ui/report-builder",
+      "title": "Report Builder",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/report-builder.md",
+      "updatedAt": "2026-06-16T03:56:56.826Z",
+      "archived": false
+    },
+    "learning/osint/ui/scope-banner": {
+      "slug": "learning/osint/ui/scope-banner",
+      "title": "Scope Banner",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/scope-banner.md",
+      "updatedAt": "2026-06-16T03:56:56.827Z",
+      "archived": false
+    },
+    "learning/osint/ui/timeline": {
+      "slug": "learning/osint/ui/timeline",
+      "title": "Timeline",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/ui/timeline.md",
+      "updatedAt": "2026-06-16T03:56:56.827Z",
+      "archived": false
+    },
+    "learning/osint/welcome": {
+      "slug": "learning/osint/welcome",
+      "title": "Welcome",
+      "tags": [
+        "learning",
+        "osint",
+        "flous-docs",
+        "auto-indexed"
+      ],
+      "path": "learning/osint/welcome.md",
+      "updatedAt": "2026-06-16T03:56:56.827Z",
       "archived": false
     },
     "packages/agents": {
@@ -960,7 +2156,7 @@
         "pipeline"
       ],
       "path": "packages/agents.md",
-      "updatedAt": "2026-06-12T13:43:41.388Z",
+      "updatedAt": "2026-06-16T14:10:48.248Z",
       "archived": false
     },
     "packages/app-generator": {
@@ -972,7 +2168,7 @@
         "auto-indexed"
       ],
       "path": "packages/app-generator.md",
-      "updatedAt": "2026-06-12T13:43:32.227Z",
+      "updatedAt": "2026-06-17T01:08:31.542Z",
       "archived": false
     },
     "packages/config": {
@@ -1004,7 +2200,7 @@
         "auto-indexed"
       ],
       "path": "packages/memory.md",
-      "updatedAt": "2026-06-12T13:38:52.096Z",
+      "updatedAt": "2026-06-16T03:56:56.717Z",
       "archived": false
     },
     "packages/orchestrator": {
@@ -1027,7 +2223,7 @@
         "auto-indexed"
       ],
       "path": "packages/persistence.md",
-      "updatedAt": "2026-06-12T13:43:42.815Z",
+      "updatedAt": "2026-06-17T01:16:34.022Z",
       "archived": false
     },
     "packages/queue": {
@@ -1039,7 +2235,7 @@
         "auto-indexed"
       ],
       "path": "packages/queue.md",
-      "updatedAt": "2026-06-12T13:43:36.014Z",
+      "updatedAt": "2026-06-17T01:09:09.122Z",
       "archived": false
     },
     "packages/runtime": {
@@ -1051,7 +2247,7 @@
         "gates"
       ],
       "path": "packages/runtime.md",
-      "updatedAt": "2026-06-12T13:43:42.706Z",
+      "updatedAt": "2026-06-16T14:10:48.429Z",
       "archived": false
     },
     "packages/sandbox": {
@@ -1063,7 +2259,7 @@
         "auto-indexed"
       ],
       "path": "packages/sandbox.md",
-      "updatedAt": "2026-06-12T13:43:41.133Z",
+      "updatedAt": "2026-06-17T01:16:09.017Z",
       "archived": false
     },
     "packages/shared": {
@@ -1075,7 +2271,7 @@
         "auto-indexed"
       ],
       "path": "packages/shared.md",
-      "updatedAt": "2026-06-12T13:43:42.602Z",
+      "updatedAt": "2026-06-17T01:16:32.891Z",
       "archived": false
     },
     "packages/token-manager": {
@@ -1087,7 +2283,7 @@
         "auto-indexed"
       ],
       "path": "packages/token-manager.md",
-      "updatedAt": "2026-06-12T13:38:52.103Z",
+      "updatedAt": "2026-06-16T03:56:56.725Z",
       "archived": false
     },
     "packages/tools": {
@@ -1107,7 +2303,15 @@
         "auto-indexed"
       ],
       "path": "packages/ui.md",
-      "updatedAt": "2026-06-12T13:43:40.772Z",
+      "updatedAt": "2026-06-17T01:16:05.482Z",
+      "archived": false
+    },
+    "packages/ui-blocks": {
+      "slug": "packages/ui-blocks",
+      "title": "Ui Blocks",
+      "tags": [],
+      "path": "packages/ui-blocks.md",
+      "updatedAt": "2026-06-14T12:19:13.361Z",
       "archived": false
     },
     "planning/chatgpt/agentos-master-codex-prompt": {
@@ -1251,6 +2455,20 @@
       "updatedAt": "2026-06-12T13:48:23.211Z",
       "archived": false
     },
+    "product/forge-command-center-consolidated": {
+      "slug": "product/forge-command-center-consolidated",
+      "title": "Forge Command Center — Consolidated Conversation Brief",
+      "tags": [
+        "product",
+        "forge",
+        "dashboard",
+        "consolidated",
+        "cursor-session"
+      ],
+      "path": "product/forge-command-center-consolidated.md",
+      "updatedAt": "2026-06-16T22:08:22.227Z",
+      "archived": false
+    },
     "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": {
       "slug": "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
       "title": "You are Claude running inside Cursor on my AgentOS repo. Your first job is orientation only. Do not edit files yet. Agen",
@@ -1260,7 +2478,7 @@
         "chat"
       ],
       "path": "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586.md",
-      "updatedAt": "2026-06-12T13:43:30.910Z",
+      "updatedAt": "2026-06-18T03:05:24.352Z",
       "archived": false
     },
     "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": {
@@ -1272,7 +2490,7 @@
         "chat"
       ],
       "path": "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a.md",
-      "updatedAt": "2026-06-12T14:59:57.546Z",
+      "updatedAt": "2026-06-18T03:05:24.384Z",
       "archived": false
     },
     "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": {
@@ -1284,7 +2502,7 @@
         "chat"
       ],
       "path": "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961.md",
-      "updatedAt": "2026-06-12T15:08:47.360Z",
+      "updatedAt": "2026-06-18T03:05:24.431Z",
       "archived": false
     },
     "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": {
@@ -1296,7 +2514,7 @@
         "chat"
       ],
       "path": "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388.md",
-      "updatedAt": "2026-06-12T13:43:30.930Z",
+      "updatedAt": "2026-06-18T03:05:24.497Z",
       "archived": false
     },
     "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3": {
@@ -1308,7 +2526,31 @@
         "chat"
       ],
       "path": "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3.md",
-      "updatedAt": "2026-06-12T13:43:30.950Z",
+      "updatedAt": "2026-06-18T03:05:24.708Z",
+      "archived": false
+    },
+    "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4": {
+      "slug": "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
+      "title": "<plugin_info kind=\"matched_installed\"> display_name: Figma description: Plugin that includes the Figma MCP server and Sk",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4.md",
+      "updatedAt": "2026-06-18T03:05:24.729Z",
+      "archived": false
+    },
+    "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a": {
+      "slug": "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a",
+      "title": "Check the website and see if its up",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a.md",
+      "updatedAt": "2026-06-18T03:05:38.150Z",
       "archived": false
     },
     "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": {
@@ -1320,7 +2562,31 @@
         "chat"
       ],
       "path": "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d.md",
-      "updatedAt": "2026-06-12T13:43:30.955Z",
+      "updatedAt": "2026-06-18T03:05:24.790Z",
+      "archived": false
+    },
+    "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66": {
+      "slug": "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "title": "Claude is working on a web design overhaul and is at this current state:Were going to rewire our AgentOS/Flous.dev proje",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66.md",
+      "updatedAt": "2026-06-18T03:05:24.859Z",
+      "archived": false
+    },
+    "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f": {
+      "slug": "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
+      "title": "You are completing a follow-up task for the AgentOS repo at C:\\Users\\gaged\\Documents\\AgenOS. ## Context The user previou",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f.md",
+      "updatedAt": "2026-06-18T03:05:24.862Z",
       "archived": false
     },
     "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028": {
@@ -1332,7 +2598,7 @@
         "chat"
       ],
       "path": "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028.md",
-      "updatedAt": "2026-06-12T13:43:30.965Z",
+      "updatedAt": "2026-06-18T03:05:24.909Z",
       "archived": false
     },
     "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a": {
@@ -1344,7 +2610,7 @@
         "chat"
       ],
       "path": "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a.md",
-      "updatedAt": "2026-06-12T13:43:30.973Z",
+      "updatedAt": "2026-06-18T03:05:24.976Z",
       "archived": false
     },
     "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13": {
@@ -1356,7 +2622,31 @@
         "chat"
       ],
       "path": "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13.md",
-      "updatedAt": "2026-06-12T13:43:30.978Z",
+      "updatedAt": "2026-06-18T03:05:25.025Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0": {
+      "slug": "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0",
+      "title": "Reply exactly: ok",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0.md",
+      "updatedAt": "2026-06-18T03:05:25.025Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08": {
+      "slug": "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08",
+      "title": "AgentOS functionalization — start 0.1: Capture baseline snapshot Phase phase-0: Baseline and invariants Record typecheck",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08.md",
+      "updatedAt": "2026-06-18T03:05:25.046Z",
       "archived": false
     },
     "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": {
@@ -1368,7 +2658,43 @@
         "chat"
       ],
       "path": "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924.md",
-      "updatedAt": "2026-06-12T13:43:30.978Z",
+      "updatedAt": "2026-06-18T03:05:25.054Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9": {
+      "slug": "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9",
+      "title": "Reply exactly: ok",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9.md",
+      "updatedAt": "2026-06-18T03:05:25.062Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2": {
+      "slug": "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2",
+      "title": "Continue AgentOS functionalization: complete task 0.2 — API auth route matrix. Prior task 0.1 is marked done. Run phase",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2.md",
+      "updatedAt": "2026-06-18T03:05:25.072Z",
+      "archived": false
+    },
+    "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d": {
+      "slug": "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d",
+      "title": "say hi",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d.md",
+      "updatedAt": "2026-06-18T03:05:25.085Z",
       "archived": false
     },
     "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0": {
@@ -1380,7 +2706,7 @@
         "chat"
       ],
       "path": "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0.md",
-      "updatedAt": "2026-06-12T13:43:30.979Z",
+      "updatedAt": "2026-06-18T03:05:25.102Z",
       "archived": false
     },
     "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": {
@@ -1392,7 +2718,19 @@
         "chat"
       ],
       "path": "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709.md",
-      "updatedAt": "2026-06-12T13:49:43.785Z",
+      "updatedAt": "2026-06-18T03:05:25.248Z",
+      "archived": false
+    },
+    "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9": {
+      "slug": "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
+      "title": "I'll start by locating the single AgentOS repository root under `C:\\Users\\gaged`. Let me search for identifying markers.",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9.md",
+      "updatedAt": "2026-06-18T03:05:38.903Z",
       "archived": false
     },
     "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": {
@@ -1404,7 +2742,7 @@
         "chat"
       ],
       "path": "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7.md",
-      "updatedAt": "2026-06-12T13:43:30.998Z",
+      "updatedAt": "2026-06-18T03:05:25.304Z",
       "archived": false
     },
     "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd": {
@@ -1416,7 +2754,19 @@
         "chat"
       ],
       "path": "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd.md",
-      "updatedAt": "2026-06-12T13:43:31.004Z",
+      "updatedAt": "2026-06-18T03:05:25.335Z",
+      "archived": false
+    },
+    "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f": {
+      "slug": "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f",
+      "title": "I learn best from formats like docs from tech websites like https://docs.factory.ai/welcome and https://developers.opena",
+      "tags": [
+        "cursor",
+        "session",
+        "chat"
+      ],
+      "path": "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f.md",
+      "updatedAt": "2026-06-18T03:05:25.405Z",
       "archived": false
     },
     "sessions/cursor/index": {
@@ -1428,7 +2778,7 @@
         "index"
       ],
       "path": "sessions/cursor/index.md",
-      "updatedAt": "2026-06-12T15:09:47.426Z",
+      "updatedAt": "2026-06-18T03:17:35.353Z",
       "archived": false
     },
     "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319": {
@@ -1440,7 +2790,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319.md",
-      "updatedAt": "2026-06-12T13:43:30.973Z",
+      "updatedAt": "2026-06-18T03:05:24.977Z",
       "archived": false
     },
     "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240": {
@@ -1452,7 +2802,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240.md",
-      "updatedAt": "2026-06-12T13:43:31.005Z",
+      "updatedAt": "2026-06-18T03:05:25.346Z",
       "archived": false
     },
     "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955": {
@@ -1464,7 +2814,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955.md",
-      "updatedAt": "2026-06-12T13:43:30.932Z",
+      "updatedAt": "2026-06-18T03:05:24.514Z",
       "archived": false
     },
     "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce": {
@@ -1476,7 +2826,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce.md",
-      "updatedAt": "2026-06-12T13:43:30.975Z",
+      "updatedAt": "2026-06-18T03:05:24.999Z",
       "archived": false
     },
     "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f": {
@@ -1488,7 +2838,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f.md",
-      "updatedAt": "2026-06-12T13:43:30.933Z",
+      "updatedAt": "2026-06-18T03:05:24.526Z",
       "archived": false
     },
     "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b": {
@@ -1500,7 +2850,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b.md",
-      "updatedAt": "2026-06-12T13:43:30.957Z",
+      "updatedAt": "2026-06-18T03:05:24.805Z",
       "archived": false
     },
     "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac": {
@@ -1512,7 +2862,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac.md",
-      "updatedAt": "2026-06-12T13:43:30.975Z",
+      "updatedAt": "2026-06-18T03:05:25.009Z",
       "archived": false
     },
     "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5": {
@@ -1524,7 +2874,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5.md",
-      "updatedAt": "2026-06-12T13:43:30.980Z",
+      "updatedAt": "2026-06-18T03:05:25.115Z",
       "archived": false
     },
     "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5": {
@@ -1536,7 +2886,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5.md",
-      "updatedAt": "2026-06-12T13:43:31.006Z",
+      "updatedAt": "2026-06-18T03:05:25.356Z",
       "archived": false
     },
     "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a": {
@@ -1548,7 +2898,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a.md",
-      "updatedAt": "2026-06-12T13:43:30.967Z",
+      "updatedAt": "2026-06-18T03:05:24.915Z",
       "archived": false
     },
     "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7": {
@@ -1560,7 +2910,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7.md",
-      "updatedAt": "2026-06-12T13:43:30.976Z",
+      "updatedAt": "2026-06-18T03:05:25.010Z",
       "archived": false
     },
     "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69": {
@@ -1572,7 +2922,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69.md",
-      "updatedAt": "2026-06-12T13:43:30.934Z",
+      "updatedAt": "2026-06-18T03:05:24.534Z",
       "archived": false
     },
     "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922": {
@@ -1584,7 +2934,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922.md",
-      "updatedAt": "2026-06-12T13:43:30.935Z",
+      "updatedAt": "2026-06-18T03:05:24.541Z",
       "archived": false
     },
     "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e": {
@@ -1596,7 +2946,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e.md",
-      "updatedAt": "2026-06-12T13:43:30.935Z",
+      "updatedAt": "2026-06-18T03:05:24.541Z",
       "archived": false
     },
     "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b": {
@@ -1608,7 +2958,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b.md",
-      "updatedAt": "2026-06-12T13:43:30.968Z",
+      "updatedAt": "2026-06-18T03:05:24.920Z",
       "archived": false
     },
     "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6": {
@@ -1620,7 +2970,19 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6.md",
-      "updatedAt": "2026-06-12T13:43:30.937Z",
+      "updatedAt": "2026-06-18T03:05:24.567Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f": {
+      "slug": "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
+      "title": "You are completing a follow-up task for the AgentOS repo at C:\\Users\\gaged\\Documents\\AgenOS. ## Context The user previou",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f.md",
+      "updatedAt": "2026-06-18T03:05:24.583Z",
       "archived": false
     },
     "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210": {
@@ -1632,7 +2994,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210.md",
-      "updatedAt": "2026-06-12T13:43:30.995Z",
+      "updatedAt": "2026-06-18T03:05:25.260Z",
       "archived": false
     },
     "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb": {
@@ -1644,7 +3006,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb.md",
-      "updatedAt": "2026-06-12T13:43:30.968Z",
+      "updatedAt": "2026-06-18T03:05:24.936Z",
       "archived": false
     },
     "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527": {
@@ -1656,7 +3018,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527.md",
-      "updatedAt": "2026-06-12T13:43:30.981Z",
+      "updatedAt": "2026-06-18T03:05:25.128Z",
       "archived": false
     },
     "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07": {
@@ -1668,7 +3030,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07.md",
-      "updatedAt": "2026-06-12T13:43:30.969Z",
+      "updatedAt": "2026-06-18T03:05:24.936Z",
       "archived": false
     },
     "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75": {
@@ -1680,7 +3042,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75.md",
-      "updatedAt": "2026-06-12T13:43:30.982Z",
+      "updatedAt": "2026-06-18T03:05:25.139Z",
       "archived": false
     },
     "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573": {
@@ -1692,7 +3054,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573.md",
-      "updatedAt": "2026-06-12T13:43:30.970Z",
+      "updatedAt": "2026-06-18T03:05:24.960Z",
       "archived": false
     },
     "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67": {
@@ -1704,7 +3066,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67.md",
-      "updatedAt": "2026-06-12T13:43:30.995Z",
+      "updatedAt": "2026-06-18T03:05:25.266Z",
       "archived": false
     },
     "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6": {
@@ -1716,7 +3078,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6.md",
-      "updatedAt": "2026-06-12T13:43:30.983Z",
+      "updatedAt": "2026-06-18T03:05:25.158Z",
       "archived": false
     },
     "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430": {
@@ -1728,7 +3090,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430.md",
-      "updatedAt": "2026-06-12T13:43:31.007Z",
+      "updatedAt": "2026-06-18T03:05:25.372Z",
       "archived": false
     },
     "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b": {
@@ -1740,7 +3102,19 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b.md",
-      "updatedAt": "2026-06-12T13:43:30.946Z",
+      "updatedAt": "2026-06-18T03:05:24.620Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69": {
+      "slug": "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69",
+      "title": "Cursor session abdcd73c",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69.md",
+      "updatedAt": "2026-06-18T03:05:24.630Z",
       "archived": false
     },
     "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6": {
@@ -1752,7 +3126,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6.md",
-      "updatedAt": "2026-06-12T13:43:31.009Z",
+      "updatedAt": "2026-06-18T03:05:25.381Z",
       "archived": false
     },
     "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73": {
@@ -1764,7 +3138,19 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73.md",
-      "updatedAt": "2026-06-12T13:43:30.922Z",
+      "updatedAt": "2026-06-18T03:05:24.447Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259": {
+      "slug": "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259",
+      "title": "Cursor session d3b3c49e",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259.md",
+      "updatedAt": "2026-06-18T03:05:24.639Z",
       "archived": false
     },
     "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740": {
@@ -1776,7 +3162,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740.md",
-      "updatedAt": "2026-06-12T13:43:30.984Z",
+      "updatedAt": "2026-06-18T03:05:25.170Z",
       "archived": false
     },
     "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639": {
@@ -1788,7 +3174,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639.md",
-      "updatedAt": "2026-06-12T13:43:30.947Z",
+      "updatedAt": "2026-06-18T03:05:24.650Z",
       "archived": false
     },
     "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c": {
@@ -1800,7 +3186,31 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c.md",
-      "updatedAt": "2026-06-12T13:43:31.009Z",
+      "updatedAt": "2026-06-18T03:05:25.389Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad": {
+      "slug": "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad",
+      "title": "Cursor session e259d176",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad.md",
+      "updatedAt": "2026-06-18T03:05:24.661Z",
+      "archived": false
+    },
+    "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c": {
+      "slug": "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c",
+      "title": "<plugin_info kind=\"matched_installed\"> display_name: Cloudflare description: Skills for the Cloudflare developer platfor",
+      "tags": [
+        "cursor",
+        "session",
+        "subagent"
+      ],
+      "path": "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c.md",
+      "updatedAt": "2026-06-18T03:05:24.673Z",
       "archived": false
     },
     "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e": {
@@ -1812,7 +3222,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e.md",
-      "updatedAt": "2026-06-12T13:43:30.948Z",
+      "updatedAt": "2026-06-18T03:05:24.684Z",
       "archived": false
     },
     "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83": {
@@ -1824,7 +3234,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83.md",
-      "updatedAt": "2026-06-12T13:43:30.985Z",
+      "updatedAt": "2026-06-18T03:05:25.179Z",
       "archived": false
     },
     "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9": {
@@ -1836,7 +3246,7 @@
         "subagent"
       ],
       "path": "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9.md",
-      "updatedAt": "2026-06-12T13:43:30.949Z",
+      "updatedAt": "2026-06-18T03:05:24.697Z",
       "archived": false
     }
   },
@@ -1846,10 +3256,22 @@
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/admin-agent/journal": [
+      "agents/admin-agent",
+      "index"
+    ],
+    "agents/agentos-operator/journal": [
+      "agents/agentos-operator",
+      "index"
+    ],
     "agents/architect-agent": [
       "index",
       "flows/pipeline",
       "packages/agents"
+    ],
+    "agents/architect-agent/journal": [
+      "agents/architect-agent",
+      "index"
     ],
     "agents/backend-service-agent": [
       "index",
@@ -1861,6 +3283,10 @@
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/code-implementer/journal": [
+      "agents/code-implementer",
+      "index"
+    ],
     "agents/code-reviewer": [
       "index",
       "flows/pipeline",
@@ -1871,6 +3297,10 @@
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/context-minimizer/journal": [
+      "agents/context-minimizer",
+      "index"
+    ],
     "agents/database-migration-agent": [
       "index",
       "flows/pipeline",
@@ -1880,6 +3310,10 @@
       "index",
       "flows/pipeline",
       "packages/agents"
+    ],
+    "agents/docs-agent/journal": [
+      "agents/docs-agent",
+      "index"
     ],
     "agents/frontend-ui-agent": [
       "index",
@@ -1896,6 +3330,10 @@
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/issue-intake-researcher/journal": [
+      "agents/issue-intake-researcher",
+      "index"
+    ],
     "agents/memory-curator": [
       "index",
       "flows/pipeline",
@@ -1906,30 +3344,58 @@
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/planner-partitioner/journal": [
+      "agents/planner-partitioner",
+      "index"
+    ],
     "agents/product-agent": [
       "index",
       "flows/pipeline",
       "packages/agents"
+    ],
+    "agents/product-agent/journal": [
+      "agents/product-agent",
+      "index"
     ],
     "agents/qa-agent": [
       "index",
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/qa-agent/journal": [
+      "agents/qa-agent",
+      "index"
+    ],
     "agents/quota-steward": [
       "index",
       "flows/pipeline",
       "packages/agents"
+    ],
+    "agents/quota-steward/journal": [
+      "agents/quota-steward",
+      "index"
     ],
     "agents/release-manager": [
       "index",
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/release-manager/journal": [
+      "agents/release-manager",
+      "index"
+    ],
     "agents/repo-cartographer": [
       "index",
       "flows/pipeline",
       "packages/agents"
+    ],
+    "agents/reviewer-agent/journal": [
+      "agents/reviewer-agent",
+      "index"
+    ],
+    "agents/security-agent/journal": [
+      "agents/security-agent",
+      "index"
     ],
     "agents/security-auditor": [
       "index",
@@ -1941,10 +3407,18 @@
       "flows/pipeline",
       "packages/agents"
     ],
+    "agents/systems-synthesizer/journal": [
+      "agents/systems-synthesizer",
+      "index"
+    ],
     "agents/task-classifier": [
       "index",
       "flows/pipeline",
       "packages/agents"
+    ],
+    "agents/task-classifier/journal": [
+      "agents/task-classifier",
+      "index"
     ],
     "apps/api": [
       "areas/repo-layout",
@@ -2042,7 +3516,24 @@
       "packages/agents",
       "packages/sandbox",
       "areas/apps-gateway",
-      "areas/apps-command-center"
+      "areas/apps-command-center",
+      "packages/ui",
+      "packages/ui-blocks"
+    ],
+    "areas/architecture-diagrams": [
+      "areas/apps-command-center",
+      "areas/system-routing-schematic",
+      "areas/icepanel-import-manifest",
+      "product/forge-command-center-consolidated",
+      "areas/diagrams/context",
+      "areas/diagrams/containers",
+      "areas/diagrams/ui-routes",
+      "areas/diagrams/agent-pipeline",
+      "areas/diagrams/mission-run-sequence",
+      "areas/diagrams/oauth-sequence",
+      "areas/diagrams/wiki-sync-sequence",
+      "areas/diagrams/approval-gate-sequence",
+      "packages/queue"
     ],
     "areas/code-ownership": [
       "agents/backend-service-agent",
@@ -2063,6 +3554,31 @@
       "index",
       "areas/repo-layout"
     ],
+    "areas/diagrams/agent-pipeline": [
+      "flows/pipeline"
+    ],
+    "areas/diagrams/approval-gate-sequence": [
+      "areas/apps-command-center"
+    ],
+    "areas/diagrams/containers": [
+      "apps/command-center",
+      "apps/api",
+      "apps/gateway",
+      "apps/worker",
+      "apps/scheduler"
+    ],
+    "areas/diagrams/context": [
+      "areas/diagrams/containers"
+    ],
+    "areas/diagrams/mission-run-sequence": [],
+    "areas/diagrams/oauth-sequence": [],
+    "areas/diagrams/ui-routes": [],
+    "areas/diagrams/wiki-sync-sequence": [
+      "flows/memory-curator"
+    ],
+    "areas/icepanel-import-manifest": [
+      "areas/system-routing-schematic"
+    ],
     "areas/repo-layout": [
       "apps/api",
       "apps/command-center",
@@ -2071,7 +3587,6 @@
       "apps/worker",
       "packages/agents",
       "packages/app-generator",
-      "packages/game-schema",
       "packages/memory",
       "packages/orchestrator",
       "packages/persistence",
@@ -2100,11 +3615,12 @@
       "agents/backend-service-agent",
       "index",
       "areas/dependency-graph",
-      "areas/apps-api",
       "areas/apps-command-center",
+      "areas/apps-api",
       "areas/apps-gateway",
-      "areas/apps-packages",
+      "packages/ui-blocks",
       "areas/apps-worker",
+      "areas/apps-packages",
       "areas/apps-scheduler",
       "packages/tools",
       "packages/config"
@@ -2112,6 +3628,17 @@
     "areas/risk-areas": [
       "packages/runtime",
       "flows/test-commands"
+    ],
+    "areas/system-routing-schematic": [
+      "areas/icepanel-import-manifest",
+      "areas/architecture-diagrams",
+      "flows/pipeline",
+      "flows/memory-curator",
+      "flows/cursor-memory",
+      "product/forge-command-center-consolidated",
+      "areas/repo-layout",
+      "areas/apps-api",
+      "areas/apps-command-center"
     ],
     "docs/agentos_local_pivot_plan": [
       "index",
@@ -2126,6 +3653,10 @@
       "areas/repo-layout"
     ],
     "docs/architecture": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/architecture/system-routing-schematic": [
       "index",
       "areas/repo-layout"
     ],
@@ -2181,7 +3712,88 @@
       "index",
       "areas/repo-layout"
     ],
+    "docs/design/agentos-comprehensive-wireframe": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/agentos-dashboard-claude-design/claude": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/agentos-dashboard-claude-design/design": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/agentos-dashboard-claude-design/prompt": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/agentos-dashboard-claude-design/wireframe": [
+      "index",
+      "areas/repo-layout"
+    ],
     "docs/design/agentos-forge-style-study": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/base-site-completion-wireframe": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/claude-design-platform-handoff/claude": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/claude-design-platform-handoff/design": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/claude-design-platform-handoff/prompt": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/claude-design-platform-handoff/readme": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/design": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/forge-redesign-claude-handoff/prompt": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/forge-redesign-claude-handoff/readme": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/open-design-to-flous-design-lab": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/platform-gallery-handoff/design": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/platform-gallery-handoff/prompt": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/platform-gallery-handoff/readme": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/platform-template-motion-reference-pack": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/trusted-device-auth-wireframe": [
+      "index",
+      "areas/repo-layout"
+    ],
+    "docs/design/wiki-graph-view-spec": [
+      "wikilinks",
       "index",
       "areas/repo-layout"
     ],
@@ -2282,18 +3894,18 @@
       "areas/repo-layout"
     ],
     "flows/cursor-memory": [
-      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
-      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
-      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
-      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
-      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
-      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
-      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
-      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
-      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
+      "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2",
+      "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08",
+      "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0",
+      "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9",
+      "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
       "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
-      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
-      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
       "sessions/cursor/index",
       "flows/memory-curator"
     ],
@@ -2332,12 +3944,6 @@
       "agents/integration-broker",
       "agents/docs-agent",
       "agents/issue-intake-researcher",
-      "flows/memory-curator",
-      "packages/memory",
-      "wikilinks",
-      "flows/test-commands",
-      "areas/risk-areas",
-      "packages/agents",
       "packages/runtime",
       "packages/orchestrator",
       "index"
@@ -2355,9 +3961,6 @@
       "flows/memory-curator",
       "flows/test-commands",
       "flows/pipeline",
-      "sessions/cursor/index",
-      "flows/cursor-memory",
-      "planning/chatgpt/index",
       "areas/repo-layout",
       "areas/config",
       "packages/runtime",
@@ -2368,7 +3971,6 @@
       "apps/worker",
       "packages/agents",
       "packages/app-generator",
-      "packages/game-schema",
       "packages/memory",
       "packages/orchestrator",
       "packages/persistence",
@@ -2398,7 +4000,242 @@
       "docs/architecture",
       "docs/troubleshooting",
       "docs/gates",
+      "learning/osint/index",
       "wikilinks"
+    ],
+    "learning/osint/adapters/archives": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/certificates": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/dns": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/internet-exposure": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/maps": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/media-verification": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/public-datasets": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/adapters/search-engines": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/collection": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/correlation": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/enrichment": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/entity-model": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/normalization": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/pipeline-overview": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/source-adapters": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/architecture/storage": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/audit-logs": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/collector": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/confidence-scoring": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/entity-resolver": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/evidence-vault": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/parser": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/query-builder": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/components/redaction-engine": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/index": [
+      "learning/osint/adapters/archives",
+      "learning/osint/adapters/certificates",
+      "learning/osint/adapters/dns",
+      "learning/osint/adapters/internet-exposure",
+      "learning/osint/adapters/maps",
+      "learning/osint/adapters/media-verification",
+      "learning/osint/adapters/public-datasets",
+      "learning/osint/adapters/search-engines",
+      "learning/osint/architecture/collection",
+      "learning/osint/architecture/correlation",
+      "learning/osint/architecture/enrichment",
+      "learning/osint/architecture/entity-model",
+      "learning/osint/architecture/normalization",
+      "learning/osint/architecture/pipeline-overview",
+      "learning/osint/architecture/source-adapters",
+      "learning/osint/architecture/storage",
+      "learning/osint/components/audit-logs",
+      "learning/osint/components/collector",
+      "learning/osint/components/confidence-scoring",
+      "learning/osint/components/entity-resolver",
+      "learning/osint/components/evidence-vault",
+      "learning/osint/components/parser",
+      "learning/osint/components/query-builder",
+      "learning/osint/components/redaction-engine",
+      "learning/osint/labs/overview",
+      "learning/osint/patterns/brand-impersonation-monitor",
+      "learning/osint/patterns/domain-exposure-mapper",
+      "learning/osint/patterns/event-timeline-builder",
+      "learning/osint/patterns/evidence-manager",
+      "learning/osint/patterns/media-verification-workspace",
+      "learning/osint/patterns/self-osint-audit",
+      "learning/osint/platform/backend-services",
+      "learning/osint/platform/data-model",
+      "learning/osint/platform/plugin-sdk",
+      "learning/osint/platform/roadmap",
+      "learning/osint/reference/source-bank",
+      "learning/osint/safety/policy",
+      "learning/osint/ui/diff-viewer",
+      "learning/osint/ui/entity-card",
+      "learning/osint/ui/evidence-card",
+      "learning/osint/ui/graph",
+      "learning/osint/ui/map",
+      "learning/osint/ui/report-builder",
+      "learning/osint/ui/scope-banner",
+      "learning/osint/ui/timeline",
+      "learning/osint/welcome",
+      "index",
+      "areas/repo-layout"
+    ],
+    "learning/osint/labs/overview": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/patterns/brand-impersonation-monitor": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/patterns/domain-exposure-mapper": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/patterns/event-timeline-builder": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/patterns/evidence-manager": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/patterns/media-verification-workspace": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/patterns/self-osint-audit": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/platform/backend-services": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/platform/data-model": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/platform/plugin-sdk": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/platform/roadmap": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/reference/source-bank": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/safety/policy": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/diff-viewer": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/entity-card": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/evidence-card": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/graph": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/map": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/report-builder": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/scope-banner": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/ui/timeline": [
+      "learning/osint/index",
+      "index"
+    ],
+    "learning/osint/welcome": [
+      "learning/osint/index",
+      "index"
     ],
     "packages/agents": [
       "flows/memory-curator",
@@ -2419,7 +4256,9 @@
       "areas/dependency-graph",
       "packages/runtime",
       "packages/ui",
-      "areas/apps-command-center"
+      "areas/apps-command-center",
+      "packages/ui-blocks",
+      "areas/apps-worker"
     ],
     "packages/config": [
       "index",
@@ -2542,8 +4381,15 @@
       "packages/orchestrator",
       "packages/agents",
       "packages/app-generator",
+      "packages/ui-blocks",
+      "areas/apps-worker",
       "packages/persistence",
       "packages/shared"
+    ],
+    "packages/ui-blocks": [
+      "index",
+      "areas/repo-layout",
+      "packages/ui"
     ],
     "planning/chatgpt/agentos-master-codex-prompt": [
       "planning/chatgpt/index",
@@ -2609,6 +4455,13 @@
       "planning/chatgpt/agentos-project",
       "index"
     ],
+    "product/forge-command-center-consolidated": [
+      "docs/troubleshooting",
+      "flows/cursor-memory",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "areas/apps-command-center",
+      "packages/ui"
+    ],
     "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": [
       "packages/persistence",
       "packages/runtime",
@@ -2652,11 +4505,37 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4": [
+      "packages/ui",
+      "packages/ui-blocks",
+      "packages/app-generator",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": [
       "packages/orchestrator",
       "packages/runtime",
       "packages/agents",
       "packages/shared",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66": [
+      "packages/ui",
+      "packages/memory",
+      "packages/llm-router",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f": [
       "sessions/cursor/index",
       "flows/cursor-memory",
       "index"
@@ -2692,7 +4571,32 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d": [
       "sessions/cursor/index",
       "flows/cursor-memory",
       "index"
@@ -2719,6 +4623,14 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9": [
+      "packages/agents",
+      "packages/runtime",
+      "packages/llm-router",
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": [
       "sessions/cursor/index",
       "flows/cursor-memory",
@@ -2733,9 +4645,26 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/index": [
-      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
+      "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2",
+      "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08",
+      "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0",
+      "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9",
+      "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
       "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
       "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
       "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
@@ -2743,11 +4672,15 @@
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
       "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
-      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
       "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
       "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
       "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
       "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
+      "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad",
+      "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c",
+      "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259",
+      "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69",
       "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
       "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
       "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
@@ -2918,6 +4851,11 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210": [
       "sessions/cursor/index",
       "flows/cursor-memory",
@@ -3003,6 +4941,11 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6": [
       "packages/shared",
       "packages/runtime",
@@ -3021,6 +4964,11 @@
       "flows/cursor-memory",
       "index"
     ],
+    "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
     "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740": [
       "packages/runtime",
       "sessions/cursor/index",
@@ -3034,6 +4982,16 @@
       "index"
     ],
     "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad": [
+      "sessions/cursor/index",
+      "flows/cursor-memory",
+      "index"
+    ],
+    "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c": [
       "sessions/cursor/index",
       "flows/cursor-memory",
       "index"
@@ -3067,26 +5025,42 @@
   "inbound": {
     "index": [
       "agents/admin-agent",
+      "agents/admin-agent/journal",
+      "agents/agentos-operator/journal",
       "agents/architect-agent",
+      "agents/architect-agent/journal",
       "agents/backend-service-agent",
       "agents/code-implementer",
+      "agents/code-implementer/journal",
       "agents/code-reviewer",
       "agents/context-minimizer",
+      "agents/context-minimizer/journal",
       "agents/database-migration-agent",
       "agents/docs-agent",
+      "agents/docs-agent/journal",
       "agents/frontend-ui-agent",
       "agents/integration-broker",
       "agents/issue-intake-researcher",
+      "agents/issue-intake-researcher/journal",
       "agents/memory-curator",
       "agents/planner-partitioner",
+      "agents/planner-partitioner/journal",
       "agents/product-agent",
+      "agents/product-agent/journal",
       "agents/qa-agent",
+      "agents/qa-agent/journal",
       "agents/quota-steward",
+      "agents/quota-steward/journal",
       "agents/release-manager",
+      "agents/release-manager/journal",
       "agents/repo-cartographer",
+      "agents/reviewer-agent/journal",
+      "agents/security-agent/journal",
       "agents/security-auditor",
       "agents/systems-synthesizer",
+      "agents/systems-synthesizer/journal",
       "agents/task-classifier",
+      "agents/task-classifier/journal",
       "areas/apps-api",
       "areas/apps-command-center",
       "areas/apps-gateway",
@@ -3100,6 +5074,7 @@
       "docs/agentos_session_context",
       "docs/agentos_token_optimization_spec",
       "docs/architecture",
+      "docs/architecture/system-routing-schematic",
       "docs/asset_manifest_and_needs",
       "docs/demo/acceptance_criteria",
       "docs/demo/build_progress",
@@ -3113,7 +5088,27 @@
       "docs/demo/project_worksheets",
       "docs/demo/scoping-form/readme",
       "docs/demo/scoping_response",
+      "docs/design/agentos-comprehensive-wireframe",
+      "docs/design/agentos-dashboard-claude-design/claude",
+      "docs/design/agentos-dashboard-claude-design/design",
+      "docs/design/agentos-dashboard-claude-design/prompt",
+      "docs/design/agentos-dashboard-claude-design/wireframe",
       "docs/design/agentos-forge-style-study",
+      "docs/design/base-site-completion-wireframe",
+      "docs/design/claude-design-platform-handoff/claude",
+      "docs/design/claude-design-platform-handoff/design",
+      "docs/design/claude-design-platform-handoff/prompt",
+      "docs/design/claude-design-platform-handoff/readme",
+      "docs/design/design",
+      "docs/design/forge-redesign-claude-handoff/prompt",
+      "docs/design/forge-redesign-claude-handoff/readme",
+      "docs/design/open-design-to-flous-design-lab",
+      "docs/design/platform-gallery-handoff/design",
+      "docs/design/platform-gallery-handoff/prompt",
+      "docs/design/platform-gallery-handoff/readme",
+      "docs/design/platform-template-motion-reference-pack",
+      "docs/design/trusted-device-auth-wireframe",
+      "docs/design/wiki-graph-view-spec",
       "docs/first-run",
       "docs/gates",
       "docs/hosted_execution_notes",
@@ -3142,9 +5137,57 @@
       "flows/pipeline",
       "flows/root-scripts",
       "flows/test-commands",
+      "learning/osint/adapters/archives",
+      "learning/osint/adapters/certificates",
+      "learning/osint/adapters/dns",
+      "learning/osint/adapters/internet-exposure",
+      "learning/osint/adapters/maps",
+      "learning/osint/adapters/media-verification",
+      "learning/osint/adapters/public-datasets",
+      "learning/osint/adapters/search-engines",
+      "learning/osint/architecture/collection",
+      "learning/osint/architecture/correlation",
+      "learning/osint/architecture/enrichment",
+      "learning/osint/architecture/entity-model",
+      "learning/osint/architecture/normalization",
+      "learning/osint/architecture/pipeline-overview",
+      "learning/osint/architecture/source-adapters",
+      "learning/osint/architecture/storage",
+      "learning/osint/components/audit-logs",
+      "learning/osint/components/collector",
+      "learning/osint/components/confidence-scoring",
+      "learning/osint/components/entity-resolver",
+      "learning/osint/components/evidence-vault",
+      "learning/osint/components/parser",
+      "learning/osint/components/query-builder",
+      "learning/osint/components/redaction-engine",
+      "learning/osint/index",
+      "learning/osint/labs/overview",
+      "learning/osint/patterns/brand-impersonation-monitor",
+      "learning/osint/patterns/domain-exposure-mapper",
+      "learning/osint/patterns/event-timeline-builder",
+      "learning/osint/patterns/evidence-manager",
+      "learning/osint/patterns/media-verification-workspace",
+      "learning/osint/patterns/self-osint-audit",
+      "learning/osint/platform/backend-services",
+      "learning/osint/platform/data-model",
+      "learning/osint/platform/plugin-sdk",
+      "learning/osint/platform/roadmap",
+      "learning/osint/reference/source-bank",
+      "learning/osint/safety/policy",
+      "learning/osint/ui/diff-viewer",
+      "learning/osint/ui/entity-card",
+      "learning/osint/ui/evidence-card",
+      "learning/osint/ui/graph",
+      "learning/osint/ui/map",
+      "learning/osint/ui/report-builder",
+      "learning/osint/ui/scope-banner",
+      "learning/osint/ui/timeline",
+      "learning/osint/welcome",
       "packages/config",
       "packages/runtime",
       "packages/tools",
+      "packages/ui-blocks",
       "planning/chatgpt/agentos-master-codex-prompt",
       "planning/chatgpt/agentos-project",
       "planning/chatgpt/asset-manifest-and-needs",
@@ -3160,15 +5203,26 @@
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
       "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
       "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
+      "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a",
       "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
       "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0",
+      "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08",
       "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9",
+      "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2",
+      "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d",
       "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
       "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
       "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f",
       "sessions/cursor/index",
       "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
       "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
@@ -3186,6 +5240,7 @@
       "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
       "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
       "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
       "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
       "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
       "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
@@ -3196,11 +5251,15 @@
       "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
       "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
       "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69",
       "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
       "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259",
       "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
       "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
       "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad",
+      "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c",
       "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
       "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
       "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
@@ -3227,6 +5286,8 @@
       "agents/security-auditor",
       "agents/systems-synthesizer",
       "agents/task-classifier",
+      "areas/diagrams/agent-pipeline",
+      "areas/system-routing-schematic",
       "flows/memory-curator",
       "index"
     ],
@@ -3258,7 +5319,6 @@
       "areas/code-ownership",
       "areas/repo-layout",
       "flows/memory-curator",
-      "flows/pipeline",
       "index",
       "packages/orchestrator",
       "packages/persistence",
@@ -3272,6 +5332,7 @@
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
       "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
       "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
       "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
@@ -3282,6 +5343,93 @@
       "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
       "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
       "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+    ],
+    "agents/admin-agent": [
+      "agents/admin-agent/journal",
+      "areas/repo-layout",
+      "flows/memory-curator",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/agentos-operator": [
+      "agents/agentos-operator/journal"
+    ],
+    "agents/architect-agent": [
+      "agents/architect-agent/journal",
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/code-implementer": [
+      "agents/code-implementer/journal",
+      "areas/code-ownership",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/context-minimizer": [
+      "agents/context-minimizer/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/docs-agent": [
+      "agents/docs-agent/journal",
+      "areas/code-ownership",
+      "flows/pipeline"
+    ],
+    "agents/issue-intake-researcher": [
+      "agents/issue-intake-researcher/journal",
+      "flows/pipeline"
+    ],
+    "agents/planner-partitioner": [
+      "agents/planner-partitioner/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/product-agent": [
+      "agents/product-agent/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/qa-agent": [
+      "agents/qa-agent/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/quota-steward": [
+      "agents/quota-steward/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/release-manager": [
+      "agents/release-manager/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/reviewer-agent": [
+      "agents/reviewer-agent/journal"
+    ],
+    "agents/security-agent": [
+      "agents/security-agent/journal"
+    ],
+    "agents/systems-synthesizer": [
+      "agents/systems-synthesizer/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
+    ],
+    "agents/task-classifier": [
+      "agents/task-classifier/journal",
+      "areas/repo-layout",
+      "flows/pipeline",
+      "index"
     ],
     "areas/repo-layout": [
       "apps/api",
@@ -3296,10 +5444,12 @@
       "areas/apps-scheduler",
       "areas/apps-worker",
       "areas/dependency-graph",
+      "areas/system-routing-schematic",
       "docs/agentos_local_pivot_plan",
       "docs/agentos_session_context",
       "docs/agentos_token_optimization_spec",
       "docs/architecture",
+      "docs/architecture/system-routing-schematic",
       "docs/asset_manifest_and_needs",
       "docs/demo/acceptance_criteria",
       "docs/demo/build_progress",
@@ -3313,7 +5463,27 @@
       "docs/demo/project_worksheets",
       "docs/demo/scoping-form/readme",
       "docs/demo/scoping_response",
+      "docs/design/agentos-comprehensive-wireframe",
+      "docs/design/agentos-dashboard-claude-design/claude",
+      "docs/design/agentos-dashboard-claude-design/design",
+      "docs/design/agentos-dashboard-claude-design/prompt",
+      "docs/design/agentos-dashboard-claude-design/wireframe",
       "docs/design/agentos-forge-style-study",
+      "docs/design/base-site-completion-wireframe",
+      "docs/design/claude-design-platform-handoff/claude",
+      "docs/design/claude-design-platform-handoff/design",
+      "docs/design/claude-design-platform-handoff/prompt",
+      "docs/design/claude-design-platform-handoff/readme",
+      "docs/design/design",
+      "docs/design/forge-redesign-claude-handoff/prompt",
+      "docs/design/forge-redesign-claude-handoff/readme",
+      "docs/design/open-design-to-flous-design-lab",
+      "docs/design/platform-gallery-handoff/design",
+      "docs/design/platform-gallery-handoff/prompt",
+      "docs/design/platform-gallery-handoff/readme",
+      "docs/design/platform-template-motion-reference-pack",
+      "docs/design/trusted-device-auth-wireframe",
+      "docs/design/wiki-graph-view-spec",
       "docs/first-run",
       "docs/gates",
       "docs/hosted_execution_notes",
@@ -3340,6 +5510,7 @@
       "docs/troubleshooting",
       "flows/memory-curator",
       "index",
+      "learning/osint/index",
       "packages/agents",
       "packages/app-generator",
       "packages/config",
@@ -3353,7 +5524,8 @@
       "packages/shared",
       "packages/token-manager",
       "packages/tools",
-      "packages/ui"
+      "packages/ui",
+      "packages/ui-blocks"
     ],
     "areas/dependency-graph": [
       "apps/api",
@@ -3379,6 +5551,7 @@
       "apps/gateway",
       "apps/scheduler",
       "apps/worker",
+      "areas/diagrams/containers",
       "areas/repo-layout",
       "index"
     ],
@@ -3446,6 +5619,7 @@
       "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
       "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
       "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
       "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
       "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
@@ -3469,7 +5643,10 @@
       "areas/apps-gateway",
       "areas/apps-packages",
       "areas/apps-worker",
+      "areas/architecture-diagrams",
+      "areas/diagrams/approval-gate-sequence",
       "areas/repo-layout",
+      "areas/system-routing-schematic",
       "packages/agents",
       "packages/app-generator",
       "packages/game-schema",
@@ -3479,11 +5656,13 @@
       "packages/sandbox",
       "packages/shared",
       "packages/tools",
-      "packages/ui"
+      "packages/ui",
+      "product/forge-command-center-consolidated"
     ],
     "packages/ui": [
       "areas/apps-api",
       "areas/apps-command-center",
+      "areas/apps-worker",
       "areas/repo-layout",
       "index",
       "packages/agents",
@@ -3491,9 +5670,13 @@
       "packages/orchestrator",
       "packages/persistence",
       "packages/runtime",
+      "packages/ui-blocks",
+      "product/forge-command-center-consolidated",
       "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
       "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
       "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
       "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
       "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
@@ -3606,10 +5789,12 @@
       "areas/apps-scheduler",
       "areas/repo-layout",
       "packages/agents",
+      "packages/app-generator",
       "packages/persistence",
       "packages/queue",
       "packages/runtime",
-      "packages/sandbox"
+      "packages/sandbox",
+      "packages/ui"
     ],
     "packages/tools": [
       "areas/apps-api",
@@ -3655,6 +5840,7 @@
       "areas/apps-packages",
       "areas/apps-worker",
       "areas/repo-layout",
+      "areas/system-routing-schematic",
       "packages/agents",
       "packages/config",
       "packages/game-schema",
@@ -3672,6 +5858,7 @@
       "index",
       "packages/ui",
       "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
       "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
       "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
       "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
@@ -3682,6 +5869,7 @@
     "packages/queue": [
       "areas/apps-scheduler",
       "areas/apps-worker",
+      "areas/architecture-diagrams",
       "areas/repo-layout",
       "index",
       "packages/persistence",
@@ -3695,6 +5883,50 @@
       "packages/persistence",
       "packages/queue"
     ],
+    "packages/ui-blocks": [
+      "areas/apps-worker",
+      "areas/repo-layout",
+      "packages/app-generator",
+      "packages/ui",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4"
+    ],
+    "areas/system-routing-schematic": [
+      "areas/architecture-diagrams",
+      "areas/icepanel-import-manifest"
+    ],
+    "areas/icepanel-import-manifest": [
+      "areas/architecture-diagrams",
+      "areas/system-routing-schematic"
+    ],
+    "product/forge-command-center-consolidated": [
+      "areas/architecture-diagrams",
+      "areas/system-routing-schematic"
+    ],
+    "areas/diagrams/context": [
+      "areas/architecture-diagrams"
+    ],
+    "areas/diagrams/containers": [
+      "areas/architecture-diagrams",
+      "areas/diagrams/context"
+    ],
+    "areas/diagrams/ui-routes": [
+      "areas/architecture-diagrams"
+    ],
+    "areas/diagrams/agent-pipeline": [
+      "areas/architecture-diagrams"
+    ],
+    "areas/diagrams/mission-run-sequence": [
+      "areas/architecture-diagrams"
+    ],
+    "areas/diagrams/oauth-sequence": [
+      "areas/architecture-diagrams"
+    ],
+    "areas/diagrams/wiki-sync-sequence": [
+      "areas/architecture-diagrams"
+    ],
+    "areas/diagrams/approval-gate-sequence": [
+      "areas/architecture-diagrams"
+    ],
     "agents/backend-service-agent": [
       "areas/code-ownership",
       "areas/repo-layout",
@@ -3707,33 +5939,16 @@
       "flows/pipeline",
       "index"
     ],
-    "agents/code-implementer": [
-      "areas/code-ownership",
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/architect-agent": [
-      "areas/code-ownership",
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
     "agents/memory-curator": [
       "areas/code-ownership",
       "areas/repo-layout",
       "flows/pipeline",
       "index"
     ],
-    "agents/docs-agent": [
-      "areas/code-ownership",
-      "flows/pipeline"
-    ],
     "areas/risk-areas": [
       "areas/code-ownership",
       "areas/config",
       "flows/memory-curator",
-      "flows/pipeline",
       "flows/test-commands",
       "packages/runtime"
     ],
@@ -3741,43 +5956,44 @@
       "areas/config",
       "areas/risk-areas",
       "flows/memory-curator",
-      "flows/pipeline",
       "flows/root-scripts",
       "index",
       "packages/agents",
       "packages/runtime"
     ],
     "apps/command-center": [
+      "areas/diagrams/containers",
       "areas/repo-layout",
       "index"
     ],
     "apps/gateway": [
-      "areas/repo-layout",
-      "index"
-    ],
-    "apps/scheduler": [
+      "areas/diagrams/containers",
       "areas/repo-layout",
       "index"
     ],
     "apps/worker": [
+      "areas/diagrams/containers",
       "areas/repo-layout",
       "index"
     ],
-    "packages/game-schema": [
+    "apps/scheduler": [
+      "areas/diagrams/containers",
       "areas/repo-layout",
+      "index"
+    ],
+    "flows/memory-curator": [
+      "areas/diagrams/wiki-sync-sequence",
+      "areas/system-routing-schematic",
+      "flows/cursor-memory",
       "index",
-      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
-      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
-      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
-      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
-      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
+      "packages/agents"
     ],
     "packages/memory": [
       "areas/repo-layout",
       "flows/memory-curator",
-      "flows/pipeline",
       "index",
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
       "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
@@ -3792,48 +6008,7 @@
       "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
       "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
     ],
-    "agents/admin-agent": [
-      "areas/repo-layout",
-      "flows/memory-curator",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/task-classifier": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/context-minimizer": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/quota-steward": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/planner-partitioner": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/product-agent": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
     "agents/repo-cartographer": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/systems-synthesizer": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "agents/qa-agent": [
       "areas/repo-layout",
       "flows/pipeline",
       "index"
@@ -3848,152 +6023,38 @@
       "flows/pipeline",
       "index"
     ],
-    "agents/release-manager": [
-      "areas/repo-layout",
-      "flows/pipeline",
-      "index"
-    ],
-    "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": [
-      "flows/cursor-memory",
-      "sessions/cursor/index"
-    ],
-    "sessions/cursor/index": [
-      "flows/cursor-memory",
-      "index",
-      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
-      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
-      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
-      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
-      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
-      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
-      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
-      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
-      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
-      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
-      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
-      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
-      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
-      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
-      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
-      "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
-      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
-      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
-      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
-      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
-      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
-      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
-      "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
-      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
-      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
-      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
-      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
-      "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
-      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
-      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
-      "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
-      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
-      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
-      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
-      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
-      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
-      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
-      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
-      "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
-      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
-      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
-      "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
-      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
-      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
-      "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
-      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
-      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
-      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
-    ],
-    "flows/memory-curator": [
-      "flows/cursor-memory",
-      "flows/pipeline",
-      "index",
-      "packages/agents"
-    ],
-    "wikilinks": [
-      "flows/memory-curator",
-      "flows/pipeline",
-      "index"
-    ],
-    "areas/code-ownership": [
-      "flows/memory-curator",
-      "packages/orchestrator"
-    ],
-    "agents/database-migration-agent": [
-      "flows/pipeline"
-    ],
-    "agents/integration-broker": [
-      "flows/pipeline"
-    ],
-    "agents/issue-intake-researcher": [
-      "flows/pipeline"
+    "areas/architecture-diagrams": [
+      "areas/system-routing-schematic"
     ],
     "flows/cursor-memory": [
-      "index",
+      "areas/system-routing-schematic",
       "planning/chatgpt/index",
+      "product/forge-command-center-consolidated",
       "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
       "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
       "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
       "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
+      "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a",
       "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
       "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
       "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
       "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0",
+      "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08",
       "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9",
+      "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2",
+      "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d",
       "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
       "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
       "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
       "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f",
       "sessions/cursor/index",
       "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
       "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
@@ -4011,6 +6072,7 @@
       "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
       "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
       "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
       "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
       "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
       "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
@@ -4021,27 +6083,149 @@
       "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
       "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
       "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69",
       "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
       "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259",
       "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
       "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
       "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad",
+      "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c",
       "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
       "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
       "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
     ],
-    "planning/chatgpt/index": [
-      "index",
-      "planning/chatgpt/agentos-master-codex-prompt",
-      "planning/chatgpt/agentos-project",
-      "planning/chatgpt/asset-manifest-and-needs",
-      "planning/chatgpt/codex-repair-prompt",
-      "planning/chatgpt/generated-asset-prompts",
-      "planning/chatgpt/memory-and-token-systems",
-      "planning/chatgpt/phaser-office-implementation-plan",
-      "planning/chatgpt/readme",
-      "planning/chatgpt/sanitization-policy",
-      "planning/chatgpt/simple-codex-steps"
+    "wikilinks": [
+      "docs/design/wiki-graph-view-spec",
+      "flows/memory-curator",
+      "index"
+    ],
+    "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388": [
+      "flows/cursor-memory",
+      "product/forge-command-center-consolidated",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f": [
+      "flows/cursor-memory",
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/index": [
+      "flows/cursor-memory",
+      "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586",
+      "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a",
+      "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961",
+      "sessions/cursor/49de712f-f8ab-41ac-af48-5827eb232388",
+      "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3",
+      "sessions/cursor/505a9726-5cfa-43c3-8f3d-8a872fbc8ad4",
+      "sessions/cursor/608e22f0-28a0-4e36-b505-496ae7cb075a",
+      "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d",
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "sessions/cursor/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
+      "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028",
+      "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a",
+      "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13",
+      "sessions/cursor/agent-2a86843b-1e1d-4c47-8a30-f87d6b243ba0",
+      "sessions/cursor/agent-4f658dc8-585e-4467-8dd7-00d0f2511d08",
+      "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924",
+      "sessions/cursor/agent-91137aad-ea7f-4c89-9327-c8db289ff3a9",
+      "sessions/cursor/agent-93762921-3dc5-4f8b-a7e6-b21081f167e2",
+      "sessions/cursor/agent-b443df5c-5001-4aee-afc9-b8c0c1b50e6d",
+      "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0",
+      "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9",
+      "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7",
+      "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd",
+      "sessions/cursor/f48c06e1-7a97-400e-84a7-c65433803c8f",
+      "sessions/cursor/subagents/09d01bcb-ea7f-4301-8de6-4f63a3c1f319",
+      "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240",
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/3c379d4f-eb48-48da-9528-8ecc47cbe60f",
+      "sessions/cursor/subagents/3c524f2e-3776-4ff3-a046-90b8fa55786b",
+      "sessions/cursor/subagents/3f842802-9304-4e88-88e2-8230c04606ac",
+      "sessions/cursor/subagents/4050d34a-d12f-4855-98d7-ce1e772585f5",
+      "sessions/cursor/subagents/439e3d65-6830-4dcb-866b-24a488fa1ce5",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/6981c39c-ed95-4c49-923a-bf5cde4262a7",
+      "sessions/cursor/subagents/6ae5b625-21ec-4155-9d57-4ec38bbbcf69",
+      "sessions/cursor/subagents/6d4b4649-0fb8-4379-a4d6-310a7b1d6922",
+      "sessions/cursor/subagents/75acab04-4e18-45e6-96fa-b03ed5f7148e",
+      "sessions/cursor/subagents/76878368-06de-4a36-a33e-20c257a6699b",
+      "sessions/cursor/subagents/7cc43236-2251-445f-8c33-a6ae7ae08cd6",
+      "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f",
+      "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210",
+      "sessions/cursor/subagents/86da12c9-1764-440e-863a-36f686e713bb",
+      "sessions/cursor/subagents/8dfaaa16-0bf6-4daa-9014-29e7b0ab0527",
+      "sessions/cursor/subagents/90099be0-cece-4ed6-885d-6c798ba61a07",
+      "sessions/cursor/subagents/90d766a2-9b10-4558-aa7c-fefa6d2d4b75",
+      "sessions/cursor/subagents/9367e7ec-07db-42a5-b1a7-c8914fae7573",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6",
+      "sessions/cursor/subagents/a28b8a73-73e5-4f39-9ff0-6e5835c30430",
+      "sessions/cursor/subagents/a5d2ef3d-2032-4147-ad00-55567a19e50b",
+      "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69",
+      "sessions/cursor/subagents/b61f856e-1171-4e57-8840-2f321abc7cd6",
+      "sessions/cursor/subagents/c1632352-dd2f-46c5-9d63-aad77a617c73",
+      "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259",
+      "sessions/cursor/subagents/de0c8b29-158f-4974-b78d-fdf304734740",
+      "sessions/cursor/subagents/de880f91-5858-4d1f-b416-1fe773ab4639",
+      "sessions/cursor/subagents/de8ad485-afda-4350-b32d-50741e41a98c",
+      "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad",
+      "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c",
+      "sessions/cursor/subagents/ec4c0891-376d-4aec-8305-8121f427f05e",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83",
+      "sessions/cursor/subagents/fa72abdb-feb3-44ba-b49a-b38603c628e9"
+    ],
+    "areas/code-ownership": [
+      "flows/memory-curator",
+      "packages/orchestrator"
+    ],
+    "agents/database-migration-agent": [
+      "flows/pipeline"
+    ],
+    "agents/integration-broker": [
+      "flows/pipeline"
     ],
     "areas/config": [
       "index"
@@ -4054,10 +6238,210 @@
       "index"
     ],
     "docs/troubleshooting": [
-      "index"
+      "index",
+      "product/forge-command-center-consolidated"
     ],
     "docs/gates": [
       "index"
+    ],
+    "learning/osint/index": [
+      "index",
+      "learning/osint/adapters/archives",
+      "learning/osint/adapters/certificates",
+      "learning/osint/adapters/dns",
+      "learning/osint/adapters/internet-exposure",
+      "learning/osint/adapters/maps",
+      "learning/osint/adapters/media-verification",
+      "learning/osint/adapters/public-datasets",
+      "learning/osint/adapters/search-engines",
+      "learning/osint/architecture/collection",
+      "learning/osint/architecture/correlation",
+      "learning/osint/architecture/enrichment",
+      "learning/osint/architecture/entity-model",
+      "learning/osint/architecture/normalization",
+      "learning/osint/architecture/pipeline-overview",
+      "learning/osint/architecture/source-adapters",
+      "learning/osint/architecture/storage",
+      "learning/osint/components/audit-logs",
+      "learning/osint/components/collector",
+      "learning/osint/components/confidence-scoring",
+      "learning/osint/components/entity-resolver",
+      "learning/osint/components/evidence-vault",
+      "learning/osint/components/parser",
+      "learning/osint/components/query-builder",
+      "learning/osint/components/redaction-engine",
+      "learning/osint/labs/overview",
+      "learning/osint/patterns/brand-impersonation-monitor",
+      "learning/osint/patterns/domain-exposure-mapper",
+      "learning/osint/patterns/event-timeline-builder",
+      "learning/osint/patterns/evidence-manager",
+      "learning/osint/patterns/media-verification-workspace",
+      "learning/osint/patterns/self-osint-audit",
+      "learning/osint/platform/backend-services",
+      "learning/osint/platform/data-model",
+      "learning/osint/platform/plugin-sdk",
+      "learning/osint/platform/roadmap",
+      "learning/osint/reference/source-bank",
+      "learning/osint/safety/policy",
+      "learning/osint/ui/diff-viewer",
+      "learning/osint/ui/entity-card",
+      "learning/osint/ui/evidence-card",
+      "learning/osint/ui/graph",
+      "learning/osint/ui/map",
+      "learning/osint/ui/report-builder",
+      "learning/osint/ui/scope-banner",
+      "learning/osint/ui/timeline",
+      "learning/osint/welcome"
+    ],
+    "learning/osint/adapters/archives": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/certificates": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/dns": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/internet-exposure": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/maps": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/media-verification": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/public-datasets": [
+      "learning/osint/index"
+    ],
+    "learning/osint/adapters/search-engines": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/collection": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/correlation": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/enrichment": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/entity-model": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/normalization": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/pipeline-overview": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/source-adapters": [
+      "learning/osint/index"
+    ],
+    "learning/osint/architecture/storage": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/audit-logs": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/collector": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/confidence-scoring": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/entity-resolver": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/evidence-vault": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/parser": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/query-builder": [
+      "learning/osint/index"
+    ],
+    "learning/osint/components/redaction-engine": [
+      "learning/osint/index"
+    ],
+    "learning/osint/labs/overview": [
+      "learning/osint/index"
+    ],
+    "learning/osint/patterns/brand-impersonation-monitor": [
+      "learning/osint/index"
+    ],
+    "learning/osint/patterns/domain-exposure-mapper": [
+      "learning/osint/index"
+    ],
+    "learning/osint/patterns/event-timeline-builder": [
+      "learning/osint/index"
+    ],
+    "learning/osint/patterns/evidence-manager": [
+      "learning/osint/index"
+    ],
+    "learning/osint/patterns/media-verification-workspace": [
+      "learning/osint/index"
+    ],
+    "learning/osint/patterns/self-osint-audit": [
+      "learning/osint/index"
+    ],
+    "learning/osint/platform/backend-services": [
+      "learning/osint/index"
+    ],
+    "learning/osint/platform/data-model": [
+      "learning/osint/index"
+    ],
+    "learning/osint/platform/plugin-sdk": [
+      "learning/osint/index"
+    ],
+    "learning/osint/platform/roadmap": [
+      "learning/osint/index"
+    ],
+    "learning/osint/reference/source-bank": [
+      "learning/osint/index"
+    ],
+    "learning/osint/safety/policy": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/diff-viewer": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/entity-card": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/evidence-card": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/graph": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/map": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/report-builder": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/scope-banner": [
+      "learning/osint/index"
+    ],
+    "learning/osint/ui/timeline": [
+      "learning/osint/index"
+    ],
+    "learning/osint/welcome": [
+      "learning/osint/index"
+    ],
+    "planning/chatgpt/index": [
+      "planning/chatgpt/agentos-master-codex-prompt",
+      "planning/chatgpt/agentos-project",
+      "planning/chatgpt/asset-manifest-and-needs",
+      "planning/chatgpt/codex-repair-prompt",
+      "planning/chatgpt/generated-asset-prompts",
+      "planning/chatgpt/memory-and-token-systems",
+      "planning/chatgpt/phaser-office-implementation-plan",
+      "planning/chatgpt/readme",
+      "planning/chatgpt/sanitization-policy",
+      "planning/chatgpt/simple-codex-steps"
     ],
     "planning/chatgpt/agentos-project": [
       "planning/chatgpt/agentos-master-codex-prompt",
@@ -4104,10 +6488,62 @@
     "packages/foo": [
       "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961"
     ],
+    "packages/llm-router": [
+      "sessions/cursor/70158c54-b13f-4e37-83ac-064376f13d66",
+      "sessions/cursor/c1913c09-3e67-46d1-9fbd-77fb9a8ed9f9"
+    ],
+    "sessions/cursor/25a5c275-94ce-44a6-a7a2-731de9c5982a": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/3d0d698f-760f-43dc-bac9-8e461a184961": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/bf9a001a-cb3a-4d40-99d1-901b9d29e709": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/665b37fb-9760-4e74-b123-912ccf68d41d": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/e2fc83b1-8302-486f-8474-7c0a963507f7": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/4af92820-4332-4bc1-b514-d560b49a83d3": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/99f3e422-5ef9-498b-8d23-a7d3ea01a028": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-28453128-cc09-424b-8934-9d21727abe13": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/agent-613a4d6a-e2d4-40c7-b4c0-b45fc5b48924": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/bd095a93-d3b4-479b-a8ba-bfd6875485f0": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/22a11abf-e2eb-4160-b02d-65c2c0fa3586": [
+      "sessions/cursor/index"
+    ],
     "sessions/cursor/a23795b4-4485-4f8a-aa47-8a7fd45fab6a": [
       "sessions/cursor/index"
     ],
     "sessions/cursor/e9111b9e-de7b-4db9-96c2-d780172fb3cd": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/867505a1-fc3e-4e21-a5d4-0a42ce84e00f": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/e259d176-50a7-442c-a5ae-8e3678817dad": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/e9d6122e-365b-4867-a0e2-f23e0245586c": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/d3b3c49e-acd0-476e-bf80-d25bf9e1f259": [
+      "sessions/cursor/index"
+    ],
+    "sessions/cursor/subagents/abdcd73c-7aec-4c02-a2e3-909ef8391c69": [
       "sessions/cursor/index"
     ],
     "sessions/cursor/subagents/868a7986-6434-41c9-add7-ddd5cf1da210": [
@@ -4211,6 +6647,13 @@
     ],
     "sessions/cursor/subagents/0cb62212-3d60-4800-8a8b-997fb745f240": [
       "sessions/cursor/index"
+    ],
+    "packages/game-schema": [
+      "sessions/cursor/subagents/309bf41e-ad59-47b4-865d-b00692499955",
+      "sessions/cursor/subagents/31de9d55-e139-4610-822d-ba55371a1bce",
+      "sessions/cursor/subagents/4826a57c-1678-4b07-a165-970af2e5547a",
+      "sessions/cursor/subagents/9c26a922-4d53-4edc-892a-e6d09828eb67",
+      "sessions/cursor/subagents/f6481d71-9061-4c2c-a1be-83b64f027e83"
     ],
     "packages/executor": [
       "sessions/cursor/subagents/a0cf4f40-ba50-4669-9fdd-701aec6ae3c6"

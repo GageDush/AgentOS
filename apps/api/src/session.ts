@@ -110,3 +110,9 @@ export function readCookieValue(cookieHeader: string | undefined, name: string) 
   }
   return undefined;
 }
+
+/** Discord OAuth session operator id when the request carries a valid session cookie. */
+export function operatorIdFromRequest(request: { headers: { cookie?: string } }): string | undefined {
+  const token = readCookieValue(request.headers.cookie, sessionCookieName());
+  return readSessionToken(token)?.operatorId;
+}

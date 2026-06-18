@@ -1,4 +1,5 @@
 import type { LlmChatRequest, LlmChatResponse, LlmProviderId } from "@agentos/shared";
+import { routeLlmCall } from "@agentos/llm-router";
 
 export type ChatProvider = {
   id: LlmProviderId;
@@ -43,36 +44,27 @@ export const ollamaProvider: ChatProvider = {
 
     const model = request.model?.trim() || defaultOllamaModel;
     const startedAt = Date.now();
-    let response: Response;
 
-    try {
-      response = await fetch("http://127.0.0.1:11434/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model,
-          prompt,
-          stream: false
-        })
-      });
-    } catch {
+    // Route the local lane through the LLM router (no direct Ollama bypass).
+    // process.cwd() + [] is sufficient here: a model override skips alias config,
+    // and the quota/budget gates are no-ops for the free local lane (the cloud
+    // gates run in the /llm/chat API route with the real usage events).
+    const result = await routeLlmCall(process.cwd(), [], {
+      model: `ollama/${model}`,
+      prompt,
+      agentId: request.agentId,
+      timeoutMs: 8000
+    });
+
+    if (!result.ok || !result.text) {
       throw new Error("Ollama is unavailable at http://127.0.0.1:11434.");
-    }
-
-    if (!response.ok) {
-      throw new Error(`Ollama returned HTTP ${response.status}.`);
-    }
-
-    const data = (await response.json()) as { response?: string };
-    if (!data.response) {
-      throw new Error("Ollama returned an empty response.");
     }
 
     return {
       ok: true,
       provider: "ollama",
       model,
-      response: data.response,
+      response: result.text,
       durationMs: Date.now() - startedAt
     };
   }

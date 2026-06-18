@@ -1,0 +1,322 @@
+.forge-wiki-shell {
+  display: grid;
+  gap: var(--forge-space-4, 1rem);
+  grid-column: 1 / -1;
+  min-height: 60vh;
+}
+
+.forge-wiki-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--forge-border, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
+  background: var(--forge-panel, rgba(10, 14, 22, 0.74));
+}
+
+/* Browse | Map tabs */
+.forge-wiki-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--forge-bg-overlay, #262320);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.07));
+  border-radius: 999px;
+  align-self: center;
+}
+.forge-wiki-tab {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--color-fg-3, #a89d92);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: color 150ms, background 150ms;
+}
+.forge-wiki-tab:hover {
+  color: var(--color-fg-1, #f5f2ee);
+}
+.forge-wiki-tab.on {
+  color: var(--forge-bg-base, #0a0908);
+  background: var(--forge-accent, #ff6a35);
+  font-weight: 600;
+}
+
+/* Map view fills the wiki shell width */
+.forge-wiki-map {
+  grid-column: 1 / -1;
+}
+
+.forge-wiki-search {
+  display: grid;
+  gap: 0.35rem;
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.forge-wiki-search-label {
+  font-size: 0.65rem;
+  color: var(--forge-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.forge-wiki-search-input {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--forge-border);
+  background: var(--forge-panel-sunken, rgba(0, 0, 0, 0.35));
+  color: var(--forge-text);
+  font: inherit;
+}
+
+.forge-wiki-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.forge-wiki-status {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--forge-accent);
+}
+
+.forge-wiki-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.forge-wiki-sidebar {
+  display: grid;
+  gap: 0.75rem;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.forge-wiki-sidebar-block {
+  padding: 0.75rem;
+  border: 1px solid var(--forge-border);
+  border-radius: 10px;
+  background: var(--forge-panel);
+}
+
+.forge-wiki-sidebar-scroll {
+  max-height: 42vh;
+  overflow: auto;
+}
+
+.forge-wiki-sidebar-kicker {
+  margin: 0 0 0.5rem;
+  font-family: var(--forge-mono);
+  font-size: 0.65rem;
+  color: var(--forge-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.forge-wiki-link-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.forge-wiki-nav-item {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.forge-wiki-nav-item:hover {
+  border-color: var(--forge-border-strong);
+  background: rgba(255, 106, 53, 0.06);
+}
+
+.forge-wiki-nav-item-active {
+  border-color: var(--forge-accent);
+  background: rgba(255, 106, 53, 0.1);
+}
+
+.forge-wiki-nav-sub {
+  font-family: var(--forge-mono);
+  font-size: 0.62rem;
+  color: var(--forge-soft);
+}
+
+.forge-wiki-nav-excerpt {
+  font-size: 0.72rem;
+  color: var(--forge-muted);
+  line-height: 1.35;
+}
+
+.forge-wiki-category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.forge-wiki-main {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--forge-border);
+  border-radius: 12px;
+  background: var(--forge-panel-strong, rgba(6, 9, 16, 0.92));
+  min-height: 420px;
+  overflow: auto;
+  max-height: calc(100vh - 200px);
+}
+
+.forge-wiki-empty {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 52ch;
+}
+
+.forge-wiki-article-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--forge-border);
+}
+
+.forge-wiki-meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  color: var(--forge-soft);
+}
+
+.forge-wiki-title {
+  margin: 0;
+  font-size: 1.65rem;
+  line-height: 1.2;
+}
+
+.forge-wiki-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.forge-wiki-article-body {
+  display: grid;
+  gap: 0.75rem;
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.forge-wiki-h1,
+.forge-wiki-h2,
+.forge-wiki-h3 {
+  margin: 0.5rem 0 0;
+  line-height: 1.25;
+}
+
+.forge-wiki-h1 {
+  font-size: 1.35rem;
+}
+
+.forge-wiki-h2 {
+  font-size: 1.15rem;
+  color: var(--forge-accent-bright, #9eb8ff);
+}
+
+.forge-wiki-h3 {
+  font-size: 1rem;
+}
+
+.forge-wiki-p {
+  margin: 0;
+  color: var(--forge-text);
+}
+
+.forge-wiki-ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.forge-wiki-pre {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 8px;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--forge-border);
+  font-family: var(--forge-mono);
+  font-size: 0.78rem;
+}
+
+.forge-wiki-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--forge-accent);
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.forge-wiki-table-wrap {
+  overflow: auto;
+}
+
+.forge-wiki-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.forge-wiki-table th,
+.forge-wiki-table td {
+  border: 1px solid var(--forge-border);
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+}
+
+.forge-wiki-table th {
+  background: rgba(255, 106, 53, 0.08);
+}
+
+.forge-wiki-related {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--forge-border);
+}
+
+@media (max-width: 960px) {
+  .forge-wiki-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .forge-wiki-sidebar {
+    max-height: none;
+  }
+
+  .forge-wiki-sidebar-scroll {
+    max-height: 240px;
+  }
+
+  .forge-wiki-main {
+    max-height: none;
+  }
+}

@@ -2,12 +2,19 @@ import {
   PERSONA_ROLE_KEYS,
   personaDiscordName,
   resolvePersona,
+  ROSTER_PERSONAS,
   type AgentPersonaRoleKey
 } from "./personas";
+
+const HOUSE_AGENT_CHOICES = ROSTER_PERSONAS.map((persona) => ({
+  name: personaDiscordName(persona),
+  value: persona.agentId
+}));
 
 export const CATEGORY_START = "◈ START";
 export const CATEGORY_OPS = "◈ OPS";
 export const CATEGORY_BRIEFING = "◈ BRIEFING";
+export const CATEGORY_NEIGHBORHOOD = "◈ NEIGHBORHOOD";
 export const CATEGORY_LOUNGE = "◈ LOUNGE";
 
 export type AgentOsChannelKey =
@@ -24,6 +31,8 @@ export type AgentOsChannelKey =
   | "chatRoom1"
   | "chatRoom2"
   | "chatRoom3"
+  | "townSquare"
+  | "socialLounge"
   | "general"
   | "voice";
 
@@ -52,7 +61,12 @@ export const STREAMLINED_LAYOUT: Record<
   AgentOsChannelKey,
   {
     name: string;
-    category: typeof CATEGORY_START | typeof CATEGORY_OPS | typeof CATEGORY_BRIEFING | typeof CATEGORY_LOUNGE;
+    category:
+      | typeof CATEGORY_START
+      | typeof CATEGORY_OPS
+      | typeof CATEGORY_BRIEFING
+      | typeof CATEGORY_NEIGHBORHOOD
+      | typeof CATEGORY_LOUNGE;
     type: number;
     topic: string;
     legacyNames: string[];
@@ -149,6 +163,20 @@ export const STREAMLINED_LAYOUT: Record<
     topic: "Focused 1–3 agent side chat — reserve from #round-table.",
     legacyNames: ["chat-room-3", "chatroom-3", "briefing-room-3"]
   },
+  townSquare: {
+    name: "town-square",
+    category: CATEGORY_NEIGHBORHOOD,
+    type: 0,
+    topic: "Neighborhood plaza — house invites, visit announcements, and who's home.",
+    legacyNames: ["town-square", "townsquare", "neighborhood", "plaza"]
+  },
+  socialLounge: {
+    name: "social-lounge",
+    category: CATEGORY_NEIGHBORHOOD,
+    type: 0,
+    topic: "Mixed agent hangout during downtime — small groups only, no mission tools.",
+    legacyNames: ["social-lounge", "agent-lounge", "hangout"]
+  },
   general: {
     name: "general",
     category: CATEGORY_LOUNGE,
@@ -176,6 +204,53 @@ export const AGENTOS_ROOT_COMMAND = {
       name: "briefing",
       description: "Start a round-table agent discussion in #round-table.",
       options: [{ name: "topic", description: "Topic or question for the agents", type: 3, required: true }]
+    },
+    {
+      type: 1,
+      name: "invite-house",
+      description: "Invite guest agents to a house visit (announced in #town-square).",
+      options: [
+        {
+          name: "host",
+          description: "Hosting agent",
+          type: 3,
+          required: true,
+          choices: HOUSE_AGENT_CHOICES
+        },
+        {
+          name: "guest",
+          description: "Guest agent",
+          type: 3,
+          required: true,
+          choices: HOUSE_AGENT_CHOICES
+        },
+        { name: "topic", description: "Visit topic", type: 3, required: true },
+        {
+          name: "duration",
+          description: "Visit duration (minutes)",
+          type: 4,
+          required: false,
+          choices: [
+            { name: "30 minutes", value: "30" },
+            { name: "45 minutes", value: "45" },
+            { name: "60 minutes", value: "60" }
+          ]
+        }
+      ]
+    },
+    {
+      type: 1,
+      name: "end-visit",
+      description: "End an active house visit and save notes to the host wiki journal.",
+      options: [
+        {
+          name: "host",
+          description: "Host agent (optional if only one visit is active)",
+          type: 3,
+          required: false,
+          choices: HOUSE_AGENT_CHOICES
+        }
+      ]
     },
     {
       type: 1,

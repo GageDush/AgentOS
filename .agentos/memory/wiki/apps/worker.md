@@ -3,7 +3,7 @@ slug: apps/worker
 title: Worker
 tags: [app, monorepo, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # @agentos/worker
 AgentOS app workspace unit.

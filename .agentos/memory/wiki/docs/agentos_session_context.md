@@ -3,7 +3,7 @@ slug: docs/agentos_session_context
 title: AGENTOS SESSION CONTEXT
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # AGENTOS SESSION CONTEXT
 
@@ -15,10 +15,20 @@ Source: `docs/AGENTOS_SESSION_CONTEXT.md` (excerpt; secrets redacted).
 
 Read this first in new agent sessions instead of replaying long chat history.
 
+## Consolidated conversation briefs
+
+| Topic | Doc |
+|-------|-----|
+| Forge dashboard, URLs, agent placards, art assets | `.agentos/memory/wiki/product/forge-command-center-consolidated.md` |
+| All Cursor sessions (auto-synced) | `.agentos/memory/wiki/sessions/cursor/index.md` |
+| Rolling Cursor digest | `.agentos/memory/wiki/flows/cursor-memory.md` |
+
+Sync Cursor chats into wiki: `pnpm wiki:sync-cursor` (or `--full`).
+
 ## Product
 
 - **AgentOS Local** = canonical product: isolated, self-run command center; must operate offline (mock/Ollama/gateway) when APIs are off.
-- **Office Demo** = archived only at `/demo/office`; do not invest unless asked.
+- **Office / Phaser surface** = removed from this checkout; Claude is handling the replacement path.
 - **Repo:** `GageDush/AgentOS`, branch `pivot/agentos-local-command-center`, commit `7ae4724+`.
 
 ## Locked decisions (2026-06-11)
@@ -58,18 +68,7 @@ Read this first in new agent sessions instead of replaying long chat history.
 
 Provider configs from official subscription docs (not metered API as default):
 
-- **Anthropic Pro:** rolling 5h + rolling 7d weekly
-- **OpenAI Codex (Plus):** shared 5h window + weekly
-- **Cursor Pro:** monthly included pool; reset on billing date; track spending %
-
-Stop files: `.agentos/stops/{agent-id}/stop.json` + queue for steward/admin resume.
-
-## Next implementation queue
-
-1. Smoke test + Ollama pulls
-2. CI: `pivot/*` + `agentos:validate-profiles`
-3. Wire full task envelopes (orchestrator → persistence)
-4. Quota Stew
+- **
 
 ## Related
 

@@ -3,7 +3,7 @@ slug: agents/task-classifier
 title: Task Classifier
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # task-classifier
 Classifies user requests into task type, complexity, risk level, required gates, and whether human clarification is needed.

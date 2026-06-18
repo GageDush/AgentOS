@@ -1,16 +1,18 @@
 # AgentOS Forge UI Style
 
-Use a dark agent-native software aesthetic:
+**Canonical spec:** `apps/command-center/src/styles/forge-ds/DESIGN-SYSTEM.md`  
+**Tokens:** `packages/ui/src/tokens/agentos-forge.css` + `apps/command-center/src/styles/forge-ds/`
 
-- **Background:** near-black with subtle radial gradient, optional noise/grid overlay.
-- **Typography:** clean sans for normal UI, compact mono for commands, labels, nav, status, and logs.
-- **Accent:** cool blue/violet (Halo-inspired) for active states, attention, approvals, and command focus.
-- **Layout:** dense but calm, with large negative space where appropriate.
-- **Panels:** translucent, thin bordered, terminal/workbench-inspired.
-- **Motion:** subtle fade/slide, cursor proximity response, hover stripe overlays, no bouncy effects.
-- **Core surfaces:** Mission Control, Agent Activity, Sandbox Approvals, Generated App Preview, System Health, Command Palette.
-- **Do not copy** Factory logos, brand text, SVGs, or exact layout.
-- **Generated apps** should use this preset by default unless the user explicitly requests another style.
+Use a warm-dark, molten-orange agent command center aesthetic:
+
+- **Background:** `#0A0908` warm near-black (brown undertone), optional dot-grid / noise overlay — not pure `#000000`
+- **Typography:** Inter / Inter Display for UI; JetBrains Mono for IDs, logs, status labels, commands; Switzer italic for marketing accent phrases only
+- **Accent:** molten orange `#FF6A35` for primary actions, active nav, approvals, and focus — deep ember `#F04E1A` in gradients only
+- **No cool blue/violet primary accents** — blue/purple reserved for future AMS panel only
+- **Layout:** dense but calm operator UI; marketing home may use more negative space
+- **Panels:** `#1C1A17` surfaces, hairline borders `rgba(255,255,255,0.07)`, subtle inner highlight
+- **Motion:** 150ms snappy transitions; respect `prefers-reduced-motion`
+- **Core surfaces:** Mission Control, Agent Activity, Sandbox Approvals, Control Gate, System Health, Command Palette, Memory Wiki, flous.dev/docs
 
 ## Default Preset
 
@@ -31,18 +33,27 @@ Use a dark agent-native software aesthetic:
 
 Import from `@agentos/ui` and `@agentos/ui/styles/agentos-forge.css` unless a missing component is explicitly required.
 
+Layered exports:
+
+- `@agentos/ui/primitives` — stat card, section header, pills
+- `@agentos/ui/blocks` — mission control, approvals, activity feed
+- `@agentos/ui/layout` — shell and nav (`AppShell`, `TopNav`)
+- `@agentos/ui/motion` — scroll reveal, proximity, reactive cards
+
+New UI: primitives under `packages/ui/src/components/`; composed surfaces in `blocks/index.ts`.
+
 ### Layout & Section Primitives
 
 - `ForgeSectionHeader` — mono kicker, large title, optional accent word
-- `ForgeStatCard` — Halo-style stat pattern (label / value / divider / caption)
+- `ForgeStatCard` — label / value / divider / caption
 - `ForgeSegmentedControl` — view-mode toggle
 - `ForgeFaqAccordion` — expandable FAQ rows
-- CSS utilities: `.forge-page-grid`, `.forge-section-header`, `.forge-stat-card`, `.forge-card-glow`, `.forge-card-featured`, `.forge-dashboard-layout`
+- CSS utilities: `.forge-page-grid`, `.forge-section-header`, `.forge-stat-card`, `.forge-card-glow`, `.forge-dashboard-layout`
 - Motion: `ScrollReveal`, `useScrollReveal` with stagger and reduced-motion fallback
 
 ### TopNav
 
-Floating centered pill nav with backdrop blur on scroll, pending-approval badge, visible Cmd+K hint, and mobile drawer menu.
+Floating centered pill nav with backdrop blur on scroll, pending-approval badge, visible Cmd+K hint, and mobile drawer menu. **Unify this shell across `/` and inner routes** (current gap: home uses handoff nav; operational routes use legacy link nav).
 
 ## Required Generated UI Semantics
 

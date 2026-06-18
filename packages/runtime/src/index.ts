@@ -68,9 +68,10 @@ function isHumanApprovalRequired() {
 }
 
 function isMockAgentExecutionEnabled(route: AgentRoutingDecisionRecord) {
+  const raw = process.env.AGENTOS_MOCK_AGENT_EXECUTION?.trim().toLowerCase();
+  if (raw === "false" || raw === "0" || raw === "no" || raw === "off") return false;
   if (route.providerLane === "mock_local") return true;
-  const raw = process.env.AGENTOS_MOCK_AGENT_EXECUTION;
-  if (raw === "true" || raw === "1") return true;
+  if (raw === "true" || raw === "1" || raw === "yes") return true;
   const toolExecution =
     process.env.FEATURE_TOOL_EXECUTION?.trim().toLowerCase() === "true" ||
     process.env.FEATURE_TOOL_EXECUTION === "1";

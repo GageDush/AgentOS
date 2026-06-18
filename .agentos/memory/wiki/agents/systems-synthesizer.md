@@ -3,7 +3,7 @@ slug: agents/systems-synthesizer
 title: Systems Synthesizer
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # systems-synthesizer
 Compiles compact specialist reports into one coherent task state, including a developer summary and user-facing summary.

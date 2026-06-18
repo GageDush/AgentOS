@@ -17,3 +17,13 @@ export function resolveAgentOsChannelId(key: AgentOsChannelKey) {
   const state = loadDiscordGuildState();
   return state?.channels?.[key];
 }
+
+export function resolveAgentHouseChannelId(agentId: string) {
+  const state = loadDiscordGuildState();
+  return state?.houses?.[agentId]?.channelId;
+}
+
+export function resolveAgentHouse(agentId: string) {
+  const state = loadDiscordGuildState();
+  return state?.houses?.[agentId];
+}

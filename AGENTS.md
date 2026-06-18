@@ -41,6 +41,8 @@ Core policy rules:
 - Dev UI only: `pnpm --filter @agentos/command-center dev`
 - Dev API only: `pnpm dev:api`
 - Checks: `pnpm sanitize:check`, `pnpm env:check`, `pnpm typecheck`, `pnpm test`
+- LLM router smoke: `pnpm llm:smoke` (Ollama-only is fine; `/llm/routes`, `/llm/chat`, `/llm/activity`). LiteLLM sidecar (optional): `pnpm llm:litellm:setup`, then `FEATURE_LITELLM_PROXY=true`.
+- Stack ports: `pnpm stack:port` shows the active UI port + listeners. **Use the active port, not an assumed `:3000`** — read `.agentos/state/command-center-port.override` (it may have escalated to `:3002`/`:3003` when a zombie holds `:3000`). Force-fix with `pnpm stack:repair`; details in `.agentos/state/README.md`.
 
 ## Rules
 

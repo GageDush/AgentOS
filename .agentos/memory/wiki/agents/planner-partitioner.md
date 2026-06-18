@@ -3,7 +3,7 @@ slug: agents/planner-partitioner
 title: Planner Partitioner
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # planner-partitioner
 Breaks complex tasks into minimal specialist subtasks with acceptance criteria, model lanes, verification gates, parallel-safety detection, and optional worktree creation.

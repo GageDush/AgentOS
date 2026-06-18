@@ -1,0 +1,28 @@
+# Litestream continuous replication for the AgentOS SQLite database.
+# Only the API writes this DB (single writer, WAL), which is exactly Litestream's
+# happy path. It streams the DB to S3-compatible object storage (Cloudflare R2) so a
+# reclaimed/lost VM can be restored in minutes.
+#
+# Credentials are supplied via the environment (set in ./.env, injected by compose):
+#   LITESTREAM_ACCESS_KEY_ID       = R2 access key id
+#   LITESTREAM_SECRET_ACCESS_KEY   = R2 secret access key
+#
+# Create the bucket once in the Cloudflare dashboard (R2 -> Create bucket: agentos-litestream)
+# and an R2 API token (R2 -> Manage API Tokens) for the keys above.
+#
+# Restore on a fresh VM (before first `docker compose up`, into the empty volume):
+#   litestream restore -config /etc/litestream.yml /app/.agentos/state/agentos-local.db
+
+dbs:
+  - path: /app/.agentos/state/agentos-local.db
+    replicas:
+      - type: s3
+        bucket: agentos-litestream
+        path: agentos-local.db
+        # Cloudflare R2 S3 endpoint for this account (account id bff3359a2863284f86c3cdc677ee301e):
+        endpoint: https://bff3359a2863284f86c3cdc677ee301e.r2.cloudflarestorage.com
+        region: auto
+        force-path-style: true
+        # Replication cadence (defaults are fine; shown for clarity):
+        sync-interval: 10s
+        retention: 72h

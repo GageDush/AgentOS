@@ -2,7 +2,7 @@
 slug: packages/queue
 title: Queue
 tags: [package, monorepo, auto-indexed]
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # @agentos/queue
 AgentOS package workspace unit.
@@ -29,7 +29,7 @@ Shared library under `packages/queue/`.
 
 ## Mission notes
 
-- **2026-06-12T13:43:35** — memory-curator: Cursor: Explore C:\Users\gaged\Documents\AgenOS for: playwright e2e setup, demo-smoke scripts, redis/queue/cron scheduler stubs, release manager API (scope: docs/demo, packages/persistence, apps/worker/src/index.ts, docs/architecture.md; artifacts: cursor-transcript)
+- **2026-06-17T01:09:06** — memory-curator: Cursor: Explore C:\Users\gaged\Documents\AgenOS for: playwright e2e setup, demo-smoke scripts, redis/queue/cron scheduler stubs, release manager API (scope: docs/demo, packages/persistence, apps/worker/src/index.ts, docs/architecture.md; artifacts: cursor-transcript)
 
 See also: [[packages/persistence]]
 

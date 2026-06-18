@@ -56,3 +56,5 @@ See also: [[packages/sandbox]]
 - **2026-06-12T13:43:41** — memory-curator: Cursor: Explore the AgentOS monorepo at C:\Users\gaged\Documents\AgenOS and return a structured report covering: 1. Top-level folder structure (apps (scope: apps/api/src/index.ts, apps/api/src/discord/, apps/command-center, packages/agents; artifacts: cursor-transcript)
 
 See also: [[areas/apps-command-center]]
+
+- **2026-06-16T14:10:48** — memory-curator: Cursor: I'll start by locating the single AgentOS repository root under `C:\Users\gaged`. Let me search for identifying markers. Two candidate locat (scope: docs/AGENTOS_FULL_REVIEW.md, docs/AGENTOS_SMOKE_TEST_REPORT.md, docs/AGENTOS_FEATURE_MATRIX.md, docs/AGENTOS_ARCHITECTURE_MAP.md; artifacts: cursor-transcript)

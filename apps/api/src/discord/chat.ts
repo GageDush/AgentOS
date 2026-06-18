@@ -1,7 +1,12 @@
 import { getProviderId, providers } from "../providers";
 import { addAudit, addUsageEvent } from "../store";
 import { loadDiscordGuildState } from "./bootstrap";
-import { getDiscordRestClient, isDiscordBotEnabled, resolveAgentOsChannelId } from "./client";
+import {
+  getDiscordRestClient,
+  isDiscordBotEnabled,
+  resolveAgentOsChannelId
+} from "./client";
+import { resolveHostAgentIdFromChannelId } from "./house-visits";
 import { buildAgentEmbed } from "./embeds";
 import { embedInteractionResponse } from "./messenger";
 import { postPersonaRichMessage, postPersonaWebhookMessage } from "./webhook-post";
@@ -11,6 +16,12 @@ import {
   reserveChatRoom,
   runChatRoomConversation
 } from "./chat-rooms";
+import {
+  inviteToHouse,
+  parseHouseInviteIntent,
+  runHouseVisitConversation,
+  tryInviteFromTownSquareMessage
+} from "./house-visits";
 import type { AgentOsChannelKey } from "./layout";
 import { runRoundTableBriefing } from "./round-table";
 import { SEEN_EMOJI } from "./theme";
@@ -175,6 +186,140 @@ export async function handleDiscordChannelMessage(
               title: "Chat room failed",
               description: error instanceof Error ? error.message : "Unknown error.",
               tone: "danger"
+            })
+          ]
+        });
+      }
+      return { handled: true as const, error: true };
+    }
+  }
+
+  const houseHostId = resolveHostAgentIdFromChannelId(channelId);
+  if (houseHostId && content.trim()) {
+    const operatorId = `discord-${authorId}`;
+    try {
+      const inviteIntent = parseHouseInviteIntent(content, houseHostId);
+      if (inviteIntent) {
+        const invited = await inviteToHouse({
+          hostAgentId: inviteIntent.hostAgentId,
+          guests: inviteIntent.guests,
+          topic: inviteIntent.topic,
+          durationMs: inviteIntent.durationMs,
+          operatorId,
+          operatorLabel: authorLabel
+        });
+        await markPromptSeen(channelId, messageId);
+        if (!invited.ok) {
+          const client = getDiscordRestClient();
+          if (client) {
+            await client.createMessage(channelId, {
+              embeds: [
+                buildAgentEmbed({
+                  agentId: houseHostId,
+                  title: "Invite failed",
+                  description: `Could not start a visit (${invited.reason}).`,
+                  tone: "warning",
+                  lane: "Neighborhood"
+                })
+              ]
+            });
+          }
+        }
+        return { handled: true as const, houseInvite: invited.ok };
+      }
+
+      const result = await runHouseVisitConversation(channelId, content, operatorId, authorLabel);
+      await markPromptSeen(channelId, messageId);
+      if (!result.ok && result.reason === "no-visit") {
+        const client = getDiscordRestClient();
+        if (client) {
+          await client.createMessage(channelId, {
+            embeds: [
+              buildAgentEmbed({
+                agentId: houseHostId,
+                title: "No active visit",
+                description:
+                  "Invite guests from `#town-square` (e.g. `invite Misty to Brock's house for coffee`) or `/agentos invite-house`, then chat here.",
+                tone: "info",
+                lane: "Neighborhood"
+              })
+            ]
+          });
+        }
+      }
+      return { handled: true as const, houseVisit: result.ok };
+    } catch (error) {
+      const client = getDiscordRestClient();
+      if (client) {
+        await client.createMessage(channelId, {
+          embeds: [
+            buildAgentEmbed({
+              agentId: houseHostId,
+              title: "House visit failed",
+              description: error instanceof Error ? error.message : "Unknown error.",
+              tone: "danger",
+              lane: "Neighborhood"
+            })
+          ]
+        });
+      }
+      return { handled: true as const, error: true };
+    }
+  }
+
+  const townSquareChannelId = resolveAgentOsChannelId("townSquare");
+  if (townSquareChannelId && channelId === townSquareChannelId && content.trim()) {
+    const operatorId = `discord-${authorId}`;
+    try {
+      const invite = await tryInviteFromTownSquareMessage(content, operatorId, authorLabel);
+      await markPromptSeen(channelId, messageId);
+      if (!invite.invited) {
+        const intent = parseHouseInviteIntent(content);
+        if (intent) {
+          const client = getDiscordRestClient();
+          if (client) {
+            await client.createMessage(channelId, {
+              embeds: [
+                buildAgentEmbed({
+                  agentId: "admin-agent",
+                  title: "Invite failed",
+                  description: `Could not open house visit (${invite.reason ?? "unknown"}).`,
+                  tone: "warning",
+                  lane: "Neighborhood"
+                })
+              ]
+            });
+          }
+        } else {
+          const client = getDiscordRestClient();
+          if (client) {
+            await client.createMessage(channelId, {
+              embeds: [
+                buildAgentEmbed({
+                  agentId: "admin-agent",
+                  title: "Town square",
+                  description:
+                    "Post an invite like `invite Misty to Brock's house for coffee` or use `/agentos invite-house`.",
+                  tone: "info",
+                  lane: "Neighborhood"
+                })
+              ]
+            });
+          }
+        }
+      }
+      return { handled: true as const, townSquare: true as const };
+    } catch (error) {
+      const client = getDiscordRestClient();
+      if (client) {
+        await client.createMessage(channelId, {
+          embeds: [
+            buildAgentEmbed({
+              agentId: "admin-agent",
+              title: "Town square failed",
+              description: error instanceof Error ? error.message : "Unknown error.",
+              tone: "danger",
+              lane: "Neighborhood"
             })
           ]
         });

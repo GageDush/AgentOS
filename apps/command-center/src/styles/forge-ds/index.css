@@ -1,0 +1,23 @@
+/* ─────────────────────────────────────────────────────────────────
+   AgentOS Forge design system — token barrel.
+   Vendored from the Claude Design "AgentOS — Home" handoff (Jun 2026).
+   See DESIGN-SYSTEM.md for the full spec (voice, color, type, motion).
+
+   Provides: --color-*, --forge-bg-*, --forge-orange-*, --status-*,
+   --font-display/sans/mono/italic, --space-*, --radius-*, --dur-*,
+   --ease-*, elevation shadows + glows, and the pulse-dot keyframe.
+
+   These complement packages/ui/.../agentos-forge.css, which carries the
+   legacy --forge-* aliases the rest of the app already reads.
+   ───────────────────────────────────────────────────────────────── */
+
+/* Remote font import MUST stay first (CSS requires @import before other rules,
+   and the local token files below get inlined into this bundle). */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&family=Inter+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap");
+
+@import "./tokens/typography.css";
+@import "./tokens/colors.css";
+@import "./tokens/spacing.css";
+@import "./tokens/motion.css";
+@import "./tokens/shadows.css";
+@import "./tokens/forge-compat.css";

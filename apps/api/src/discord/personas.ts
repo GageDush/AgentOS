@@ -164,25 +164,74 @@ export const AGENT_PERSONAS: AgentPersona[] = [
     color: 0x74b9ff,
     glyph: "dot",
     accent: [116, 185, 255, 255]
+  },
+  {
+    agentId: "repo-cartographer",
+    roleTitle: "Cartographer",
+    characterName: "Roark",
+    color: 0x607d8b,
+    glyph: "eye",
+    accent: [96, 125, 139, 255]
+  },
+  {
+    agentId: "memory-curator",
+    roleTitle: "Memory",
+    characterName: "Lenora",
+    color: 0xa29bfe,
+    glyph: "dot",
+    accent: [162, 155, 254, 255]
+  },
+  {
+    agentId: "frontend-ui-agent",
+    roleTitle: "Frontend",
+    characterName: "Skyla",
+    color: 0x6b9fff,
+    glyph: "plus",
+    accent: [107, 159, 255, 255]
+  },
+  {
+    agentId: "backend-service-agent",
+    roleTitle: "Backend",
+    characterName: "Volkner",
+    color: 0x2980b9,
+    glyph: "plus",
+    accent: [41, 128, 185, 255]
+  },
+  {
+    agentId: "database-migration-agent",
+    roleTitle: "Database",
+    characterName: "Bertha",
+    color: 0x16a085,
+    glyph: "dot",
+    accent: [22, 160, 133, 255]
+  },
+  {
+    agentId: "integration-broker",
+    roleTitle: "Integration",
+    characterName: "Juan",
+    color: 0xe17055,
+    glyph: "eye",
+    accent: [225, 112, 85, 255]
   }
 ];
 
 const PERSONA_ALIASES: Record<string, string> = {
   "builder-agent": "code-implementer",
-  "security-agent": "security-auditor"
+  "security-agent": "security-auditor",
+  "reviewer-agent": "code-reviewer"
 };
 
-/** Agents that participate in the round-table briefing channel. */
-export const ROUND_TABLE_AGENT_IDS = [
-  "admin-agent",
-  "builder-agent",
-  "qa-agent",
-  "security-auditor",
-  "release-manager",
-  "quota-steward"
-] as const;
-
 const personaByAgentId = new Map(AGENT_PERSONAS.map((persona) => [persona.agentId, persona]));
+
+/** Unique personas (one voice per role + character). */
+export const ROSTER_PERSONAS = [
+  ...new Map(
+    AGENT_PERSONAS.map((persona) => [`${persona.roleTitle}:${persona.characterName}`, persona])
+  ).values()
+];
+
+/** Full agent roster for round-table briefings. */
+export const ROUND_TABLE_AGENT_IDS: readonly string[] = ROSTER_PERSONAS.map((persona) => persona.agentId);
 
 export const DEFAULT_PERSONA = AGENT_PERSONAS[0];
 
@@ -311,8 +360,6 @@ export const PERSONA_ROLE_LEGACY: Record<AgentPersonaRoleKey, string[]> = {
   reviewerAgent: ["Reviewer Agent", "Gary"]
 };
 
-export const ROSTER_PERSONAS = [
-  ...new Map(
-    AGENT_PERSONAS.map((persona) => [`${persona.roleTitle}:${persona.characterName}`, persona])
-  ).values()
-];
+export function roundTableRosterLabel() {
+  return ROSTER_PERSONAS.map((persona) => personaDiscordName(persona)).join(" · ");
+}

@@ -358,6 +358,81 @@ function indexDocs() {
   return written;
 }
 
+/**
+ * Index the flous.dev/docs OSINT curriculum (apps/command-center/src/content/docs)
+ * into learning/osint/* with FULL body (not excerpts) so agents can retrieve the
+ * whole article. The flous reader UI (/docs/*) stays canonical for humans.
+ */
+function indexFlousDocs() {
+  const written = [];
+  const docsBase = join(root, "apps", "command-center", "src", "content", "docs");
+  if (!existsSync(docsBase)) return written;
+
+  const files = [];
+  (function walk(dir) {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (SKIP_DIR_NAMES.has(entry.name)) continue;
+        walk(join(dir, entry.name));
+      } else if (entry.name.endsWith(".md")) {
+        files.push(join(dir, entry.name));
+      }
+    }
+  })(docsBase);
+
+  for (const abs of files.sort()) {
+    const relFromDocs = relative(docsBase, abs).replace(/\\/g, "/").replace(/\.md$/, "");
+    const slug = `learning/osint/${slugify(relFromDocs)}`;
+    const title = titleFromSlug(basename(abs, ".md"));
+    const raw = readFileSync(abs, "utf8");
+    const fullBody = redact(raw.replace(/^---[\s\S]*?---\s*/m, "")).trim();
+    if (!fullBody) continue;
+    const readerPath = `/docs/${relFromDocs}`;
+
+    const body = [
+      `# ${title}`,
+      "",
+      `Source: \`apps/command-center/src/content/docs/${relFromDocs}.md\` — full body indexed for agent retrieval.`,
+      `Canonical human reader: \`${readerPath}\` (flous.dev/docs).`,
+      "",
+      "## Article",
+      "",
+      fullBody,
+      "",
+      "## Related",
+      "",
+      "- [[learning/osint/index]]",
+      "- [[index]]"
+    ].join("\n");
+
+    if (writeArticle(slug, title, ["learning", "osint", "flous-docs"], body)) {
+      written.push(slug);
+    }
+  }
+
+  const hub = [
+    "# OSINT learning curriculum",
+    "",
+    "Full-body index of the flous.dev/docs OSINT component curriculum, ingested for agent retrieval.",
+    "The canonical human reader stays at `/docs/*` (flous reader UI).",
+    "",
+    "## Articles",
+    "",
+    ...written.map((entry) => `- [[${entry}]]`),
+    "",
+    "## Related",
+    "",
+    "- [[index]]",
+    "- [[areas/repo-layout]]"
+  ].join("\n");
+  writeArticle("learning/osint/index", "OSINT learning curriculum", ["learning", "osint", "hub"], hub, {
+    overwrite: "always"
+  });
+  written.push("learning/osint/index");
+
+  return written;
+}
+
 function indexAreas(registry) {
   const apps = readdirSync(join(root, "apps"), { withFileTypes: true })
     .filter((e) => e.isDirectory())
@@ -598,6 +673,7 @@ function indexHome(registry, counts) {
     "- [[docs/architecture]]",
     "- [[docs/troubleshooting]]",
     "- [[docs/gates]]",
+    "- [[learning/osint/index]] — flous.dev OSINT curriculum (full body)",
     "",
     "## Index stats",
     "",
@@ -624,7 +700,8 @@ const report = {
   docs: indexDocs(),
   areas: indexAreas(registry),
   flows: [...indexPipeline(registry), ...indexRootScripts()],
-  config: indexConfig()
+  config: indexConfig(),
+  flousDocs: indexFlousDocs()
 };
 
 const total =
@@ -634,7 +711,8 @@ const total =
   report.docs.length +
   report.areas.length +
   report.flows.length +
-  report.config.length;
+  report.config.length +
+  report.flousDocs.length;
 
 indexHome(registry, { total });
 

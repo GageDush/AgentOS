@@ -3,7 +3,7 @@ slug: docs/memory_and_token_systems
 title: MEMORY AND TOKEN SYSTEMS
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # MEMORY AND TOKEN SYSTEMS
 

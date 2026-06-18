@@ -10,8 +10,7 @@ import {
   AGENT_PERSONAS,
   personaDiscordName,
   personaMessageLine,
-  resolvePersona,
-  ROUND_TABLE_AGENT_IDS
+  resolvePersona
 } from "./personas";
 import { postPersonaPlainMessage, postPersonaRichMessage } from "./webhook-post";
 
@@ -134,9 +133,7 @@ export function parseParticipantAgentIds(text: string, reservingAgentId: string)
     const name = persona.characterName.toLowerCase();
     const role = persona.roleTitle.toLowerCase();
     if (normalized.includes(name) || normalized.includes(`[${role}]`)) {
-      if (ROUND_TABLE_AGENT_IDS.includes(persona.agentId as (typeof ROUND_TABLE_AGENT_IDS)[number])) {
-        hits.add(persona.agentId);
-      }
+      hits.add(persona.agentId);
     }
   }
 
@@ -144,9 +141,7 @@ export function parseParticipantAgentIds(text: string, reservingAgentId: string)
   if (withPeers?.[1]) {
     for (const persona of AGENT_PERSONAS) {
       if (withPeers[1].toLowerCase().includes(persona.characterName.toLowerCase())) {
-        if (ROUND_TABLE_AGENT_IDS.includes(persona.agentId as (typeof ROUND_TABLE_AGENT_IDS)[number])) {
-          hits.add(persona.agentId);
-        }
+        hits.add(persona.agentId);
       }
     }
   }

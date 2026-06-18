@@ -3,7 +3,7 @@ slug: agents/architect-agent
 title: Architect Agent
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # architect-agent
 Designs system boundaries, interfaces, and data flow for complex missions before implementation.

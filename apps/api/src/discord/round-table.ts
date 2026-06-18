@@ -43,7 +43,8 @@ export async function runRoundTableBriefing(
   }
 
   const defaultIds = options?.executedOnly && options.agentIds?.length ? options.agentIds : ROUND_TABLE_AGENT_IDS;
-  const agentIds = (options?.agentIds ?? defaultIds).slice(0, options?.maxAgents ?? 6);
+  const maxAgents = options?.maxAgents ?? ROUND_TABLE_AGENT_IDS.length;
+  const agentIds = (options?.agentIds ?? defaultIds).slice(0, maxAgents);
   if (options?.executedOnly && agentIds.length === 0) {
     return { ok: false as const, reason: "no-executed-agents" };
   }

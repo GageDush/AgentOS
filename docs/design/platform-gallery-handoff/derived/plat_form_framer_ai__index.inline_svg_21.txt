@@ -1,0 +1,5 @@
+Label: inline_svg_21
+Extraction mode: screenshot_inference
+Confidence: medium
+Preservation note: Vector is visible at runtime but may not have a direct standalone asset URL.
+Rights note: unknown

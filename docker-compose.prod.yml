@@ -1,0 +1,147 @@
+# AgentOS production stack for the Oracle Cloud Always Free VM.
+# The laptop dev stack keeps using docker-compose.yml — this file is additive.
+#
+# cloudflared is NOT in this stack: it runs as a host systemd service pointing at the
+# 127.0.0.1-published ports below, so the tunnel survives app restarts/rebuilds.
+# Only api (8787) and command-center (3000) are published, bound to loopback only —
+# the tunnel is the sole ingress. gateway/worker/scheduler stay on the internal network.
+#
+# Bring up (on the VM, from the repo root):
+#   docker compose -f docker-compose.prod.yml build       # builds api image once + command-center
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Prerequisites on the VM (see docs/DEPLOY-ORACLE.md):
+#   - ./.env                       scp'd from the laptop, chmod 600 (never committed)
+#   - laptop agentos-local.db      copied into the agentos-data volume (data migration)
+#   - LITESTREAM_* + R2 bucket     for off-box SQLite backup (in ./.env)
+
+services:
+  # --- API: the ONLY process that opens the SQLite DB (single writer, WAL) ---
+  api:
+    build:
+      context: .
+      dockerfile: docker/service.prod.Dockerfile
+    image: agentos-service:local            # built once here; reused by the services below
+    command: ["pnpm", "--filter", "@agentos/api", "exec", "tsx", "src/index.ts"]
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"               # loopback only; tunnel reaches it
+    environment:
+      NODE_ENV: production
+      AGENTOS_API_PORT: "8787"
+      AGENTOS_GATEWAY_URL: http://gateway:8790
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+    volumes:
+      - agentos-data:/app/.agentos/state     # persistent SQLite DB lives here
+      - ./.env:/app/.env:ro                  # secrets mounted, never baked into the image
+    depends_on:
+      gateway:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  # --- Gateway: stateless command executor (no DB, internal only) ---
+  gateway:
+    image: agentos-service:local
+    command: ["pnpm", "--filter", "@agentos/gateway", "exec", "tsx", "src/index.ts"]
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      AGENTOS_GATEWAY_PORT: "8790"
+      AGENTOS_REPO_ROOT: /app
+    volumes:
+      - ./.env:/app/.env:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8790/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # --- Worker: stateless; claims jobs from the API over HTTP (no DB) ---
+  worker:
+    image: agentos-service:local
+    command: ["pnpm", "--filter", "@agentos/worker", "exec", "tsx", "src/index.ts"]
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      AGENTOS_API_URL: http://api:8787
+      AGENTOS_GATEWAY_URL: http://gateway:8790
+    volumes:
+      - ./.env:/app/.env:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # --- Scheduler: stateless cron client; polls the API for due routines (no DB, no port) ---
+  scheduler:
+    image: agentos-service:local
+    command: ["pnpm", "--filter", "@agentos/scheduler", "exec", "tsx", "src/index.ts"]
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      AGENTOS_API_URL: http://api:8787
+    volumes:
+      - ./.env:/app/.env:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # --- Command Center: Next.js UI; proxies /agentos-api/* to the API server-side ---
+  command-center:
+    build:
+      context: .
+      dockerfile: docker/command-center.prod.Dockerfile
+      args:
+        NEXT_PUBLIC_AGENTOS_API_URL: https://api.flous.dev   # baked into client bundle
+    image: agentos-command-center:local
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: production
+      AGENTOS_API_PROXY_TARGET: http://api:8787              # server-side rewrite target
+      NEXT_PUBLIC_AGENTOS_API_URL: https://api.flous.dev
+    volumes:
+      - ./.env:/app/.env:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  # --- Redis: queue backend (internal only) ---
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  # --- Litestream: continuous off-box backup of the SQLite DB to Cloudflare R2 ---
+  # Reads the same agentos-data volume as the API. Restore steps in docs/DEPLOY-ORACLE.md.
+  # Access keys + bucket come from ./.env (compose interpolates ${...} from it).
+  litestream:
+    image: litestream/litestream:0.3.13      # verify latest at hub.docker.com/r/litestream/litestream/tags
+    restart: unless-stopped
+    command: ["replicate"]
+    environment:
+      LITESTREAM_ACCESS_KEY_ID: ${LITESTREAM_ACCESS_KEY_ID:-}
+      LITESTREAM_SECRET_ACCESS_KEY: ${LITESTREAM_SECRET_ACCESS_KEY:-}
+    volumes:
+      - agentos-data:/app/.agentos/state
+      - ./infra/litestream/litestream.yml:/etc/litestream.yml:ro
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  agentos-data:
+  redis-data:

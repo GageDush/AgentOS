@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="AgentOS mark">
+  
+  <rect x="2.5" y="2.5" width="43" height="43" rx="10.5" fill="#0F0D0B" stroke="#FF6A35" stroke-width="3"></rect>
+
+  
+  
+  <rect x="9" y="11" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="13" y="15" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="17" y="19" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  
+  <rect x="13" y="23" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+  <rect x="9" y="27" width="4" height="4" rx="0.5" fill="#FF6A35"></rect>
+
+  
+  <rect x="9" y="34" width="13" height="3.5" rx="0.5" fill="#FF6A35"></rect>
+</svg>

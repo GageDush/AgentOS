@@ -3,7 +3,7 @@ slug: apps/gateway
 title: Gateway
 tags: [app, monorepo, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # @agentos/gateway
 AgentOS app workspace unit.

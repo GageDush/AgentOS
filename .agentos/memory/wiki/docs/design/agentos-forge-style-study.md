@@ -3,7 +3,7 @@ slug: docs/design/agentos-forge-style-study
 title: Agentos Forge Style Study
 tags: [docs, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # Agentos Forge Style Study
 
@@ -20,7 +20,7 @@ AgentOS Forge draws conceptual inspiration from polished agent command centers:
 - Dark terminal shell with mission-control framing
 - Live agent presence and run visibility
 - Mono labels for status, logs, and navigation
-- Cool blue/violet active states (Halo-inspired palette)
+- Molten orange active states (`#FF6A35` primary, `#F04E1A` ember in gradients)
 - Subtle hover motion and cursor-reactive microinteractions
 - Translucent panels with thin borders
 - Sandbox approval UX with clear risk and scope
@@ -68,7 +68,7 @@ First visit to `/` or `/dashboard` runs a three-phase intro before the dashboard
 2. **Landing** — `ForgeLandingZone` with typing `> Run Everything` prompt (click or Enter)
 3. **Launch** — `ForgeLaunchTransition` flash into the dashboard shell
 
-Repeat visits in the same tab skip the intro via `sessionStorage`
+Repeat visits in the same tab skip the int
 
 ## Related
 

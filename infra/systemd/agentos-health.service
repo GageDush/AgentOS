@@ -1,0 +1,9 @@
+[Unit]
+Description=AgentOS health watchdog (restart stack + tunnel if api.flous.dev/health fails)
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=REPO_DIR=/opt/agentos
+ExecStart=/opt/agentos/infra/systemd/agentos-health.sh

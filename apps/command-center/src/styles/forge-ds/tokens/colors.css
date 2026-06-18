@@ -1,0 +1,66 @@
+:root {
+  /* ─ Background Surfaces ──────────────────────────── */
+  --forge-bg-base:    #0A0908;
+  --forge-bg-raised:  #131110;
+  --forge-bg-surface: #1C1A17;
+  --forge-bg-overlay: #262320;
+  --forge-bg-hover:   rgba(255, 255, 255, 0.04);
+  --forge-bg-active:  rgba(255, 255, 255, 0.08);
+
+  /* ─ Orange Brand Palette ─────────────────────────── */
+  --forge-orange-50:          #FFF3EE;
+  --forge-orange-100:         #FFD9C8;
+  --forge-orange-200:         #FFAB88;
+  --forge-orange-300:         #FF8A4C;
+  --forge-orange-400:         #FF6A35;
+  --forge-orange-500:         #F04E1A;
+  --forge-orange-600:         #C0360A;
+  --forge-orange-700:         #8C2308;
+  --forge-orange-800:         #5A1505;
+  --forge-orange-glow:        rgba(255, 106, 53, 0.16);
+  --forge-orange-glow-strong: rgba(255, 106, 53, 0.30);
+
+  /* ─ Warm Neutral Scale ───────────────────────────── */
+  --forge-neutral-50:  #F5F2EE;
+  --forge-neutral-100: #E8E3DB;
+  --forge-neutral-200: #CBC3B8;
+  --forge-neutral-300: #A89D92;
+  --forge-neutral-400: #857870;
+  --forge-neutral-500: #635650;
+  --forge-neutral-600: #453E3A;
+  --forge-neutral-700: #302B28;
+  --forge-neutral-800: #1C1A17;
+  --forge-neutral-900: #0A0908;
+
+  /* ─ Status ───────────────────────────────────────── */
+  --status-ok:          #22C97A;
+  --status-ok-bg:       rgba(34, 201, 122, 0.10);
+  --status-ok-border:   rgba(34, 201, 122, 0.22);
+  --status-warn:        #F5A623;
+  --status-warn-bg:     rgba(245, 166, 35, 0.10);
+  --status-warn-border: rgba(245, 166, 35, 0.22);
+  --status-err:         #EF4545;
+  --status-err-bg:      rgba(239, 69, 69, 0.10);
+  --status-err-border:  rgba(239, 69, 69, 0.22);
+  --status-info:        #5B98F5;
+  --status-info-bg:     rgba(91, 152, 245, 0.10);
+  --status-info-border: rgba(91, 152, 245, 0.22);
+
+  /* ─ Semantic Aliases ─────────────────────────────── */
+  --color-bg:            var(--forge-bg-base);
+  --color-raised:        var(--forge-bg-raised);
+  --color-surface:       var(--forge-bg-surface);
+  --color-overlay:       var(--forge-bg-overlay);
+  --color-border:        rgba(255, 255, 255, 0.07);
+  --color-border-mid:    rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+  --color-border-accent: rgba(255, 106, 53, 0.28);
+  --color-fg-1:          var(--forge-neutral-50);
+  --color-fg-2:          var(--forge-neutral-200);
+  --color-fg-3:          var(--forge-neutral-400);
+  --color-fg-4:          var(--forge-neutral-600);
+  --color-accent:        var(--forge-orange-400);
+  --color-accent-dim:    var(--forge-orange-500);
+  --color-accent-bright: var(--forge-orange-300);
+  --color-accent-glow:   var(--forge-orange-glow);
+}

@@ -3,7 +3,7 @@ slug: agents/issue-intake-researcher
 title: Issue Intake Researcher
 tags: [agent, profile, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # issue-intake-researcher
 Structures vague tickets, Discord prompts, and research requests into clarified goals before planning or implementation.

@@ -1,21 +1,22 @@
 :root {
   color-scheme: dark;
-  /* Legacy aliases — bridge to forge tokens (prefer --forge-* in new code) */
-  --bg: var(--forge-bg, #06070c);
-  --bg-2: var(--forge-bg-2, #0a0d14);
-  --panel: var(--forge-panel, rgba(10, 14, 22, 0.74));
-  --panel-strong: var(--forge-panel-strong, rgba(6, 9, 16, 0.92));
-  --line: var(--forge-border, rgba(255, 255, 255, 0.08));
-  --line-strong: var(--forge-border-strong, rgba(107, 159, 255, 0.32));
-  --text: var(--forge-text, #eef2ff);
-  --muted: var(--forge-muted, #8b93a8);
-  --soft: var(--forge-soft, #5a6278);
-  --cyan: var(--forge-accent, #6b9fff);
-  --green: var(--forge-green, #5fe4a1);
-  --accent: var(--forge-accent-bright, #9eb8ff);
-  --red: var(--forge-red, #ff7d86);
-  --violet: var(--forge-violet, #8fa4ff);
-  --shadow: var(--forge-shadow, 0 24px 64px rgba(0, 0, 0, 0.45));
+  /* Legacy aliases — bridge to forge tokens (prefer --forge-* in new code).
+     Fallbacks updated to the Forge orange identity (Jun 2026 redesign). */
+  --bg: var(--forge-bg, #0a0908);
+  --bg-2: var(--forge-bg-2, #131110);
+  --panel: var(--forge-panel, rgba(28, 26, 23, 0.74));
+  --panel-strong: var(--forge-panel-strong, rgba(10, 9, 8, 0.92));
+  --line: var(--forge-border, rgba(255, 255, 255, 0.07));
+  --line-strong: var(--forge-border-strong, rgba(255, 106, 53, 0.32));
+  --text: var(--forge-text, #f5f2ee);
+  --muted: var(--forge-muted, #a89d92);
+  --soft: var(--forge-soft, #635650);
+  --cyan: var(--forge-accent, #ff6a35);
+  --green: var(--forge-green, #22c97a);
+  --accent: var(--forge-accent-bright, #ff8a4c);
+  --red: var(--forge-red, #ef4545);
+  --violet: var(--forge-violet, #f04e1a);
+  --shadow: var(--forge-shadow, 0 24px 64px rgba(0, 0, 0, 0.55));
 }
 
 * {
@@ -62,7 +63,7 @@ code,
   border-radius: 14px;
   border: 1px solid var(--line-strong);
   background:
-    linear-gradient(180deg, rgba(107, 159, 255, 0.08), rgba(11, 19, 31, 0.92)),
+    linear-gradient(180deg, rgba(255, 106, 53, 0.08), rgba(19, 17, 16, 0.92)),
     var(--panel);
   padding: 14px;
   display: grid;
@@ -72,7 +73,7 @@ code,
 .operator-auth-card-signed-in {
   border-color: rgba(95, 228, 161, 0.28);
   background:
-    linear-gradient(180deg, rgba(95, 228, 161, 0.08), rgba(11, 19, 31, 0.92)),
+    linear-gradient(180deg, rgba(95, 228, 161, 0.08), rgba(19, 17, 16, 0.92)),
     var(--panel);
 }
 
@@ -109,7 +110,7 @@ code,
   border-radius: 10px;
   border: 1px solid var(--line-strong);
   background: linear-gradient(135deg, var(--violet), var(--cyan));
-  color: #060a14;
+  color: #0a0908;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -167,7 +168,7 @@ code,
   gap: 16px;
   margin-bottom: 14px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(107, 159, 255, 0.08), rgba(95, 228, 161, 0.05));
+  background: linear-gradient(135deg, rgba(255, 106, 53, 0.08), rgba(95, 228, 161, 0.05));
 }
 
 .focus-card strong,
@@ -287,13 +288,13 @@ code,
 
 .primary-button {
   border: 1px solid var(--line-strong);
-  background: linear-gradient(135deg, rgba(107, 159, 255, 0.18), rgba(95, 228, 161, 0.12));
+  background: linear-gradient(135deg, rgba(255, 106, 53, 0.18), rgba(95, 228, 161, 0.12));
   color: var(--text);
 }
 
 .secondary-button {
-  border: 1px solid rgba(107, 159, 255, 0.28);
-  background: rgba(107, 159, 255, 0.08);
+  border: 1px solid rgba(255, 106, 53, 0.28);
+  background: rgba(255, 106, 53, 0.08);
   color: var(--text);
 }
 
@@ -405,7 +406,7 @@ code,
 
 .history-button-active {
   border-color: var(--line-strong);
-  background: linear-gradient(135deg, rgba(107, 159, 255, 0.08), rgba(143, 164, 255, 0.1));
+  background: linear-gradient(135deg, rgba(255, 106, 53, 0.08), rgba(240, 78, 26, 0.1));
 }
 
 .settings-grid,

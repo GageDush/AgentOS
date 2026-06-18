@@ -47,10 +47,6 @@ export function installMissionBriefingHook() {
       ]
     });
 
-    await runRoundTableBriefing(topic, event.operatorId ?? "system", "Operator", {
-      agentIds: event.executedAgentIds,
-      executedOnly: true,
-      maxAgents: 8
-    });
+    await runRoundTableBriefing(topic, event.operatorId ?? "system", "Operator");
   });
 }

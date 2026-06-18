@@ -3,7 +3,7 @@ slug: packages/token-manager
 title: Token Manager
 tags: [package, monorepo, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # @agentos/token-manager
 AgentOS package workspace unit.

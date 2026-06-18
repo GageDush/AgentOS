@@ -24,28 +24,28 @@ function displayName(session: OperatorSession) {
 const pageStyles = `
   :root {
     color-scheme: dark;
-    --bg: #07111b;
-    --bg-2: #0e1b29;
-    --panel: rgba(11, 19, 31, 0.94);
-    --line: rgba(129, 171, 211, 0.16);
-    --line-strong: rgba(143, 197, 255, 0.28);
-    --text: #ecf3ff;
-    --muted: #8da1bc;
-    --cyan: #53c7ff;
-    --green: #5fe4a1;
-    --violet: #8fa4ff;
-    --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    --bg: #0a0908;
+    --bg-2: #131110;
+    --panel: rgba(28, 26, 23, 0.94);
+    --line: rgba(255, 255, 255, 0.07);
+    --line-strong: rgba(255, 106, 53, 0.32);
+    --text: #f5f2ee;
+    --muted: #a89d92;
+    --cyan: #ff6a35;
+    --green: #22c97a;
+    --violet: #f04e1a;
+    --shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0;
     min-height: 100%;
     background:
-      radial-gradient(circle at top left, rgba(83, 199, 255, 0.11), transparent 24rem),
-      radial-gradient(circle at bottom right, rgba(143, 164, 255, 0.1), transparent 26rem),
+      radial-gradient(circle at top left, rgba(255, 106, 53, 0.1), transparent 24rem),
+      radial-gradient(circle at bottom right, rgba(240, 78, 26, 0.08), transparent 26rem),
       linear-gradient(160deg, var(--bg), var(--bg-2));
     color: var(--text);
-    font-family: Bahnschrift, "Segoe UI", "Trebuchet MS", sans-serif;
+    font-family: "Inter", system-ui, "Segoe UI", sans-serif;
   }
   body {
     min-height: 100vh;

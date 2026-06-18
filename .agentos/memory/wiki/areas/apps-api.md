@@ -84,3 +84,7 @@ See also: [[packages/sandbox]]
 - **2026-06-12T13:43:42** — memory-curator: Cursor: Complete the AgentOS Discord round-table/briefing deployment in repo: C:\Users\gaged\Documents\AgenOS Context: User wanted: - Round-table/Br (scope: apps/api/src/discord/, apps/api, apps/api/src/discord, scripts/.; artifacts: cursor-transcript)
 
 - **2026-06-12T13:43:42** — memory-curator: Cursor: Explore C:\Users\gaged\Documents\AgenOS for: 1. Existing discord embeds in apps/api/src/discord/embeds.ts, personas.ts 2. packages/shared st (scope: apps/api/src/discord/embeds.ts, packages/shared, apps/command-center, apps/api/src/discord/; artifacts: cursor-transcript)
+
+- **2026-06-14T00:21:27** — memory-curator: Cursor: You are completing a follow-up task for the AgentOS repo at C:\Users\gaged\Documents\AgenOS. ## Context The user previously had work done on (scope: docs/design/platform-template-motion-reference-pack.md, apps/api/src/scraper/, apps/api/src/scraper/routes.ts, apps/api/src/scraper/downloader.ts; artifacts: cursor-transcript)
+
+- **2026-06-16T18:44:24** — memory-curator: Cursor: Continue AgentOS functionalization: complete task 0.2 — API auth route matrix. Prior task 0.1 is marked done. Run phase gates with `pnpm fun (scope: docs/architecture/api-auth-matrix.md., docs/architecture/api-auth-matrix.md, apps/api/src/index.ts, apps/api/src/scraper/routes.ts; artifacts: cursor-transcript)

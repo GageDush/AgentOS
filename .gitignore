@@ -17,6 +17,8 @@ apps/*/dist/
 .agentos/state/discord-registry.json
 .agentos/state/plan-*.md
 .agentos/state/*.json
+.agentos/state/*.yaml
+.agentos/state/litellm.config.yaml
 .agentos/state/*.pids
 .agentos/stops/
 
@@ -31,3 +33,6 @@ apps/*/dist/
 .cursor/
 test-results/
 playwright-report/
+
+# Website scraper job output
+apps/api/data/scraper/

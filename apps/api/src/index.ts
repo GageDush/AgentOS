@@ -39,6 +39,7 @@ import {
   type SandboxPermissionLevel
 } from "@agentos/shared";
 import {
+  buildWikiGraph,
   cursorWikiSyncIntervalMs,
   expandWikiContext,
   getWikiBacklinks,
@@ -54,11 +55,16 @@ import {
   syncChatGptPlanningToWiki,
   syncCursorSessionsToWiki
 } from "@agentos/memory";
+import { listRouteAliases, routeLlmCall } from "@agentos/llm-router";
 import { findRepoRoot } from "@agentos/persistence";
 import { evaluateBudget, evaluateQuotaSteward } from "@agentos/token-manager";
 import { buildApiRuntimeOptions } from "./runtime-options";
 import { getProviderId, providers } from "./providers";
 import { buildPullRequestBody, createGitHubMissionIssue, createGitHubPullRequest } from "./github";
+import { installApiAuthGuard, requireAuthWebSocket } from "./auth-guard";
+import { resolveCorsOrigin } from "./cors-policy";
+import { requireDiscordAdminApi } from "./discord-admin-guard";
+import { mutateRateLimitPreHandler } from "./rate-limit";
 import { renderAuthLoginRequiredPage, renderAuthMePage, renderAuthSuccessPage } from "./auth-pages";
 import {
   buildDiscordAuthorizeUrl,
@@ -72,6 +78,7 @@ import { startDiscordGateway } from "./discord/gateway";
 import { ensureOperatorLaneIndicator } from "./discord/operator-lane-status";
 import { dispatchDiscordInteraction, interactionPublicKeyConfigured, verifyInteractionRequest, type DiscordInteraction } from "./discord/interactions";
 import { installDiscordPersistenceHooks } from "./discord/persistence-hooks";
+import { registerScraperRoutes } from "./scraper/routes.js";
 import { postSystemPulse, syncPendingApprovalsToDiscord } from "./discord/notify";
 import {
   buildSessionCookie,
@@ -81,7 +88,8 @@ import {
   readCookieValue,
   readSessionToken,
   sessionCookieName,
-  touchSessionCookie
+  touchSessionCookie,
+  operatorIdFromRequest
 } from "./session";
 import {
   addAudit,
@@ -124,7 +132,10 @@ import {
 loadRepoEnv();
 installDiscordPersistenceHooks();
 
+/** Route auth classes: docs/architecture/api-auth-matrix.md */
 const app = Fastify({ logger: true });
+installApiAuthGuard(app);
+app.addHook("preHandler", mutateRateLimitPreHandler);
 const port = Number(process.env.AGENTOS_API_PORT ?? 8787);
 const repoRoot = findRepoRoot(process.cwd());
 
@@ -148,8 +159,13 @@ function quotaStatus() {
   });
 }
 
-await app.register(cors, { origin: true, credentials: true });
+function actingOperatorId(request: { headers: { cookie?: string } }) {
+  return operatorIdFromRequest(request) ?? store.operators[0]?.id ?? "operator-local";
+}
+
+await app.register(cors, { origin: resolveCorsOrigin, credentials: true });
 await app.register(websocket);
+await registerScraperRoutes(app);
 
 function permissionEscalates(level: SandboxPermissionLevel) {
   return !["observe", "safe_execute"].includes(level);
@@ -729,6 +745,49 @@ app.get("/memory/wiki/manifest", async () => {
   return manifest;
 });
 
+// Wikilink graph for the /wiki Map view. Same shape as graph.json, but archived
+// articles (and their edges) are dropped; orphans are hidden unless requested.
+app.get("/memory/wiki/graph", async (request, reply) => {
+  const includeOrphans = (request.query as { includeOrphans?: string }).includeOrphans === "true";
+  const graph = buildWikiGraph(repoRoot);
+
+  const articles: typeof graph.articles = {};
+  for (const [slug, summary] of Object.entries(graph.articles)) {
+    if (!summary.archived) articles[slug] = summary;
+  }
+  const visible = new Set(Object.keys(articles));
+
+  const filterMap = (map: Record<string, string[]>): Record<string, string[]> => {
+    const next: Record<string, string[]> = {};
+    for (const [slug, targets] of Object.entries(map)) {
+      if (!visible.has(slug)) continue;
+      const kept = targets.filter((target) => visible.has(target));
+      if (kept.length) next[slug] = kept;
+    }
+    return next;
+  };
+
+  const outbound = filterMap(graph.outbound);
+  const inbound = filterMap(graph.inbound);
+
+  let resultArticles = articles;
+  if (!includeOrphans) {
+    const linked = new Set<string>();
+    for (const [slug, targets] of Object.entries(outbound)) {
+      linked.add(slug);
+      for (const target of targets) linked.add(target);
+    }
+    for (const [slug, targets] of Object.entries(inbound)) {
+      linked.add(slug);
+      for (const target of targets) linked.add(target);
+    }
+    resultArticles = Object.fromEntries(Object.entries(articles).filter(([slug]) => linked.has(slug)));
+  }
+
+  void reply.header("Cache-Control", "private, max-age=30");
+  return { articles: resultArticles, outbound, inbound };
+});
+
 app.post("/memory/wiki/rebuild", async () => {
   const manifest = rebuildWikiManifest(repoRoot);
   addAudit("memory.wiki_rebuilt", "operator-api", `Rebuilt wiki manifest (${manifest.articles.length} articles).`);
@@ -873,6 +932,125 @@ app.get("/usage/summary", async () => usageSummary());
 app.get("/quota/status", async () => quotaStatus());
 app.get("/usage/budgets", async () => store.budgets);
 app.post("/usage/budgets", async (request) => addBudget(request.body as Parameters<typeof addBudget>[0]));
+
+// ── LLM router (Phase 1: additive — existing providers/agents callers unchanged) ──
+app.post("/llm/chat", async (request, reply) => {
+  const body = (request.body ?? {}) as LlmChatRequest & {
+    messages?: Array<{ role: string; content: string }>;
+    alias?: string;
+    missionId?: string;
+    runId?: string;
+    estimatedCostUsd?: number;
+  };
+
+  const prompt =
+    body.prompt?.trim() ||
+    body.messages?.filter((m) => m.role === "user").map((m) => m.content).join("\n").trim();
+
+  if (!prompt) {
+    return reply.code(400).send({ ok: false, error: "Prompt is required." });
+  }
+
+  const result = await routeLlmCall(repoRoot, store.usageEvents, {
+    prompt,
+    messages: body.messages,
+    alias: body.alias,
+    model: body.model,
+    agentId: body.agentId,
+    missionId: body.missionId,
+    runId: body.runId,
+    estimatedCostUsd: body.estimatedCostUsd,
+    budgets: store.budgets
+  });
+
+  if (result.ok && result.usageEvent) {
+    addUsageEvent({
+      provider: result.usageEvent.provider,
+      model: result.usageEvent.model,
+      promptTokens: result.usageEvent.promptTokens,
+      completionTokens: result.usageEvent.completionTokens,
+      totalTokens: result.usageEvent.totalTokens,
+      estimatedCostUsd: result.usageEvent.estimatedCostUsd,
+      agentId: result.usageEvent.agentId,
+      taskId: result.usageEvent.taskId,
+      runId: result.usageEvent.runId
+    });
+    addAudit(
+      "llm.route.completed",
+      result.usageEvent.agentId ?? "operator-api",
+      `Routed via ${result.provider}/${result.model} (${result.lane}).`,
+      result.usageEvent.taskId,
+      result.usageEvent.runId
+    );
+  } else if (result.blocked) {
+    addAudit(
+      "llm.route.blocked",
+      body.agentId ?? "operator-api",
+      result.blockReason ?? "Router blocked the call.",
+      body.missionId,
+      body.runId
+    );
+    return reply.code(429).send(result);
+  } else if (!result.ok) {
+    return reply.code(502).send(result);
+  }
+
+  let savedMemoryId: string | undefined;
+  if (body.saveMemory !== false && result.text) {
+    const memory = persistMemory({
+      type: "tool_result",
+      title: `LLM router response (${result.model})`,
+      content: result.text,
+      source: result.provider,
+      agentId: body.agentId,
+      tags: ["llm", "router"],
+      importance: 5,
+      archived: false
+    });
+    savedMemoryId = memory.id;
+  }
+
+  return {
+    ...result,
+    response: result.text,
+    savedMemoryId
+  };
+});
+
+app.get("/llm/routes", async () => {
+  const aliases = listRouteAliases(repoRoot);
+  let ollama = false;
+  try {
+    const response = await fetch("http://127.0.0.1:11434/api/tags");
+    ollama = response.ok;
+  } catch {
+    ollama = false;
+  }
+  let litellm = false;
+  const litellmEnabled = process.env.FEATURE_LITELLM_PROXY === "true";
+  if (litellmEnabled) {
+    try {
+      const base = process.env.AGENTOS_LITELLM_BASE_URL ?? "http://127.0.0.1:4000";
+      const response = await fetch(`${base}/health`);
+      litellm = response.ok;
+    } catch {
+      litellm = false;
+    }
+  }
+  return {
+    mode: process.env.AGENTOS_LLM_ROUTER_MODE ?? "local-first",
+    litellmEnabled,
+    health: { ollama, litellm },
+    aliases
+  };
+});
+
+app.get("/llm/activity", async (request) => {
+  const limitRaw = Number((request.query as { limit?: string }).limit ?? 50);
+  const limit = Math.max(1, Math.min(500, Number.isFinite(limitRaw) ? limitRaw : 50));
+  const events = [...store.usageEvents].slice(-limit).reverse();
+  return { events, count: events.length };
+});
 app.post("/usage/mock-event", async (request, reply) => {
   const body = request.body as { estimatedCostUsd?: number; promptTokens?: number; completionTokens?: number };
   const decision = evaluateBudget(store.usageEvents, store.budgets, body.estimatedCostUsd ?? 0);
@@ -901,20 +1079,24 @@ app.get("/control-gate", async () => ({
   recent: store.approvals.slice(0, 20),
   quickActions: listQuickActions().filter((action) => !action.consumedAt)
 }));
-app.post("/approvals/:id/approve-once", async (request, reply) => resolveApprovalDecision((request.params as { id: string }).id, "approved", "once", store.operators[0]?.id ?? "operator-local"));
-app.post("/approvals/:id/approve-for-mission", async (request, reply) =>
-  resolveApprovalDecision((request.params as { id: string }).id, "approved", "mission", store.operators[0]?.id ?? "operator-local")
+app.post("/approvals/:id/approve-once", async (request, reply) =>
+  resolveApprovalDecision((request.params as { id: string }).id, "approved", "once", actingOperatorId(request))
 );
-app.post("/approvals/:id/deny", async (request, reply) => resolveApprovalDecision((request.params as { id: string }).id, "denied", undefined, store.operators[0]?.id ?? "operator-local"));
-app.post("/approvals/bulk/approve-once", async () =>
-  bulkApprovePendingApprovals(store.operators[0]?.id ?? "operator-local")
+app.post("/approvals/:id/approve-for-mission", async (request, reply) =>
+  resolveApprovalDecision((request.params as { id: string }).id, "approved", "mission", actingOperatorId(request))
+);
+app.post("/approvals/:id/deny", async (request, reply) =>
+  resolveApprovalDecision((request.params as { id: string }).id, "denied", undefined, actingOperatorId(request))
+);
+app.post("/approvals/bulk/approve-once", async (request) =>
+  bulkApprovePendingApprovals(actingOperatorId(request))
 );
 
 app.get("/quick-actions", async () => listQuickActions());
 app.post("/quick-actions/:id/consume", async (request, reply) => {
   const action = getQuickAction((request.params as { id: string }).id);
   if (!action) return reply.code(404).send({ error: "Quick action not found" });
-  return executeQuickAction(action.id, store.operators[0]?.id ?? "operator-local");
+  return executeQuickAction(action.id, actingOperatorId(request));
 });
 
 app.post("/rich-actions/execute", async (request, reply) => {
@@ -934,7 +1116,7 @@ app.post("/rich-actions/execute", async (request, reply) => {
   }
   const result = await executeRichQuickAction({
     actionType: body.actionType,
-    operatorId: body.operatorId ?? store.operators[0]?.id ?? "operator-local",
+    operatorId: actingOperatorId(request),
     scope: body.scope ?? {},
     threadId: body.threadId
   });
@@ -960,56 +1142,6 @@ app.post("/chat/threads/:id/messages", async (request, reply) => {
 });
 
 app.get("/audit", async () => store.auditEvents);
-app.post("/llm/chat", async (request, reply) => {
-  const body = request.body as LlmChatRequest;
-  if (!body?.prompt?.trim()) {
-    return reply.code(400).send({ ok: false, error: "Prompt is required." });
-  }
-
-  try {
-    const provider = providers[getProviderId()];
-    const result = await provider.chat(body);
-    let savedMemoryId: string | undefined;
-
-    if (body.saveMemory !== false) {
-      const memory = persistMemory({
-        type: "tool_result",
-        title: `Local AI console response (${result.model})`,
-        content: result.response,
-        source: result.provider,
-        agentId: body.agentId,
-        tags: ["llm", "local-ai"],
-        importance: 5,
-        archived: false
-      });
-      savedMemoryId = memory.id;
-    }
-
-    addAudit("llm.chat.completed", body.agentId ?? "agentos-operator", `Local AI response from ${result.provider}.`);
-
-    const estimatedCostUsd = 0;
-    const promptTokens = Math.ceil(body.prompt.length / 4);
-    const completionTokens = Math.ceil(result.response.length / 4);
-    addUsageEvent({
-      provider: result.provider,
-      model: result.model,
-      promptTokens,
-      completionTokens,
-      totalTokens: promptTokens + completionTokens,
-      estimatedCostUsd,
-      agentId: body.agentId,
-      runId: `llm-${Date.now()}`
-    });
-
-    return {
-      ...result,
-      savedMemoryId
-    };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Local AI provider failure.";
-    return reply.code(502).send({ ok: false, error: message, provider: getProviderId() });
-  }
-});
 
 app.get("/mission/demo", async () => store.demoMission);
 app.post("/mission/demo/run", async () => {
@@ -1158,7 +1290,7 @@ app.post("/discord/interactions", async (request, reply) => {
   }
 });
 
-app.post("/discord/restructure", async (_request, reply) => {
+app.post("/discord/restructure", { preHandler: requireDiscordAdminApi }, async (_request, reply) => {
   if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
     return reply.code(503).send({ error: "Discord bot restructure is not configured." });
   }
@@ -1171,7 +1303,7 @@ app.post("/discord/restructure", async (_request, reply) => {
   }
 });
 
-app.post("/discord/bootstrap", async (_request, reply) => {
+app.post("/discord/bootstrap", { preHandler: requireDiscordAdminApi }, async (_request, reply) => {
   if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
     return reply.code(503).send({ error: "Discord bot bootstrap is not configured." });
   }
@@ -1184,7 +1316,7 @@ app.post("/discord/bootstrap", async (_request, reply) => {
   }
 });
 
-app.post("/discord/sync-commands", async (_request, reply) => {
+app.post("/discord/sync-commands", { preHandler: requireDiscordAdminApi }, async (_request, reply) => {
   if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
     return reply.code(503).send({ error: "Discord command sync is not configured." });
   }
@@ -1197,7 +1329,7 @@ app.post("/discord/sync-commands", async (_request, reply) => {
   }
 });
 
-app.post("/discord/sync-roles", async (_request, reply) => {
+app.post("/discord/sync-roles", { preHandler: requireDiscordAdminApi }, async (_request, reply) => {
   if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
     return reply.code(503).send({ error: "Discord role sync is not configured." });
   }
@@ -1218,7 +1350,7 @@ app.post("/discord/sync-outbox", async () => {
   return { ok: true, approvals };
 });
 
-app.post("/discord/post-guides", async (_request, reply) => {
+app.post("/discord/post-guides", { preHandler: requireDiscordAdminApi }, async (_request, reply) => {
   if (!process.env.DISCORD_BOT_TOKEN?.trim() || !process.env.DISCORD_GUILD_ID?.trim()) {
     return reply.code(503).send({ error: "Discord bot is not configured." });
   }
@@ -1239,7 +1371,11 @@ app.post("/discord/pulse", async () => {
   return { ok: pulse.ok, pulse };
 });
 
-app.get("/events", { websocket: true }, (connection) => {
+app.get("/events", { websocket: true }, (connection, request) => {
+  if (!requireAuthWebSocket(request)) {
+    connection.close(4401, "Authentication required");
+    return;
+  }
   connection.send(JSON.stringify({ event: "system.health.changed", data: { api: "online" } }));
   const timer = setInterval(() => {
     const database = getDatabaseSnapshot();

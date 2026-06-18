@@ -1,0 +1,30 @@
+# AgentOS — LiteLLM proxy config TEMPLATE.
+# Do NOT put real keys here. `scripts/setup-litellm.(ps1|sh)` renders this to
+# .agentos/state/litellm.config.yaml (gitignored), pulling keys from your .env
+# via os.environ/* references — so secrets never live in the repo.
+#
+# Start: litellm --config .agentos/state/litellm.config.yaml --port 4000
+
+model_list:
+  - model_name: ollama/qwen2.5-coder:7b
+    litellm_params:
+      model: ollama/qwen2.5-coder:7b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder:3b
+    litellm_params:
+      model: ollama/qwen2.5-coder:3b
+      api_base: http://127.0.0.1:11434
+  - model_name: openai/gpt-4o-mini
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: anthropic/claude-sonnet-4-20250514
+    litellm_params:
+      model: anthropic/claude-sonnet-4-20250514
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+router_settings:
+  routing_strategy: simple-shuffle  # Phase 1; latency-based in Phase 2
+
+litellm_settings:
+  drop_params: true

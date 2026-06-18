@@ -68,3 +68,9 @@ See also: [[packages/agents]]
 - **2026-06-12T13:43:41** — memory-curator: Cursor: Plan a layout for the discord server/guild that utilizes the full spectrum of what can be modified in a discord server with a fully authed a (scope: scripts/bootstrap-discord-guild.ts, apps/api/src/discord/, packages/shared/src/index.ts, apps/command-center/src/components/local/AgentOSLocalApp.tsx; artifacts: cursor-transcript)
 
 - **2026-06-12T13:43:42** — memory-curator: Cursor: Explore C:\Users\gaged\Documents\AgenOS for: 1. Existing discord embeds in apps/api/src/discord/embeds.ts, personas.ts 2. packages/shared st (scope: apps/api/src/discord/embeds.ts, packages/shared, apps/command-center, apps/api/src/discord/; artifacts: cursor-transcript)
+
+- **2026-06-14T00:21:27** — memory-curator: Cursor: You are completing a follow-up task for the AgentOS repo at C:\Users\gaged\Documents\AgenOS. ## Context The user previously had work done on (scope: docs/design/platform-template-motion-reference-pack.md, apps/api/src/scraper/, apps/api/src/scraper/routes.ts, apps/api/src/scraper/downloader.ts; artifacts: cursor-transcript)
+
+- **2026-06-15T04:03:56** — memory-curator: Cursor: I learn best from formats like docs from tech websites like https://docs.factory.ai/welcome and https://developers.openai.com/api/docs Could (scope: docs/getting-started/welcome, docs/concepts/agent-pipeline, apps/command-center/src/content/docs/manifest.ts, apps/command-center/src/content/docs/; artifacts: cursor-transcript)
+
+- **2026-06-16T03:06:06** — memory-curator: Cursor: Claude is working on a web design overhaul and is at this current state:Were going to rewire our AgentOS/Flous.dev project to this new desig (scope: apps/command-center, packages/ui/src/tokens/agentos-forge.css, apps/command-center/src/styles/forge-ds/, packages/ui; artifacts: cursor-transcript)

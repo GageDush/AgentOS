@@ -6,7 +6,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./styles/agentos-forge.css": "./src/tokens/agentos-forge.css",
-    "./motion": "./src/motion/index.ts"
+    "./motion": "./src/motion/index.ts",
+    "./layout": "./src/layout/index.ts",
+    "./primitives": "./src/primitives/index.ts",
+    "./blocks": "./src/blocks/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

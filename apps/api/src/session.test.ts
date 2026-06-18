@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { buildSessionCookie, sessionMaxAgeSeconds } from "./session";
+import {
+  buildSessionCookie,
+  createSessionToken,
+  operatorIdFromRequest,
+  sessionMaxAgeSeconds,
+  type OperatorSession
+} from "./session";
 
 describe("session cookies", () => {
   const env = { ...process.env };
@@ -21,5 +27,20 @@ describe("session cookies", () => {
     expect(cookie).toContain("SameSite=None");
     expect(cookie).toContain("Secure");
     expect(cookie).toContain("Max-Age=3600");
+  });
+
+  it("reads operator id from a signed session cookie on the request", () => {
+    process.env.SESSION_SECRET = "test-session-secret";
+    const session: OperatorSession = {
+      provider: "discord",
+      discordUserId: "449600988094136343",
+      username: "gage",
+      operatorId: "discord-449600988094136343",
+      issuedAt: new Date().toISOString()
+    };
+    const token = createSessionToken(session);
+    const cookie = buildSessionCookie(token, 3600);
+    const operatorId = operatorIdFromRequest({ headers: { cookie } });
+    expect(operatorId).toBe("discord-449600988094136343");
   });
 });

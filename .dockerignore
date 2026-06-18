@@ -1,0 +1,27 @@
+# Keep secrets, local state, and rebuildable artifacts OUT of the image build context.
+# Without this, `COPY . .` in the Dockerfiles would bake .env (live secrets) into a layer.
+.git
+.github
+**/node_modules
+**/.next
+**/dist
+**/coverage
+**/*.log
+
+# Secrets — mounted at runtime instead (./.env -> /app/.env:ro). Keep .env.example.
+.env
+.env.*
+!.env.example
+!.env.functional.example
+
+# Local-only state and backups (backups may contain .env per .agentos/backups note).
+.agentos/state
+.agentos/backups
+.tunnel
+.cloudflared
+
+# Editor / OS noise
+.cursor
+.vscode
+.DS_Store
+Thumbs.db

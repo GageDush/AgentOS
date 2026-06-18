@@ -1,0 +1,5 @@
+Label: animated_particle_waves_background
+Extraction mode: screenshot_inference
+Confidence: low
+Preservation note: Canvas/WebGL was visible in runtime capture; treat screenshot as visual source of truth.
+Rights note: unknown

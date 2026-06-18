@@ -3,7 +3,7 @@ slug: apps/api
 title: Api
 tags: [app, monorepo, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # @agentos/api
 AgentOS app workspace unit.
@@ -29,6 +29,8 @@ Runnable service under `apps/api/`.
 - `src/discord/`
   - `src/discord/agent-avatars.test.ts`
   - `src/discord/agent-avatars.ts`
+  - `src/discord/agent-houses.test.ts`
+  - `src/discord/agent-houses.ts`
   - `src/discord/agent-profiles.ts`
   - `src/discord/artwork.test.ts`
   - `src/discord/artwork.ts`
@@ -51,16 +53,14 @@ Runnable service under `apps/api/`.
   - `src/discord/embeds.ts`
   - `src/discord/gateway.test.ts`
   - `src/discord/gateway.ts`
+  - `src/discord/house-visits.test.ts`
+  - `src/discord/house-visits.ts`
+  - `src/discord/house-wiki.ts`
   - `src/discord/interaction-respond.test.ts`
   - `src/discord/interaction-respond.ts`
   - `src/discord/interactions.integration.test.ts`
   - `src/discord/interactions.test.ts`
   - `src/discord/interactions.ts`
-  - `src/discord/layout.ts`
-  - `src/discord/message-attribution.ts`
-  - `src/discord/messenger.test.ts`
-  - `src/discord/messenger.ts`
-  - `src/discord/mission-briefing.ts`
 ## Related
 - [[areas/repo-layout]]
 - [[areas/dependency-graph]]

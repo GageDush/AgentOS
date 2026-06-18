@@ -3,7 +3,7 @@ slug: areas/config
 title: Configuration reference
 tags: [config, env, auto-indexed]
 archived: false
-valid_from: 2026-06-12
+valid_from: 2026-06-16
 ---
 # Configuration reference
 
@@ -40,7 +40,11 @@ Environment variable **names** from `.env.example` only (no values).
 - `AGENTOS_IMPLEMENTER_APPLY_PATCHES`
 - `AGENTOS_MEMORY_DECAY`
 - `AGENTOS_MEMORY_WIKI_WRITE`
+- `AGENTOS_CURSOR_WIKI_SYNC`
+- `AGENTOS_CURSOR_TRANSCRIPTS_DIR`
+- `AGENTOS_CURSOR_WIKI_SYNC_INTERVAL_MS`
 - `AGENTOS_DISCORD_BRIEFING_ON_COMPLETE`
+- `AGENTOS_DISCORD_HOUSE_VISITS`
 - `AGENTOS_TOOL_MAX_ITERATIONS`
 - `AGENTOS_TOOL_MAX_MINUTES`
 - `AGENTOS_FIX_VERIFY_RETRIES`
@@ -73,13 +77,16 @@ Environment variable **names** from `.env.example` only (no values).
 - `scripts/agentos-background.ps1`
 - `scripts/agentos-control.ps1`
 - `scripts/bootstrap-discord-guild.ts`
+- `scripts/bootstrap-discord-houses.ts`
 - `scripts/db-migrate.mjs`
 - `scripts/db-reset.mjs`
 - `scripts/db-seed.mjs`
 - `scripts/demo-smoke.ps1`
 - `scripts/demo.ps1`
 - `scripts/discord-interactions-mode.mjs`
+- `scripts/icepanel-populate-diagrams.mjs`
 - `scripts/install-agentos-autostart.ps1`
+- `scripts/install-tunnel-watchdog.ps1`
 - `scripts/kick-discord-bots.ts`
 - `scripts/migrate-memory-to-wiki.mjs`
 - `scripts/mission-execution-smoke.mjs`
@@ -94,6 +101,7 @@ Environment variable **names** from `.env.example` only (no values).
 - `scripts/sanitize-agentos.mjs`
 - `scripts/setup-cloudflare-tunnel.ps1`
 - `scripts/setup-cursor-channel.ts`
+- `scripts/setup-open-codesign.ps1`
 - `scripts/setup-operator-command-channel.ts`
 - `scripts/smoke-full.mjs`
 - `scripts/smoke-full.ps1`
@@ -101,9 +109,10 @@ Environment variable **names** from `.env.example` only (no values).
 - `scripts/spine-test-and-report.mjs`
 - `scripts/sync-discord-commands.ts`
 - `scripts/sync-discord-roles.ts`
-- `scripts/validate-env.mjs`
-- `scripts/wiki-index-repo.mjs`
-- `scripts/wiki-memory-benchmark.mjs`
+- `scripts/tool-execution-live-smoke.mjs`
+- `scripts/tool-execution-smoke.mjs`
+- `scripts/tunnel-maintenance.ps1`
+- `scripts/tunnel-watchdog.ps1`
 
 ## Related
 

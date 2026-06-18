@@ -10,6 +10,7 @@ import { ForgeDashboardView } from "../forge/ForgeDashboardView";
 import { ForgeControlGateView } from "../forge/ForgeControlGateView";
 import { ForgeInspectorSidebar } from "../forge/ForgeInspectorSidebar";
 import { ForgeMemoryQueuePanel } from "../forge/ForgeMemoryQueuePanel";
+import { ForgeWikiView } from "../forge/ForgeWikiView";
 import {
   buildCommandPaletteItems,
   toActivityFeed,
@@ -74,6 +75,7 @@ type SectionKey =
   | "control-gate"
   | "blackbox"
   | "archive"
+  | "wiki"
   | "loadout"
   | "settings";
 
@@ -116,6 +118,73 @@ type DashboardPayload = {
     providerMode: string;
   };
 };
+
+const EMPTY_DASHBOARD: DashboardPayload = {
+  workspaces: [],
+  operators: [],
+  agents: [],
+  missions: [],
+  runs: [],
+  approvals: [],
+  audit: [],
+  archive: [],
+  routines: [],
+  loadout: [],
+  sessions: [],
+  quickActions: [],
+  chatThreads: [],
+  chatMessages: [],
+  routingDecisions: [],
+  usage: {
+    dailySpend: 0,
+    monthlySpend: 0,
+    dailyLimit: 0,
+    monthlyLimit: 0,
+    warningThresholdPercent: 0,
+    totalTokens: 0
+  },
+  system: {
+    api: "offline",
+    worker: "offline",
+    gateway: "offline",
+    discordMode: "mock",
+    providerMode: "mock"
+  }
+};
+
+function normalizeDashboardPayload(raw: Partial<DashboardPayload> | null | undefined): DashboardPayload {
+  if (!raw) return { ...EMPTY_DASHBOARD };
+  return {
+    workspaces: raw.workspaces ?? [],
+    operators: raw.operators ?? [],
+    agents: raw.agents ?? [],
+    missions: raw.missions ?? [],
+    runs: raw.runs ?? [],
+    approvals: raw.approvals ?? [],
+    audit: raw.audit ?? [],
+    archive: raw.archive ?? [],
+    routines: raw.routines ?? [],
+    loadout: raw.loadout ?? [],
+    sessions: raw.sessions ?? [],
+    quickActions: raw.quickActions ?? [],
+    chatThreads: raw.chatThreads ?? [],
+    chatMessages: raw.chatMessages ?? [],
+    routingDecisions: raw.routingDecisions ?? [],
+    usage: raw.usage ?? EMPTY_DASHBOARD.usage,
+    quota: raw.quota,
+    system: raw.system ?? EMPTY_DASHBOARD.system
+  };
+}
+
+function mergeDashboardPayload(
+  current: DashboardPayload | null,
+  update: Partial<DashboardPayload>
+): DashboardPayload {
+  return normalizeDashboardPayload({
+    ...normalizeDashboardPayload(current ?? undefined),
+    ...update
+  });
+}
 
 type MissionDraft = {
   title: string;
@@ -243,11 +312,11 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
 
   useEffect(() => {
     if (!lastSnapshot) return;
-    const payload = lastSnapshot as DashboardPayload;
+    const payload = lastSnapshot as Partial<DashboardPayload>;
     setApiOnline(true);
     startTransition(() => {
-      setData(payload);
-      setActiveRunId((current) => current ?? payload.runs[0]?.id);
+      setData((current) => mergeDashboardPayload(current, payload));
+      setActiveRunId((current) => current ?? payload.runs?.[0]?.id);
     });
   }, [lastSnapshot]);
 
@@ -269,8 +338,8 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
       }
       setApiOnline(true);
       startTransition(() => {
-        setData(result.data);
-        setActiveRunId((current) => current ?? result.data.runs[0]?.id);
+        setData(normalizeDashboardPayload(result.data));
+        setActiveRunId((current) => current ?? result.data.runs?.[0]?.id);
       });
     };
 
@@ -361,13 +430,19 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
     };
   }, [draft.command, draft.sandboxLevel]);
 
-  const activeRun = useMemo(() => data?.runs.find((run) => run.id === activeRunId), [data?.runs, activeRunId]);
-  const activeMission = useMemo(() => data?.missions.find((mission) => mission.latestRunId === activeRunId), [data?.missions, activeRunId]);
-  const pendingApprovals = data?.approvals.filter((approval) => approval.status === "pending") ?? [];
+  const activeRun = useMemo(() => data?.runs?.find((run) => run.id === activeRunId), [data?.runs, activeRunId]);
+  const activeMission = useMemo(
+    () => data?.missions?.find((mission) => mission.latestRunId === activeRunId),
+    [data?.missions, activeRunId]
+  );
+  const pendingApprovals = data?.approvals?.filter((approval) => approval.status === "pending") ?? [];
+  const activeMissionCount = data?.missions?.filter((mission) => mission.status === "running").length ?? 0;
+  // Run Inspector only belongs on operational run surfaces (missions, gate, blackbox).
+  const showInspector = section === "missions" || section === "control-gate" || section === "blackbox";
   const activeThread = useMemo(
     () =>
-      data?.chatThreads.find((thread) => thread.id === activeMission?.activeThreadId) ??
-      data?.chatThreads[0],
+      data?.chatThreads?.find((thread) => thread.id === activeMission?.activeThreadId) ??
+      data?.chatThreads?.[0],
     [data?.chatThreads, activeMission?.activeThreadId]
   );
   const activeQuickActions = useMemo(
@@ -380,7 +455,7 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
     [data?.quickActions, activeMission, activeRun]
   );
   const activeRoute = useMemo(
-    () => data?.routingDecisions.find((route) => route.id === activeRun?.routeDecisionId),
+    () => data?.routingDecisions?.find((route) => route.id === activeRun?.routeDecisionId),
     [data?.routingDecisions, activeRun?.routeDecisionId]
   );
 
@@ -392,8 +467,8 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
     }
     setApiOnline(true);
     startTransition(() => {
-      setData(result.data);
-      if (!activeRunId) setActiveRunId(result.data.runs[0]?.id);
+      setData(normalizeDashboardPayload(result.data));
+      if (!activeRunId) setActiveRunId(result.data.runs?.[0]?.id);
     });
   }
 
@@ -683,6 +758,8 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
       healthMetrics={healthMetrics}
       commandItems={commandItems}
       pendingApprovals={pendingApprovals.length}
+      activeMissions={activeMissionCount}
+      showInspector={showInspector}
     >
       <section className="forge-page-grid">
         <ForgeSectionHeader
@@ -816,26 +893,27 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
         ) : null}
         {section === "blackbox" ? <BlackboxView audit={data.audit} activeLogs={activeLogs} activeRunId={activeRunId} /> : null}
         {section === "archive" ? <ArchiveView archive={data.archive} /> : null}
+        {section === "wiki" ? <ForgeWikiView /> : null}
         {section === "loadout" ? <LoadoutView loadout={data.loadout} providerStatus={providerStatus} /> : null}
         {section === "settings" ? <SettingsView data={data} providerStatus={providerStatus} /> : null}
       </section>
 
-      <ForgeInspectorSidebar collapsedDefault={section === "dashboard"} mission={activeMission} run={activeRun}>
-        <RunInspector
-          mission={activeMission}
-          run={activeRun}
-          route={activeRoute}
-          logs={activeLogs}
-          approvals={pendingApprovals}
-          quickActions={activeQuickActions}
-          onResolveApproval={resolveApprovalAction}
-          onConsumeQuickAction={consumeQuickAction}
-          busyAction={busyAction}
-        />
-        {section !== "dashboard" ? (
+      {showInspector ? (
+        <ForgeInspectorSidebar collapsedDefault={false} mission={activeMission} run={activeRun}>
+          <RunInspector
+            mission={activeMission}
+            run={activeRun}
+            route={activeRoute}
+            logs={activeLogs}
+            approvals={pendingApprovals}
+            quickActions={activeQuickActions}
+            onResolveApproval={resolveApprovalAction}
+            onConsumeQuickAction={consumeQuickAction}
+            busyAction={busyAction}
+          />
           <RecentHistory runs={data.runs} missions={data.missions} onSelectRun={setActiveRunId} activeRunId={activeRunId} />
-        ) : null}
-      </ForgeInspectorSidebar>
+        </ForgeInspectorSidebar>
+      ) : null}
 
       <ForgeChatDock
         thread={activeThread}
@@ -854,6 +932,7 @@ function AgentOSLocalAppInner({ section }: { section: SectionKey }) {
 function labelForSection(section: SectionKey) {
   if (section === "dashboard") return "Command Center";
   if (section === "control-gate") return "Operator Approval Surface";
+  if (section === "wiki") return "Memory Wiki";
   return section.replace("-", " ");
 }
 
@@ -873,6 +952,8 @@ function titleForSection(section: SectionKey) {
       return "Live execution story and operator trace";
     case "archive":
       return "Mission memory and archived results";
+    case "wiki":
+      return "Curated memory, Cursor sessions, and project briefs";
     case "loadout":
       return "Local models, tools, and integration posture";
     case "settings":
@@ -888,6 +969,8 @@ function descriptionForSection(section: SectionKey) {
       return "Mission records now drive the app instead of the deprecated office scene.";
     case "control-gate":
       return "Approve once, deny, or approve for the whole mission with an audit event for every decision.";
+    case "wiki":
+      return "Browse what agents and Cursor sessions have recorded — consolidated briefs, flows, and session digests.";
     default:
       return "AgentOS Local stays mock-first, local-safe, and ready for Ollama when you want it.";
   }
@@ -904,7 +987,9 @@ function OperatorAuthCard({
     return (
       <div className="operator-auth-card">
         <p className="operator-auth-kicker">Operator access</p>
-        <p className="operator-auth-copy">Sign in with Discord to link your operator session across app and API.</p>
+        <p className="operator-auth-copy">
+          Sign in with Discord to attribute approvals and gate decisions to your operator ID in the audit trail.
+        </p>
         <a className="operator-auth-button" href={discordLoginUrl()}>
           Continue with Discord
         </a>
@@ -918,6 +1003,7 @@ function OperatorAuthCard({
       <p className="operator-auth-kicker">Signed in</p>
       <strong className="operator-auth-name">{displayName}</strong>
       <span className="operator-auth-handle">@{session.username}</span>
+      <p className="operator-auth-copy">Approvals and gate actions record as <code>{session.operatorId}</code>.</p>
       <button
         className="operator-auth-logout"
         type="button"
@@ -1618,6 +1704,83 @@ const operatorFaqItems: ForgeFaqItem[] = [
   }
 ];
 
+type LlmRoutesResponse = {
+  mode: string;
+  litellmEnabled: boolean;
+  health: { ollama: boolean; litellm: boolean };
+  aliases: Array<{ alias: string; models: string[]; lanes: string[]; requiresApproval: boolean }>;
+};
+
+function RouterHealthPanel() {
+  const [routes, setRoutes] = useState<LlmRoutesResponse | null>(null);
+  const [down, setDown] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const result = await apiGetResult<LlmRoutesResponse>("/llm/routes");
+      if (!active) return;
+      if (result.ok) {
+        setRoutes(result.data);
+        setDown(false);
+      } else {
+        setDown(true);
+      }
+    };
+    void load();
+    const id = setInterval(load, 12000);
+    return () => {
+      active = false;
+      clearInterval(id);
+    };
+  }, []);
+
+  const litellmValue = routes
+    ? routes.litellmEnabled
+      ? routes.health.litellm
+        ? "reachable"
+        : "enabled · down"
+      : "disabled"
+    : "—";
+
+  return (
+    <Panel title="LLM Router" subtitle="Local-first routing — Ollama direct, LiteLLM optional.">
+      {down ? (
+        <div className="settings-grid">
+          <Setting label="Router" value="API unavailable" />
+        </div>
+      ) : !routes ? (
+        <div className="settings-grid">
+          <Setting label="Router" value="Checking…" />
+        </div>
+      ) : (
+        <>
+          <div className="settings-grid">
+            <Setting label="Mode" value={routes.mode} />
+            <Setting label="Ollama" value={routes.health.ollama ? "reachable" : "unavailable"} />
+            <Setting label="LiteLLM" value={litellmValue} />
+            <Setting label="Aliases" value={String(routes.aliases.length)} />
+          </div>
+          {!routes.litellmEnabled ? (
+            <p
+              style={{
+                margin: "10px 0 0",
+                fontFamily: "var(--forge-mono)",
+                fontSize: "0.72rem",
+                lineHeight: 1.5,
+                color: "var(--forge-soft)"
+              }}
+            >
+              Cloud lanes are off. Enable with <code>pnpm llm:litellm:setup</code>, then set <code>FEATURE_LITELLM_PROXY=true</code> and{" "}
+              <code>pnpm stack:restart</code>.
+            </p>
+          ) : null}
+        </>
+      )}
+    </Panel>
+  );
+}
+
 function SettingsView({ data, providerStatus }: { data: DashboardPayload; providerStatus?: ProviderStatus }) {
   const [runtimeView, setRuntimeView] = useState<"system" | "providers">("system");
 
@@ -1657,6 +1820,7 @@ function SettingsView({ data, providerStatus }: { data: DashboardPayload; provid
           )}
         </div>
       </Panel>
+      <RouterHealthPanel />
       <Panel title="Policy Snapshot" subtitle="Safe commands are small by design during the pivot.">
         <div className="policy-list">
           <div><strong>Auto-allowed:</strong> `git status`, `git diff`, `pnpm test`, `pnpm typecheck`, `pnpm lint`</div>
